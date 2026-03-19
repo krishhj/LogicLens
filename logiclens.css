@@ -1093,3 +1093,67 @@ body.light .queue-container {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
+/* ── RESPONSIVE DESIGN ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero, .container, .structures, .scaling-section {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+  
+  .container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  nav {
+    padding: 0 5vw;
+  }
+
+  .canvas {
+    height: 320px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 30px;
+  }
+  
+  .samples-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .sample-btn {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+
+  .info-panel {
+    flex-direction: column;
+    gap: 8px !important;
+  }
+
+  .canvas {
+    height: 220px;
+  }
+  
+  .hero-stats {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .stat {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat:last-child {
+    border-bottom: none;
+  }
+}
