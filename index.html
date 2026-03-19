@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LogicLens</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">LogicLens</div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero">
+        <h1>Visualize Code Logic</h1>
+        <p>
+            Understand algorithms, data structures, and program behavior visually.
+        </p>
+    </section>
+
+    <div class="container">
+        <div class="editor">
+            <h3>Algorithm Setup</h3>
+
+            <span class="input-label">Custom Array:</span>
+            <input type="text" id="arrayInput" value="30, 10, 45, 20, 15" placeholder="e.g. 10, 50, 20, 40" />
+
+            <span class="input-label">Paste Code:</span>
+            <div class="samples-row">
+                <span class="sample-lbl">Demos:</span>
+                <button class="sample-btn" onclick="loadDemo('bubble')">Bubble Sort</button>
+                <button class="sample-btn" onclick="loadDemo('insertion')">Insertion Sort</button>
+                <button class="sample-btn" onclick="loadDemo('selection')">Selection Sort</button>
+                <button class="sample-btn" onclick="loadDemo('quick')">Quick Sort</button>
+            </div>
+            <textarea id="codeInput">
+int arr[] = {5,3,8,1};
+
+for(int i=0;i<n;i++){
+ for(int j=0;j<n-i-1;j++){
+  if(arr[j] > arr[j+1]){
+   swap(arr[j],arr[j+1]);
+  }
+ }
+}
+</textarea>
+            <button class="viz-btn" id="vizBtn" onclick="analyzeCode()">
+                Visualize Logic
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>Sorting Visualization</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: #eab308"></span>Compare</span>
+                <span><span class="box" style="background: #ef4444"></span>Swap</span>
+                <span><span class="box" style="background: #22c55e"></span>Sorted</span>
+                <span><span class="box" style="background: #38bdf8"></span>Unsorted</span>
+            </div>
+
+            <div class="canvas" id="canvas"></div>
+
+            <div class="step-box" id="stepText">▶ System Ready.</div>
+
+            <div class="info-panel" id="infoPanel" style="display: none; margin-top: 10px; gap: 10px; justify-content: space-between;">
+                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Language</strong> 
+                    <span id="langText" style="color:var(--blue); font-weight:600;">-</span>
+                </div>
+                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Time Complexity</strong> 
+                    <span id="timeText" style="color:var(--glow); font-weight:600;">-</span>
+                </div>
+                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Space Complexity</strong> 
+                    <span id="spaceText" style="color:var(--amber); font-weight:600;">-</span>
+                </div>
+            </div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepBack()">◀</button>
+                    <button class="btn-play" id="playPauseBtn" onclick="togglePlay()">
+                        ▶ Play
+                    </button>
+                    <button class="btn-icon" onclick="stepForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="progressSlider" min="0" max="0" value="0" oninput="scrubTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-slow" onclick="setSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-normal" onclick="setSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-fast" onclick="setSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card">
+                <h3>Graphs</h3>
+                <p>BFS / DFS exploration</p>
+            </div>
+            <div class="card">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="scaling-section">
+        <h2 style="margin-bottom: 20px">Technical Scaling</h2>
+        <div class="scaling-box">
+            <div class="scaling-item">
+                <h4>O(1)</h4>
+                <p>Constant time operations independent of input size.</p>
+            </div>
+            <div class="scaling-item">
+                <h4>O(log n)</h4>
+                <p>Logarithmic algorithms like binary search.</p>
+            </div>
+            <div class="scaling-item">
+                <h4>O(n)</h4>
+                <p>Linear complexity processing each element.</p>
+            </div>
+            <div class="scaling-item">
+                <h4>O(n log n)</h4>
+                <p>Efficient sorting algorithms like Merge Sort.</p>
+            </div>
+            <div class="scaling-item">
+                <h4>O(n²)</h4>
+                <p>Nested loop algorithms like Bubble Sort.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+        const demos = {
+            bubble: "void bubbleSort(int arr[], int n) {\n  for(int i=0; i<n; i++) {\n    for(int j=0; j<n-i-1; j++) {\n      if(arr[j] > arr[j+1]) {\n        int temp = arr[j];\n        arr[j] = arr[j+1];\n        arr[j+1] = temp;\n      }\n    }\n  }\n}",
+            insertion: "void insertionSort(int arr[], int n) {\n    for (int i = 1; i < n; i++) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j = j - 1;\n        }\n        arr[j + 1] = key;\n    }\n}",
+            selection: "class SelectionSort {\n    void sort(int arr[]) {\n        int n = arr.length;\n        for (int i = 0; i < n-1; i++) {\n            int min_idx = i;\n            for (int j = i+1; j < n; j++) {\n                if (arr[j] < arr[min_idx]) {\n                    min_idx = j;\n                }\n            }\n            int temp = arr[min_idx];\n            arr[min_idx] = arr[i];\n            arr[i] = temp;\n        }\n    }\n}",
+            quick: "def quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)"
+        };
+
+        function loadDemo(type) {
+            document.getElementById("codeInput").value = demos[type];
+        }
+
+        /* --- HYBRID ENGINE STATE --- */
+        let steps = []; // Stores the dynamically fetched snapshots
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval = null;
+        let speedMs = 1000;
+
+        // 1. HYBRID FETCH (Calls Node.js/Gemini Backend)
+        const isLocalDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const API_URL = isLocalDev ? "http://localhost:5000/api/analyze" : "/api/analyze";
+
+        async function analyzeCode() {
+            const code = document.querySelector("textarea").value;
+
+            // --- NEW: DYNAMIC ARRAY PARSING ---
+            const rawInput = document.getElementById("arrayInput").value;
+
+            // Turn "30, 10, 45" into an actual JavaScript array of numbers: [30, 10, 45]
+            let parsedArray = rawInput.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
+
+            // Fallback: If user types letters or leaves it blank, reset to default
+            if (parsedArray.length === 0) {
+                parsedArray = [30, 10, 45, 20, 15];
+                document.getElementById("arrayInput").value = "30, 10, 45, 20, 15";
+            }
+            // ----------------------------------
+
+            let btn = document.querySelector(".viz-btn");
+            let stepText = document.getElementById("stepText");
+
+            pausePlayback();
+            // ... (keep the rest of your fetch try/catch block exactly the same below this line!)
+            btn.innerText = "Analyzing...";
+            btn.disabled = true;
+            stepText.innerText = "▶ Analysing and preparing Visualisation";
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        array: parsedArray,
+                        code: code,
+                        algorithm: "custom",
+                    }),
+                });
+
+                const data = await response.json();
+                steps = data.steps || [];
+
+                document.getElementById("infoPanel").style.display = "flex";
+                document.getElementById("langText").innerText = data.language || "Unknown";
+                document.getElementById("timeText").innerText = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
+                document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
+
+                if (steps.length > 0) {
+                    document.getElementById("progressSlider").max = steps.length - 1;
+                    currentStep = 0;
+                    togglePlay(); // Auto-start the fetched animation
+                } else {
+                    stepText.innerText = "▶ Analysis failed. No steps generated.";
+                }
+            } catch (err) {
+                stepText.innerText =
+                    "▶ Connection Error: Is your Node server running on port 5000?";
+            } finally {
+                btn.innerText = "Visualize Logic";
+                btn.disabled = false;
+            }
+        }
+
+        // 2. RENDER THE BACKEND FRAME
+        function renderFrame(frame) {
+            if (!frame) return;
+            let canvas = document.getElementById("canvas");
+            canvas.innerHTML = "";
+
+            // Default to 'array' (bar chart) if the AI doesn't specify a type
+            const type = frame.type || "array"; 
+
+            // --- 1. RENDER ARRAY (BAR CHART) ---
+            if (type === "array") {
+                const maxVal = Math.max(...frame.array, 1);
+                frame.array.forEach((value, index) => {
+                    let bar = document.createElement("div");
+                    bar.classList.add("bar");
+                    bar.style.height = (value / maxVal) * 260 + "px";
+
+                    let highlightArr = frame.highlight || [];
+                    let sortedArr = frame.sorted || [];
+
+                    if (sortedArr.includes(index)) bar.style.background = "#22c55e"; 
+                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308"; 
+                    else bar.style.background = "#38bdf8"; 
+
+                    let label = document.createElement("span");
+                    label.innerText = value;
+                    bar.appendChild(label);
+                    canvas.appendChild(bar);
+                });
+            } 
+            
+            // --- 2. RENDER STACK (VERTICAL) ---
+            else if (type === "stack") {
+                let container = document.createElement("div");
+                container.classList.add("stack-container");
+                
+                frame.array.forEach((value, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("stack-item");
+                    item.innerText = value;
+                    
+                    let highlightArr = frame.highlight || [];
+                    if (highlightArr.includes(index)) {
+                        // Green for pushed item, Red for popped item
+                        item.style.background = frame.action === "pop" ? "#ef4444" : "#22c55e";
+                        item.style.color = "white";
+                    }
+                    container.appendChild(item);
+                });
+                canvas.appendChild(container);
+            }
+
+            // --- 3. RENDER QUEUE (HORIZONTAL) ---
+            else if (type === "queue") {
+                let container = document.createElement("div");
+                container.classList.add("queue-container");
+                
+                frame.array.forEach((value, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("queue-item");
+                    item.innerText = value;
+                    
+                    let highlightArr = frame.highlight || [];
+                    if (highlightArr.includes(index)) {
+                        // Green for enqueued item, Red for dequeued item
+                        item.style.background = frame.action === "dequeue" ? "#ef4444" : "#22c55e";
+                        item.style.color = "white";
+                    }
+                    container.appendChild(item);
+                });
+                canvas.appendChild(container);
+            }
+
+            // Update text and timeline slider safely
+            document.getElementById("stepText").innerText = "▶ " + (frame.explanation || "Processing...");
+            let slider = document.getElementById("progressSlider");
+            if (slider) slider.value = currentStep;
+
+            // Highlight line in textarea
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById("codeInput");
+                const lines = textarea.value.split('\n');
+                let startPos = 0;
+                for (let i = 0; i < frame.line && i < lines.length; i++) {
+                    startPos += lines[i].length + 1;
+                }
+                let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                
+                const curScroll = textarea.scrollTop;
+                textarea.focus();
+                textarea.setSelectionRange(startPos, endPos);
+                textarea.scrollTop = curScroll;
+            }
+        }
+
+        // 3. BULLETPROOF MEDIA CONTROLS LOGIC
+        function togglePlay() {
+            if (steps.length === 0) return alert("Click 'Visualize Logic' to analyze code first!");
+
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                // If at the end, restart from the beginning
+                if (currentStep >= steps.length - 1) {
+                    currentStep = 0;
+                }
+                startPlayback();
+            }
+        }
+
+        function startPlayback() {
+            isPlaying = true;
+            updatePlayBtnUI();
+            renderFrame(steps[currentStep]);
+
+            // Clear any existing clocks to prevent bugs
+            clearInterval(playInterval);
+
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    renderFrame(steps[currentStep]);
+                } else {
+                    pausePlayback(); // Auto-pause at the end
+                }
+            }, speedMs);
+        }
+
+        function pausePlayback() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            updatePlayBtnUI();
+        }
+
+        function updatePlayBtnUI() {
+            let playBtn = document.getElementById("playPauseBtn");
+            if (!playBtn) return;
+
+            if (isPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (currentStep >= steps.length - 1 && steps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        // The button you clicked (⏮). It now automatically plays!
+        function jumpToStart() {
+            if (steps.length === 0) return;
+            currentStep = 0;
+            startPlayback();
+        }
+
+        function jumpToEnd() {
+            if (steps.length === 0) return;
+            pausePlayback();
+            currentStep = steps.length - 1;
+            renderFrame(steps[currentStep]);
+        }
+
+        function stepForward() {
+            if (steps.length === 0) return;
+            pausePlayback();
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderFrame(steps[currentStep]);
+            }
+        }
+
+        function stepBack() {
+            if (steps.length === 0) return;
+            pausePlayback();
+            if (currentStep > 0) {
+                currentStep--;
+                renderFrame(steps[currentStep]);
+            }
+        }
+
+        function setSpeed(ms, type) {
+            speedMs = ms;
+
+            document.getElementById("btn-slow").classList.remove("active");
+            document.getElementById("btn-normal").classList.remove("active");
+            document.getElementById("btn-fast").classList.remove("active");
+            document.getElementById("btn-" + type).classList.add("active");
+
+            // If it's currently playing, seamlessly restart the interval at the new speed
+            if (isPlaying) {
+                startPlayback();
+            }
+        }
+
+        function scrubTimeline() {
+            if (steps.length === 0) return;
+            pausePlayback();
+            currentStep = parseInt(document.getElementById("progressSlider").value);
+            renderFrame(steps[currentStep]);
+        }
+    </script>
+</body>
+
+</html>
