@@ -22,11 +22,11 @@ const analyzeCodeWithAI = async (code, baseArray) => {
     Return a valid JSON object matching this exact schema:
     {
         "algorithm": "Descriptive Name Here",
-        "complexity": { "time": "O(n)", "space": "O(1)" },
+        "complexity": { "time": { "best": "O(n)", "average": "O(n log n)", "worst": "O(n^2)" }, "space": "O(1)" },
         "explanation": "A short 1-sentence explanation.",
         "interview_steps": [
             "🧠 **Core Logic:** Explain how the algorithm works.",
-            "⏱️ **Time Complexity:** Explain the mathematical time complexity.",
+            "⏱️ **Time Complexity:** Explain the mathematical time complexity for best, average, and worst cases.",
             "💾 **Space Complexity:** Explain the space usage."
         ],
         "steps": [
@@ -49,7 +49,7 @@ const analyzeCodeWithAI = async (code, baseArray) => {
         console.error("🚨 CRITICAL AI ERROR:", error.message);
         return {
             algorithm: "Analysis Failed",
-            complexity: { time: "O(n)", space: "O(1)" },
+            complexity: { time: { best: "O(n)", average: "O(n)", worst: "O(n)" }, space: "O(1)" },
             explanation: "Could not trace custom code execution.",
             interview_steps: ["⚠️ Analysis failed."],
             steps: [{ array: baseArray, highlight: [], explanation: "Execution failed." }]

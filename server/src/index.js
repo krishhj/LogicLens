@@ -205,7 +205,10 @@ app.post("/api/analyze", async (req, res) => {
     let steps = [];
 
     const aiAlgorithm = analysis.algorithm ? analysis.algorithm.toLowerCase() : "custom";
-    const timeComp = analysis.complexity.time ? analysis.complexity.time.replace(/\s/g, "") : "";
+    const timeCompObj = analysis.complexity.time;
+    const timeComp = timeCompObj 
+        ? (typeof timeCompObj === 'string' ? timeCompObj.replace(/\s/g, "") : (timeCompObj.worst || "").replace(/\s/g, "")) 
+        : "";
     
     const searchTarget = baseArray[Math.floor(baseArray.length / 2)];
 

@@ -79,7 +79,11 @@ for(int i=0;i<n;i++){
                 </div>
                 <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
                     <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Time Complexity</strong> 
-                    <span id="timeText" style="color:var(--glow); font-weight:600;">-</span>
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span><span style="font-size: 8px; color: var(--text2);">Best:</span> <span id="timeBest" style="color:var(--glow); font-weight:600;">-</span></span>
+                        <span><span style="font-size: 8px; color: var(--text2);">Avg:</span> <span id="timeAvg" style="color:var(--glow); font-weight:600;">-</span></span>
+                        <span><span style="font-size: 8px; color: var(--text2);">Worst:</span> <span id="timeWorst" style="color:var(--glow); font-weight:600;">-</span></span>
+                    </div>
                 </div>
                 <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
                     <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Space Complexity</strong> 
@@ -239,7 +243,16 @@ for(int i=0;i<n;i++){
 
                 document.getElementById("infoPanel").style.display = "flex";
                 document.getElementById("langText").innerText = data.language || "Unknown";
-                document.getElementById("timeText").innerText = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
+                if (data.complexity && data.complexity.time && typeof data.complexity.time === 'object') {
+                    document.getElementById("timeBest").innerText = data.complexity.time.best || "-";
+                    document.getElementById("timeAvg").innerText = data.complexity.time.average || "-";
+                    document.getElementById("timeWorst").innerText = data.complexity.time.worst || "-";
+                } else {
+                    let text = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
+                    document.getElementById("timeBest").innerText = text;
+                    document.getElementById("timeAvg").innerText = text;
+                    document.getElementById("timeWorst").innerText = text;
+                }
                 document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
 
                 if (steps.length > 0) {
