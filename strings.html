@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogicLens - Strings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            </a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>String Pattern Matching</h1>
+        <p>Visualize sliding window searching mapping dynamically across Character Arrays.</p>
+    </section>
+
+    <div class="container" id="stringContainer" style="margin-top: 40px;">
+        <div class="editor">
+            <h3>String Setup</h3>
+
+            <div style="display: flex; gap: 8px; flex-direction: column; margin-bottom: 12px">
+                <span class="input-label">Command (e.g., string(helloworld) / search(owo)):</span>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="stringInputVal" style="flex: 1; margin-bottom: 0;" placeholder="search(ow)" />
+                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="addStringCommand()">Add</button>
+                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetString()">Reset</button>
+                </div>
+            </div>
+
+            <span class="input-label" style="margin-top: 20px;">Recorded Parsing Engine:</span>
+            <textarea id="stringCodeInput" style="height: 180px;">
+string(concatenate)
+search(cat)</textarea>
+
+            <button class="viz-btn" id="stringVizBtn" onclick="analyzeStringCode()">
+                Visualize Pattern
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>String Analysis Output</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: var(--bg2); border:1px solid var(--border)"></span>Inactive</span>
+                <span><span class="box" style="background: #eab308"></span>Scanning</span>
+                <span><span class="box" style="background: #22c55e"></span>Match Found</span>
+            </div>
+
+            <div class="canvas string-container" id="stringCanvas"></div>
+
+            <div class="step-box" id="stringStepText">▶ System Ready.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToStringStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepStringBack()">◀</button>
+                    <button class="btn-play" id="stringPlayPauseBtn" onclick="toggleStringPlay()">▶ Play</button>
+                    <button class="btn-icon" onclick="stepStringForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToStringEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="stringProgressSlider" min="0" max="0" value="0" oninput="scrubStringTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-string-slow" onclick="setStringSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-string-normal" onclick="setStringSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-string-fast" onclick="setStringSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+        function addStringCommand() {
+            const input = document.getElementById("stringInputVal");
+            const val = input.value.trim();
+            if(!val) return;
+            const textarea = document.getElementById("stringCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += val + "\n";
+            input.value = "";
+        }
+
+        function resetString() {
+            document.getElementById("stringCodeInput").value = "";
+            stringSteps = [];
+            stringCurrentStep = 0;
+            renderStringFrame({ characters: [], comparing: [], matching: [], explanation: "Engine Reset." });
+            pauseStringPlayback();
+            let slider = document.getElementById("stringProgressSlider");
+            slider.max = 0;
+            slider.value = 0;
+            updateStringPlayBtnUI();
+        }
+
+        let stringSteps = [];
+        let stringCurrentStep = 0;
+        let stringIsPlaying = false;
+        let stringPlayInterval = null;
+        let stringSpeedMs = 1000;
+        
+        function analyzeStringCode() {
+            pauseStringPlayback();
+            const code = document.getElementById("stringCodeInput").value;
+            const lines = code.split('\n');
+            
+            stringSteps = [];
+            let activeString = [];
+
+            lines.forEach((line, idx) => {
+                let text = line.trim();
+                if (!text) return;
+                
+                let matchString = text.match(/string\(([^)]+)\)/);
+                if (matchString) {
+                    let str = matchString[1];
+                    activeString = str.split('');
+                    stringSteps.push({
+                        characters: [...activeString],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Base string established: "${str}"`,
+                        stepIndex: stringSteps.length,
+                        line: idx
+                    });
+                }
+                
+                let matchSearch = text.match(/search\(([^)]+)\)/);
+                if (matchSearch) {
+                    let query = matchSearch[1];
+                    let qLen = query.length;
+                    
+                    if(activeString.length === 0) return;
+                    
+                    stringSteps.push({
+                        characters: [...activeString],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Started Naive Pattern Search for query: "${query}"`,
+                        stepIndex: stringSteps.length,
+                        line: idx
+                    });
+
+                    let foundAny = false;
+                    
+                    for (let i = 0; i <= activeString.length - qLen; i++) {
+                        let comparingIndices = [];
+                        for(let j=0; j<qLen; j++) comparingIndices.push(i+j);
+                        
+                        stringSteps.push({
+                            characters: [...activeString],
+                            comparing: [...comparingIndices],
+                            matching: [],
+                            action: "compare",
+                            explanation: `Scanning substring layer starting at index ${i}...`,
+                            stepIndex: stringSteps.length,
+                            line: idx
+                        });
+                        
+                        let match = true;
+                        for(let j=0; j<qLen; j++) {
+                            if (activeString[i+j] !== query[j]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        
+                        if (match) {
+                            foundAny = true;
+                            stringSteps.push({
+                                characters: [...activeString],
+                                comparing: [],
+                                matching: [...comparingIndices],
+                                action: "match",
+                                explanation: `Match successfully located at index ${i}!`,
+                                stepIndex: stringSteps.length,
+                                line: idx
+                            });
+                        }
+                    }
+                    
+                    if (!foundAny) {
+                        stringSteps.push({
+                            characters: [...activeString],
+                            comparing: [],
+                            matching: [],
+                            action: "none",
+                            explanation: `Search exhausted. Query "${query}" was not found.`,
+                            stepIndex: stringSteps.length,
+                            line: idx
+                        });
+                    }
+                }
+            });
+
+            if (stringSteps.length === 0) {
+                 stringSteps.push({ characters: [], comparing: [], matching: [], explanation: "No valid commands found.", stepIndex: 0 });
+            }
+
+            if (stringSteps.length > 0) {
+                document.getElementById("stringProgressSlider").max = stringSteps.length - 1;
+                stringCurrentStep = 0;
+                toggleStringPlay(); 
+            }
+        }
+
+        function renderStringFrame(frame) {
+            if (!frame) return;
+            
+            const canvas = document.getElementById("stringCanvas");
+            canvas.innerHTML = "";
+            
+            frame.characters.forEach((char, idx) => {
+                let div = document.createElement("div");
+                div.classList.add("string-char");
+                div.innerText = char;
+                
+                if (frame.matching && frame.matching.includes(idx)) {
+                    div.classList.add("highlight-match");
+                } else if (frame.comparing && frame.comparing.includes(idx)) {
+                    div.classList.add("highlight-compare");
+                }
+                
+                canvas.appendChild(div);
+            });
+
+            document.getElementById("stringStepText").innerText = "▶ " + frame.explanation;
+
+            let slider = document.getElementById("stringProgressSlider");
+            if (slider && frame.stepIndex !== undefined) {
+                slider.value = frame.stepIndex;
+            }
+
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById("stringCodeInput");
+                if (textarea) {
+                    const lines = textarea.value.split('\n');
+                    let startPos = 0;
+                    for (let i = 0; i < frame.line && i < lines.length; i++) {
+                        startPos += lines[i].length + 1;
+                    }
+                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                    const curScroll = textarea.scrollTop;
+                    textarea.focus();
+                    textarea.setSelectionRange(startPos, endPos);
+                    textarea.scrollTop = curScroll;
+                }
+            }
+        }
+
+        function toggleStringPlay() {
+            if (stringSteps.length === 0) return alert("Click 'Visualize Pattern' to render logic first!");
+            if (stringIsPlaying) pauseStringPlayback();
+            else {
+                if (stringCurrentStep >= stringSteps.length - 1) stringCurrentStep = 0;
+                startStringPlayback();
+            }
+        }
+
+        function startStringPlayback() {
+            stringIsPlaying = true;
+            updateStringPlayBtnUI();
+            renderStringFrame(stringSteps[stringCurrentStep]);
+            clearInterval(stringPlayInterval);
+            stringPlayInterval = setInterval(() => {
+                if (stringCurrentStep < stringSteps.length - 1) {
+                    stringCurrentStep++;
+                    renderStringFrame(stringSteps[stringCurrentStep]);
+                } else {
+                    pauseStringPlayback();
+                }
+            }, stringSpeedMs);
+        }
+
+        function pauseStringPlayback() {
+            stringIsPlaying = false;
+            clearInterval(stringPlayInterval);
+            updateStringPlayBtnUI();
+        }
+
+        function updateStringPlayBtnUI() {
+            let playBtn = document.getElementById("stringPlayPauseBtn");
+            if (!playBtn) return;
+            if (stringIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (stringCurrentStep >= stringSteps.length - 1 && stringSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToStringStart() {
+            if (stringSteps.length === 0) return;
+            stringCurrentStep = 0;
+            startStringPlayback();
+        }
+
+        function jumpToStringEnd() {
+            if (stringSteps.length === 0) return;
+            pauseStringPlayback();
+            stringCurrentStep = stringSteps.length - 1;
+            renderStringFrame(stringSteps[stringCurrentStep]);
+        }
+
+        function stepStringForward() {
+            if (stringSteps.length === 0) return;
+            pauseStringPlayback();
+            if (stringCurrentStep < stringSteps.length - 1) {
+                stringCurrentStep++;
+                renderStringFrame(stringSteps[stringCurrentStep]);
+            }
+        }
+
+        function stepStringBack() {
+            if (stringSteps.length === 0) return;
+            pauseStringPlayback();
+            if (stringCurrentStep > 0) {
+                stringCurrentStep--;
+                renderStringFrame(stringSteps[stringCurrentStep]);
+            }
+        }
+
+        function setStringSpeed(ms, type) {
+            stringSpeedMs = ms;
+            document.getElementById("btn-string-slow").classList.remove("active");
+            document.getElementById("btn-string-normal").classList.remove("active");
+            document.getElementById("btn-string-fast").classList.remove("active");
+            document.getElementById("btn-string-" + type).classList.add("active");
+            if (stringIsPlaying) startStringPlayback();
+        }
+
+        function scrubStringTimeline() {
+            if (stringSteps.length === 0) return;
+            pauseStringPlayback();
+            stringCurrentStep = parseInt(document.getElementById("stringProgressSlider").value);
+            renderStringFrame(stringSteps[stringCurrentStep]);
+        }
+    </script>
+</body>
+</html>
