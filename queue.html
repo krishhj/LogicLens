@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LogicLens</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            </a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>Queue Data Structure</h1>
+        <p>
+            Visualize Enqueue, Dequeue, and the FIFO flow interactively.
+        </p>
+    </section>
+
+    <div class="container" id="queueContainer" style="margin-top: 40px;">
+        <div class="editor">
+            <h3>Queue Setup</h3>
+
+            <span class="input-label">Queue Value:</span>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="queueInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 10" />
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="enqueueValue()">Enqueue</button>
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 79, 106, 0.1); color: var(--red); border-color: var(--red);" onclick="dequeueValue()">Dequeue</button>
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetQueue()">Reset</button>
+            </div>
+
+            <span class="input-label" style="margin-top: 20px;">Recorded Operations:</span>
+            <textarea id="queueCodeInput" style="height: 140px;">
+enqueue(10)
+enqueue(20)
+dequeue()</textarea>
+
+            <button class="viz-btn" id="queueVizBtn" onclick="analyzeQueueCode()">
+                Visualize Code
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>Queue Visualization</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: #38bdf8"></span>Normal</span>
+                <span><span class="box" style="background: #22c55e"></span>Enqueued</span>
+                <span><span class="box" style="background: #ef4444"></span>Dequeued</span>
+                <span><span class="box" style="background: #eab308"></span>Active</span>
+            </div>
+
+            <div class="canvas" id="queueCanvas" style="display: flex; align-items: center; justify-content: flex-start; overflow-x: auto; padding-left: 20px;"></div>
+
+            <div class="step-box" id="queueStepText">▶ System Ready.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToQueueStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepQueueBack()">◀</button>
+                    <button class="btn-play" id="queuePlayPauseBtn" onclick="toggleQueuePlay()">
+                        ▶ Play
+                    </button>
+                    <button class="btn-icon" onclick="stepQueueForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToQueueEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="queueProgressSlider" min="0" max="0" value="0" oninput="scrubQueueTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-queue-slow" onclick="setQueueSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-queue-normal" onclick="setQueueSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-queue-fast" onclick="setQueueSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+
+
+        // 2. RENDER THE BACKEND FRAME
+        function renderFrame(frame, context = {}) {
+            if (!frame) return;
+            const canvasId = context.canvasId || "canvas";
+            const stepTextId = context.stepTextId || "stepText";
+            const sliderId = context.sliderId || "progressSlider";
+            const codeInputId = context.codeInputId || "codeInput";
+
+            let canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.innerHTML = "";
+
+            // Default to 'array' (bar chart) if the AI doesn't specify a type
+            const type = frame.type || "array"; 
+
+            // --- 1. RENDER ARRAY (BAR CHART) ---
+            if (type === "array") {
+                const maxVal = Math.max(...frame.array, 1);
+                frame.array.forEach((value, index) => {
+                    let bar = document.createElement("div");
+                    bar.classList.add("bar");
+                    bar.style.height = (value / maxVal) * 260 + "px";
+
+                    let highlightArr = frame.highlight || [];
+                    let sortedArr = frame.sorted || [];
+
+                    if (sortedArr.includes(index)) bar.style.background = "#22c55e"; 
+                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308"; 
+                    else bar.style.background = "#38bdf8"; 
+
+                    let label = document.createElement("span");
+                    label.innerText = value;
+                    bar.appendChild(label);
+                    canvas.appendChild(bar);
+                });
+            } 
+            
+            // --- 2. RENDER STACK (VERTICAL) ---
+            else if (type === "stack") {
+                let container = document.createElement("div");
+                container.classList.add("stack-container");
+                
+                frame.array.forEach((value, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("stack-item");
+                    item.innerText = value;
+                    
+                    let highlightArr = frame.highlight || [];
+                    if (highlightArr.includes(index)) {
+                        // Green for pushed item, Red for popped item
+                        item.style.background = frame.action === "pop" ? "#ef4444" : "#22c55e";
+                        item.style.color = "white";
+                    }
+                    container.appendChild(item);
+                });
+                canvas.appendChild(container);
+            }
+
+            // --- 3. RENDER QUEUE (HORIZONTAL) ---
+            else if (type === "queue") {
+                frame.array.forEach((value, index) => {
+                    let wrap = document.createElement("div");
+                    wrap.classList.add("queue-item-wrap");
+
+                    let frontLabel = document.createElement("div");
+                    frontLabel.classList.add("queue-pointer-label");
+                    frontLabel.innerText = "Front";
+                    if (index === 0 && frame.array.length > 0) frontLabel.classList.add("visible");
+                    
+                    let item = document.createElement("div");
+                    item.classList.add("queue-item");
+                    item.innerText = value;
+                    
+                    let highlightArr = frame.highlight || [];
+                    if (highlightArr.includes(index)) {
+                        if (frame.action === "dequeue") item.style.background = "#ef4444";
+                        else if (frame.action === "enqueue") item.style.background = "#22c55e";
+                        else item.style.background = "#eab308";
+                        item.style.color = "white";
+                    }
+
+                    let rearLabel = document.createElement("div");
+                    rearLabel.classList.add("queue-pointer-label");
+                    rearLabel.innerText = "Rear";
+                    if (index === frame.array.length - 1 && frame.array.length > 0) rearLabel.classList.add("visible");
+
+                    wrap.appendChild(frontLabel);
+                    wrap.appendChild(item);
+                    wrap.appendChild(rearLabel);
+                    canvas.appendChild(wrap);
+                });
+            }
+
+            // Update text and timeline slider safely
+            const stepTextEl = document.getElementById(stepTextId);
+            if (stepTextEl) {
+                stepTextEl.innerText = "▶ " + (frame.explanation || "Processing...");
+            }
+            
+            let slider = document.getElementById(sliderId);
+            if (slider) {
+                if (context.currentStep !== undefined) {
+                    slider.value = context.currentStep;
+                } else if (frame.stepIndex !== undefined) {
+                    slider.value = frame.stepIndex;
+                } else {
+                    // Fallback to global currentStep if running sorting
+                    if (typeof currentStep !== 'undefined' && sliderId === "progressSlider") {
+                        slider.value = currentStep;
+                    }
+                }
+            }
+
+            // Highlight line in textarea
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById(codeInputId);
+                if (textarea) {
+                    const lines = textarea.value.split('\n');
+                    let startPos = 0;
+                    for (let i = 0; i < frame.line && i < lines.length; i++) {
+                        startPos += lines[i].length + 1;
+                    }
+                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                    
+                    const curScroll = textarea.scrollTop;
+                    textarea.focus();
+                    textarea.setSelectionRange(startPos, endPos);
+                    textarea.scrollTop = curScroll;
+                }
+            }
+        }
+
+
+
+        // --- QUEUE LOGIC ---
+        let queueSteps = [];
+        let queueCurrentStep = 0;
+        let queueIsPlaying = false;
+        let queuePlayInterval = null;
+        let queueSpeedMs = 1000;
+
+        const queueContext = {
+            canvasId: "queueCanvas",
+            stepTextId: "queueStepText",
+            sliderId: "queueProgressSlider",
+            codeInputId: "queueCodeInput"
+        };
+
+        function enqueueValue() {
+            const input = document.getElementById("queueInputVal");
+            const val = input.value.trim();
+            if(!val) return;
+            const textarea = document.getElementById("queueCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += "enqueue(" + val + ")\n";
+            input.value = "";
+        }
+
+        function dequeueValue() {
+            const textarea = document.getElementById("queueCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += "dequeue()\n";
+        }
+
+        function resetQueue() {
+            document.getElementById("queueCodeInput").value = "";
+            queueSteps = [];
+            queueCurrentStep = 0;
+            renderFrame({ type: "queue", array: [], explanation: "Queue Reset.", action: "none" }, queueContext);
+            pauseQueuePlayback();
+            let slider = document.getElementById("queueProgressSlider");
+            slider.max = 0;
+            slider.value = 0;
+            updateQueuePlayBtnUI();
+        }
+
+        function analyzeQueueCode() {
+            pauseQueuePlayback();
+            const code = document.getElementById("queueCodeInput").value;
+            const lines = code.split('\n');
+            let queueArray = [];
+            queueSteps = [];
+            
+            queueSteps.push({
+                type: "queue",
+                array: [...queueArray],
+                highlight: [],
+                action: "none",
+                explanation: "Queue initialized.",
+                stepIndex: 0,
+                line: -1
+            });
+
+            lines.forEach((line, index) => {
+                let text = line.trim();
+                if (!text) return;
+                
+                if (text.startsWith("enqueue(")) {
+                    let match = text.match(/enqueue\((([^)]+))\)/);
+                    if (match) {
+                        let val = match[1].trim();
+                        queueArray.push(val);
+                        queueSteps.push({
+                            type: "queue",
+                            array: [...queueArray],
+                            highlight: [queueArray.length - 1],
+                            action: "enqueue",
+                            explanation: `Enqueued ${val} at the rear.`,
+                            stepIndex: queueSteps.length,
+                            line: index
+                        });
+                    }
+                } else if (text.startsWith("dequeue()")) {
+                    if (queueArray.length > 0) {
+                        let val = queueArray[0];
+                        queueSteps.push({
+                            type: "queue",
+                            array: [...queueArray],
+                            highlight: [0],
+                            action: "dequeue",
+                            explanation: `Dequeuing ${val} from the front.`,
+                            stepIndex: queueSteps.length,
+                            line: index
+                        });
+                        queueArray.shift();
+                        queueSteps.push({
+                            type: "queue",
+                            array: [...queueArray],
+                            highlight: [],
+                            action: "none",
+                            explanation: `${val} dequeued successfully.`,
+                            stepIndex: queueSteps.length,
+                            line: index
+                        });
+                    } else {
+                        queueSteps.push({
+                            type: "queue",
+                            array: [...queueArray],
+                            highlight: [],
+                            action: "error",
+                            explanation: `Cannot dequeue: Queue is empty.`,
+                            stepIndex: queueSteps.length,
+                            line: index
+                        });
+                    }
+                }
+            });
+
+            document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
+            queueCurrentStep = 0;
+            
+            if (queueSteps.length > 0) {
+                toggleQueuePlay();
+            } else {
+                document.getElementById("queueStepText").innerText = "▶ No valid operations found.";
+            }
+        }
+
+        function toggleQueuePlay() {
+            if (queueSteps.length === 0) return alert("Click 'Visualize Code' to analyze code first!");
+            if (queueIsPlaying) {
+                pauseQueuePlayback();
+            } else {
+                if (queueCurrentStep >= queueSteps.length - 1) {
+                    queueCurrentStep = 0;
+                }
+                startQueuePlayback();
+            }
+        }
+
+        function startQueuePlayback() {
+            queueIsPlaying = true;
+            updateQueuePlayBtnUI();
+            renderFrame(queueSteps[queueCurrentStep], queueContext);
+
+            clearInterval(queuePlayInterval);
+            queuePlayInterval = setInterval(() => {
+                if (queueCurrentStep < queueSteps.length - 1) {
+                    queueCurrentStep++;
+                    renderFrame(queueSteps[queueCurrentStep], queueContext);
+                } else {
+                    pauseQueuePlayback();
+                }
+            }, queueSpeedMs);
+        }
+
+        function pauseQueuePlayback() {
+            queueIsPlaying = false;
+            clearInterval(queuePlayInterval);
+            updateQueuePlayBtnUI();
+        }
+
+        function updateQueuePlayBtnUI() {
+            let playBtn = document.getElementById("queuePlayPauseBtn");
+            if (!playBtn) return;
+
+            if (queueIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (queueCurrentStep >= queueSteps.length - 1 && queueSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToQueueStart() {
+            if (queueSteps.length === 0) return;
+            queueCurrentStep = 0;
+            startQueuePlayback();
+        }
+
+        function jumpToQueueEnd() {
+            if (queueSteps.length === 0) return;
+            pauseQueuePlayback();
+            queueCurrentStep = queueSteps.length - 1;
+            renderFrame(queueSteps[queueCurrentStep], queueContext);
+        }
+
+        function stepQueueForward() {
+            if (queueSteps.length === 0) return;
+            pauseQueuePlayback();
+            if (queueCurrentStep < queueSteps.length - 1) {
+                queueCurrentStep++;
+                renderFrame(queueSteps[queueCurrentStep], queueContext);
+            }
+        }
+
+        function stepQueueBack() {
+            if (queueSteps.length === 0) return;
+            pauseQueuePlayback();
+            if (queueCurrentStep > 0) {
+                queueCurrentStep--;
+                renderFrame(queueSteps[queueCurrentStep], queueContext);
+            }
+        }
+
+        function setQueueSpeed(ms, type) {
+            queueSpeedMs = ms;
+            document.getElementById("btn-queue-slow").classList.remove("active");
+            document.getElementById("btn-queue-normal").classList.remove("active");
+            document.getElementById("btn-queue-fast").classList.remove("active");
+            document.getElementById("btn-queue-" + type).classList.add("active");
+
+            if (queueIsPlaying) {
+                startQueuePlayback();
+            }
+        }
+
+        function scrubQueueTimeline() {
+            if (queueSteps.length === 0) return;
+            pauseQueuePlayback();
+            queueCurrentStep = parseInt(document.getElementById("queueProgressSlider").value);
+            renderFrame(queueSteps[queueCurrentStep], queueContext);
+        }
+    </script>
+</body>
+
+</html>

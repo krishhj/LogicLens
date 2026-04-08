@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogicLens - Trees</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            </a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>Tree Data Structure</h1>
+        <p>Visualize Binary Search Tree Insertions and Tree balancing flow.</p>
+    </section>
+
+    <div class="container" id="treeContainer" style="margin-top: 40px;">
+        <div class="editor">
+            <h3>Tree Setup</h3>
+
+            <span class="input-label">Node Value:</span>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="treeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 50" />
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="insertValue()">Insert</button>
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetTree()">Reset</button>
+            </div>
+
+            <span class="input-label" style="margin-top: 20px;">Recorded Operations:</span>
+            <textarea id="treeCodeInput" style="height: 140px;">
+insert(50)
+insert(20)
+insert(70)
+insert(10)
+insert(30)</textarea>
+
+            <button class="viz-btn" id="treeVizBtn" onclick="analyzeTreeCode()">
+                Visualize Code
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>Tree Visualization</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: #38bdf8"></span>Normal</span>
+                <span><span class="box" style="background: #eab308"></span>Comparing</span>
+                <span><span class="box" style="background: #22c55e"></span>Inserted</span>
+            </div>
+
+            <div class="canvas tree-canvas-wrapper" id="treeCanvasWrapper">
+                <svg id="treeEdges"></svg>
+                <div id="treeCanvas"></div>
+            </div>
+
+            <div class="step-box" id="treeStepText">▶ System Ready.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToTreeStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepTreeBack()">◀</button>
+                    <button class="btn-play" id="treePlayPauseBtn" onclick="toggleTreePlay()">▶ Play</button>
+                    <button class="btn-icon" onclick="stepTreeForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToTreeEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="treeProgressSlider" min="0" max="0" value="0" oninput="scrubTreeTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-tree-slow" onclick="setTreeSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-tree-normal" onclick="setTreeSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-tree-fast" onclick="setTreeSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+        function insertValue() {
+            const input = document.getElementById("treeInputVal");
+            const val = input.value.trim();
+            if(!val) return;
+            const textarea = document.getElementById("treeCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += "insert(" + val + ")\n";
+            input.value = "";
+        }
+
+        function resetTree() {
+            document.getElementById("treeCodeInput").value = "";
+            treeSteps = [];
+            treeCurrentStep = 0;
+            renderTreeFrame({ array: [], explanation: "Tree Reset.", action: "none", highlight: -1 });
+            pauseTreePlayback();
+            let slider = document.getElementById("treeProgressSlider");
+            slider.max = 0;
+            slider.value = 0;
+            updateTreePlayBtnUI();
+        }
+
+        let treeSteps = [];
+        let treeCurrentStep = 0;
+        let treeIsPlaying = false;
+        let treePlayInterval = null;
+        let treeSpeedMs = 1000;
+
+        function analyzeTreeCode() {
+            pauseTreePlayback();
+            const code = document.getElementById("treeCodeInput").value;
+            const lines = code.split('\n');
+            let bstArray = []; 
+            treeSteps = [];
+            
+            treeSteps.push({
+                array: [...bstArray],
+                highlight: -1,
+                action: "none",
+                explanation: "BST initialized.",
+                stepIndex: 0,
+                line: -1
+            });
+
+            lines.forEach((line, lineIndex) => {
+                let text = line.trim();
+                if (!text) return;
+                
+                if (text.startsWith("insert(")) {
+                    let match = text.match(/insert\((([^)]+))\)/);
+                    if (match) {
+                        let val = parseInt(match[1].trim(), 10);
+                        if (isNaN(val)) return;
+
+                        if (bstArray.length === 0 || bstArray[0] === undefined) {
+                            bstArray[0] = val;
+                            treeSteps.push({
+                                array: [...bstArray],
+                                highlight: 0,
+                                action: "insert",
+                                explanation: `Inserted root node ${val}.`,
+                                stepIndex: treeSteps.length,
+                                line: lineIndex
+                            });
+                        } else {
+                            let currIdx = 0;
+                            while (bstArray[currIdx] !== undefined) {
+                                treeSteps.push({
+                                    array: [...bstArray],
+                                    highlight: currIdx,
+                                    action: "compare",
+                                    explanation: `Comparing ${val} with ${bstArray[currIdx]}.`,
+                                    stepIndex: treeSteps.length,
+                                    line: lineIndex
+                                });
+
+                                if (val < bstArray[currIdx]) {
+                                    currIdx = 2 * currIdx + 1;
+                                } else {
+                                    currIdx = 2 * currIdx + 2;
+                                }
+                            }
+                            bstArray[currIdx] = val;
+                            treeSteps.push({
+                                array: [...bstArray],
+                                highlight: currIdx,
+                                action: "insert",
+                                explanation: `Inserted ${val}.`,
+                                stepIndex: treeSteps.length,
+                                line: lineIndex
+                            });
+                        }
+                    }
+                }
+            });
+
+            treeSteps.push({
+                array: [...bstArray],
+                highlight: -1,
+                action: "none",
+                explanation: "BST Insertion complete! The Tree represents Sorted Elements (In-order traversal is implicitly sorted).",
+                stepIndex: treeSteps.length,
+                line: -1
+            });
+
+            if (treeSteps.length > 0) {
+                document.getElementById("treeProgressSlider").max = treeSteps.length - 1;
+                treeCurrentStep = 0;
+                toggleTreePlay(); 
+            }
+        }
+
+        // RENDER LOGIC
+        function getCoordinate(idx) {
+            let depth = Math.floor(Math.log2(idx + 1));
+            let numNodesInDepth = Math.pow(2, depth);
+            let positionInDepth = idx - (numNodesInDepth - 1);
+            
+            let widthPercent = 100 / numNodesInDepth;
+            let xPercent = (positionInDepth + 0.5) * widthPercent;
+            
+            let yPx = depth * 80 + 30;
+            return { x: xPercent, y: yPx };
+        }
+
+        function drawLine(svg, pos1, pos2) {
+            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", pos1.x + "%");
+            line.setAttribute("y1", pos1.y + "px");
+            line.setAttribute("x2", pos2.x + "%");
+            line.setAttribute("y2", pos2.y + "px");
+            line.classList.add("tree-edge");
+            svg.appendChild(line);
+        }
+
+        function renderTreeFrame(frame) {
+            if (!frame) return;
+            
+            const canvas = document.getElementById("treeCanvas");
+            const svgEdges = document.getElementById("treeEdges");
+            canvas.innerHTML = "";
+            svgEdges.innerHTML = "";
+            
+            // Draw Edges
+            frame.array.forEach((val, idx) => {
+                if (val === undefined) return;
+                let leftIdx = 2 * idx + 1;
+                let rightIdx = 2 * idx + 2;
+                let parentPos = getCoordinate(idx);
+                
+                if (frame.array[leftIdx] !== undefined) {
+                    let childPos = getCoordinate(leftIdx);
+                    drawLine(svgEdges, parentPos, childPos);
+                }
+                if (frame.array[rightIdx] !== undefined) {
+                    let childPos = getCoordinate(rightIdx);
+                    drawLine(svgEdges, parentPos, childPos);
+                }
+            });
+
+            // Draw Nodes
+            frame.array.forEach((val, idx) => {
+                if (val === undefined) return;
+                
+                let pos = getCoordinate(idx);
+                let node = document.createElement("div");
+                node.classList.add("tree-node", "visible");
+                node.style.left = pos.x + "%";
+                node.style.top = pos.y + "px";
+                node.innerText = val;
+                
+                if (frame.highlight === idx) {
+                    if (frame.action === "compare") node.classList.add("highlight-compare");
+                    else if (frame.action === "insert") node.classList.add("highlight-insert");
+                }
+                
+                canvas.appendChild(node);
+            });
+
+            document.getElementById("treeStepText").innerText = "▶ " + frame.explanation;
+
+            let slider = document.getElementById("treeProgressSlider");
+            if (slider && frame.stepIndex !== undefined) {
+                slider.value = frame.stepIndex;
+            }
+
+            // Sync Textarea Highlight
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById("treeCodeInput");
+                if (textarea) {
+                    const lines = textarea.value.split('\n');
+                    let startPos = 0;
+                    for (let i = 0; i < frame.line && i < lines.length; i++) {
+                        startPos += lines[i].length + 1;
+                    }
+                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                    const curScroll = textarea.scrollTop;
+                    textarea.focus();
+                    textarea.setSelectionRange(startPos, endPos);
+                    textarea.scrollTop = curScroll;
+                }
+            }
+        }
+
+        // MEDIA CONTROLS
+        function toggleTreePlay() {
+            if (treeSteps.length === 0) return alert("Click 'Visualize Code' to analyze code first!");
+            if (treeIsPlaying) {
+                pauseTreePlayback();
+            } else {
+                if (treeCurrentStep >= treeSteps.length - 1) {
+                    treeCurrentStep = 0;
+                }
+                startTreePlayback();
+            }
+        }
+
+        function startTreePlayback() {
+            treeIsPlaying = true;
+            updateTreePlayBtnUI();
+            renderTreeFrame(treeSteps[treeCurrentStep]);
+            clearInterval(treePlayInterval);
+            treePlayInterval = setInterval(() => {
+                if (treeCurrentStep < treeSteps.length - 1) {
+                    treeCurrentStep++;
+                    renderTreeFrame(treeSteps[treeCurrentStep]);
+                } else {
+                    pauseTreePlayback();
+                }
+            }, treeSpeedMs);
+        }
+
+        function pauseTreePlayback() {
+            treeIsPlaying = false;
+            clearInterval(treePlayInterval);
+            updateTreePlayBtnUI();
+        }
+
+        function updateTreePlayBtnUI() {
+            let playBtn = document.getElementById("treePlayPauseBtn");
+            if (!playBtn) return;
+            if (treeIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (treeCurrentStep >= treeSteps.length - 1 && treeSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToTreeStart() {
+            if (treeSteps.length === 0) return;
+            treeCurrentStep = 0;
+            startTreePlayback();
+        }
+
+        function jumpToTreeEnd() {
+            if (treeSteps.length === 0) return;
+            pauseTreePlayback();
+            treeCurrentStep = treeSteps.length - 1;
+            renderTreeFrame(treeSteps[treeCurrentStep]);
+        }
+
+        function stepTreeForward() {
+            if (treeSteps.length === 0) return;
+            pauseTreePlayback();
+            if (treeCurrentStep < treeSteps.length - 1) {
+                treeCurrentStep++;
+                renderTreeFrame(treeSteps[treeCurrentStep]);
+            }
+        }
+
+        function stepTreeBack() {
+            if (treeSteps.length === 0) return;
+            pauseTreePlayback();
+            if (treeCurrentStep > 0) {
+                treeCurrentStep--;
+                renderTreeFrame(treeSteps[treeCurrentStep]);
+            }
+        }
+
+        function setTreeSpeed(ms, type) {
+            treeSpeedMs = ms;
+            document.getElementById("btn-tree-slow").classList.remove("active");
+            document.getElementById("btn-tree-normal").classList.remove("active");
+            document.getElementById("btn-tree-fast").classList.remove("active");
+            document.getElementById("btn-tree-" + type).classList.add("active");
+            if (treeIsPlaying) {
+                startTreePlayback();
+            }
+        }
+
+        function scrubTreeTimeline() {
+            if (treeSteps.length === 0) return;
+            pauseTreePlayback();
+            treeCurrentStep = parseInt(document.getElementById("treeProgressSlider").value);
+            renderTreeFrame(treeSteps[treeCurrentStep]);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogicLens - Sentences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            </a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>Sentence NLP Parsing</h1>
+        <p>Visualize word tokenization and structural array manipulation dynamically.</p>
+    </section>
+
+    <div class="container" id="sentenceContainer" style="margin-top: 40px;">
+        <div class="editor">
+            <h3>Sentence Setup</h3>
+
+            <div style="display: flex; gap: 8px; flex-direction: column; margin-bottom: 12px">
+                <span class="input-label">Command (e.g., sentence(Hello World) / search(World)):</span>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="sentenceInputVal" style="flex: 1; margin-bottom: 0;" placeholder="reverse()" />
+                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="addSentenceCommand()">Add</button>
+                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetSentence()">Reset</button>
+                </div>
+            </div>
+
+            <span class="input-label" style="margin-top: 20px;">Text Manipulation Scripts:</span>
+            <textarea id="sentenceCodeInput" style="height: 180px;">
+sentence(The quick brown fox jumps over the lazy dog)
+search(fox)
+reverse()</textarea>
+
+            <button class="viz-btn" id="sentenceVizBtn" onclick="analyzeSentenceCode()">
+                Visualize Procedure
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>Lexical Word Output</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: var(--bg2); border:1px solid var(--border)"></span>Unfocused</span>
+                <span><span class="box" style="background: #eab308"></span>Scanning</span>
+                <span><span class="box" style="background: #22c55e"></span>Match/Action</span>
+            </div>
+
+            <div class="canvas sentence-container" id="sentenceCanvas"></div>
+
+            <div class="step-box" id="sentenceStepText">▶ System Ready.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToSentenceStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepSentenceBack()">◀</button>
+                    <button class="btn-play" id="sentencePlayPauseBtn" onclick="toggleSentencePlay()">▶ Play</button>
+                    <button class="btn-icon" onclick="stepSentenceForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToSentenceEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="sentenceProgressSlider" min="0" max="0" value="0" oninput="scrubSentenceTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-sentence-slow" onclick="setSentenceSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-sentence-normal" onclick="setSentenceSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-sentence-fast" onclick="setSentenceSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+        function addSentenceCommand() {
+            const input = document.getElementById("sentenceInputVal");
+            const val = input.value.trim();
+            if(!val) return;
+            const textarea = document.getElementById("sentenceCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += val + "\n";
+            input.value = "";
+        }
+
+        function resetSentence() {
+            document.getElementById("sentenceCodeInput").value = "";
+            sentenceSteps = [];
+            sentenceCurrentStep = 0;
+            renderSentenceFrame({ words: [], comparing: [], matching: [], explanation: "Engine Reset." });
+            pauseSentencePlayback();
+            let slider = document.getElementById("sentenceProgressSlider");
+            slider.max = 0;
+            slider.value = 0;
+            updateSentencePlayBtnUI();
+        }
+
+        let sentenceSteps = [];
+        let sentenceCurrentStep = 0;
+        let sentenceIsPlaying = false;
+        let sentencePlayInterval = null;
+        let sentenceSpeedMs = 1000;
+        
+        function analyzeSentenceCode() {
+            pauseSentencePlayback();
+            const code = document.getElementById("sentenceCodeInput").value;
+            const lines = code.split('\n');
+            
+            sentenceSteps = [];
+            let activeWords = [];
+
+            lines.forEach((line, idx) => {
+                let text = line.trim();
+                if (!text) return;
+                
+                let matchSentence = text.match(/sentence\(([^)]+)\)/);
+                if (matchSentence) {
+                    let str = matchSentence[1];
+                    activeWords = str.split(' ');
+                    sentenceSteps.push({
+                        words: [...activeWords],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Tokenized raw sentence into Lexical Array.`,
+                        stepIndex: sentenceSteps.length,
+                        line: idx
+                    });
+                }
+                
+                let matchSearch = text.match(/search\(([^)]+)\)/);
+                if (matchSearch) {
+                    let query = matchSearch[1].trim();
+                    if(activeWords.length === 0) return;
+                    
+                    sentenceSteps.push({
+                        words: [...activeWords],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Initiating linear search for token: "${query}"`,
+                        stepIndex: sentenceSteps.length,
+                        line: idx
+                    });
+
+                    let foundAny = false;
+                    for (let i = 0; i < activeWords.length; i++) {
+                        sentenceSteps.push({
+                            words: [...activeWords],
+                            comparing: [i],
+                            matching: [],
+                            action: "compare",
+                            explanation: `Comparing "${activeWords[i]}" to "${query}"...`,
+                            stepIndex: sentenceSteps.length,
+                            line: idx
+                        });
+                        
+                        if (activeWords[i] === query) {
+                            foundAny = true;
+                            sentenceSteps.push({
+                                words: [...activeWords],
+                                comparing: [],
+                                matching: [i],
+                                action: "match",
+                                explanation: `Match perfectly located at block ${i}!`,
+                                stepIndex: sentenceSteps.length,
+                                line: idx
+                            });
+                        }
+                    }
+                    
+                    if (!foundAny) {
+                        sentenceSteps.push({
+                            words: [...activeWords],
+                            comparing: [],
+                            matching: [],
+                            action: "none",
+                            explanation: `Token "${query}" was not identified in array.`,
+                            stepIndex: sentenceSteps.length,
+                            line: idx
+                        });
+                    }
+                }
+
+                let matchReverse = text.match(/reverse\(\)/);
+                if (matchReverse) {
+                    if(activeWords.length === 0) return;
+                    
+                    sentenceSteps.push({
+                        words: [...activeWords],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Initiating Reverse Array manipulation...`,
+                        stepIndex: sentenceSteps.length,
+                        line: idx
+                    });
+                    
+                    let left = 0;
+                    let right = activeWords.length - 1;
+                    
+                    while (left < right) {
+                        sentenceSteps.push({
+                            words: [...activeWords],
+                            comparing: [left, right],
+                            matching: [],
+                            action: "compare",
+                            explanation: `Swapping endpoints "${activeWords[left]}" and "${activeWords[right]}"...`,
+                            stepIndex: sentenceSteps.length,
+                            line: idx
+                        });
+                        
+                        // Swap
+                        let temp = activeWords[left];
+                        activeWords[left] = activeWords[right];
+                        activeWords[right] = temp;
+                        
+                        sentenceSteps.push({
+                            words: [...activeWords],
+                            comparing: [],
+                            matching: [left, right],
+                            action: "match",
+                            explanation: `Swap executed. Moving pointers closer natively.`,
+                            stepIndex: sentenceSteps.length,
+                            line: idx
+                        });
+                        
+                        left++;
+                        right--;
+                    }
+                    
+                    sentenceSteps.push({
+                        words: [...activeWords],
+                        comparing: [],
+                        matching: [],
+                        action: "none",
+                        explanation: `Reversal process completely finalized!`,
+                        stepIndex: sentenceSteps.length,
+                        line: idx
+                    });
+                }
+            });
+
+            if (sentenceSteps.length === 0) {
+                 sentenceSteps.push({ words: [], comparing: [], matching: [], explanation: "No valid manipulation commands parsed.", stepIndex: 0 });
+            }
+
+            if (sentenceSteps.length > 0) {
+                document.getElementById("sentenceProgressSlider").max = sentenceSteps.length - 1;
+                sentenceCurrentStep = 0;
+                toggleSentencePlay(); 
+            }
+        }
+
+        function renderSentenceFrame(frame) {
+            if (!frame) return;
+            
+            const canvas = document.getElementById("sentenceCanvas");
+            canvas.innerHTML = "";
+            
+            frame.words.forEach((word, idx) => {
+                let div = document.createElement("div");
+                div.classList.add("sentence-word");
+                div.innerText = word;
+                
+                if (frame.matching && frame.matching.includes(idx)) {
+                    div.classList.add("highlight-match");
+                } else if (frame.comparing && frame.comparing.includes(idx)) {
+                    div.classList.add("highlight-compare");
+                }
+                
+                canvas.appendChild(div);
+            });
+
+            document.getElementById("sentenceStepText").innerText = "▶ " + frame.explanation;
+
+            let slider = document.getElementById("sentenceProgressSlider");
+            if (slider && frame.stepIndex !== undefined) {
+                slider.value = frame.stepIndex;
+            }
+
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById("sentenceCodeInput");
+                if (textarea) {
+                    const lines = textarea.value.split('\n');
+                    let startPos = 0;
+                    for (let i = 0; i < frame.line && i < lines.length; i++) {
+                        startPos += lines[i].length + 1;
+                    }
+                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                    const curScroll = textarea.scrollTop;
+                    textarea.focus();
+                    textarea.setSelectionRange(startPos, endPos);
+                    textarea.scrollTop = curScroll;
+                }
+            }
+        }
+
+        function toggleSentencePlay() {
+            if (sentenceSteps.length === 0) return alert("Click 'Visualize Procedure' to render logic first!");
+            if (sentenceIsPlaying) pauseSentencePlayback();
+            else {
+                if (sentenceCurrentStep >= sentenceSteps.length - 1) sentenceCurrentStep = 0;
+                startSentencePlayback();
+            }
+        }
+
+        function startSentencePlayback() {
+            sentenceIsPlaying = true;
+            updateSentencePlayBtnUI();
+            renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+            clearInterval(sentencePlayInterval);
+            sentencePlayInterval = setInterval(() => {
+                if (sentenceCurrentStep < sentenceSteps.length - 1) {
+                    sentenceCurrentStep++;
+                    renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+                } else {
+                    pauseSentencePlayback();
+                }
+            }, sentenceSpeedMs);
+        }
+
+        function pauseSentencePlayback() {
+            sentenceIsPlaying = false;
+            clearInterval(sentencePlayInterval);
+            updateSentencePlayBtnUI();
+        }
+
+        function updateSentencePlayBtnUI() {
+            let playBtn = document.getElementById("sentencePlayPauseBtn");
+            if (!playBtn) return;
+            if (sentenceIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (sentenceCurrentStep >= sentenceSteps.length - 1 && sentenceSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToSentenceStart() {
+            if (sentenceSteps.length === 0) return;
+            sentenceCurrentStep = 0;
+            startSentencePlayback();
+        }
+
+        function jumpToSentenceEnd() {
+            if (sentenceSteps.length === 0) return;
+            pauseSentencePlayback();
+            sentenceCurrentStep = sentenceSteps.length - 1;
+            renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+        }
+
+        function stepSentenceForward() {
+            if (sentenceSteps.length === 0) return;
+            pauseSentencePlayback();
+            if (sentenceCurrentStep < sentenceSteps.length - 1) {
+                sentenceCurrentStep++;
+                renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+            }
+        }
+
+        function stepSentenceBack() {
+            if (sentenceSteps.length === 0) return;
+            pauseSentencePlayback();
+            if (sentenceCurrentStep > 0) {
+                sentenceCurrentStep--;
+                renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+            }
+        }
+
+        function setSentenceSpeed(ms, type) {
+            sentenceSpeedMs = ms;
+            document.getElementById("btn-sentence-slow").classList.remove("active");
+            document.getElementById("btn-sentence-normal").classList.remove("active");
+            document.getElementById("btn-sentence-fast").classList.remove("active");
+            document.getElementById("btn-sentence-" + type).classList.add("active");
+            if (sentenceIsPlaying) startSentencePlayback();
+        }
+
+        function scrubSentenceTimeline() {
+            if (sentenceSteps.length === 0) return;
+            pauseSentencePlayback();
+            sentenceCurrentStep = parseInt(document.getElementById("sentenceProgressSlider").value);
+            renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
+        }
+    </script>
+</body>
+</html>
