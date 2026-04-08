@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LogicLens - Stack</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            </a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>Stack Data Structure</h1>
+        <p>
+            Visualize Push, Pop, and the LIFO flow interactively.
+        </p>
+    </section>
+
+    <div class="container" id="stackContainer" style="margin-top: 40px;">
+        <div class="editor">
+            <h3>Stack Setup</h3>
+
+            <span class="input-label">Stack Value:</span>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="stackInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 10" />
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="pushValue()">Push</button>
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 79, 106, 0.1); color: var(--red); border-color: var(--red);" onclick="popValue()">Pop</button>
+                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetStack()">Reset</button>
+            </div>
+
+            <span class="input-label" style="margin-top: 20px;">Recorded Operations:</span>
+            <textarea id="stackCodeInput" style="height: 140px;">
+push(10)
+push(20)
+pop()</textarea>
+
+            <button class="viz-btn" id="stackVizBtn" onclick="analyzeStackCode()">
+                Visualize Code
+            </button>
+        </div>
+
+        <div class="visualizer">
+            <h3>Stack Visualization</h3>
+
+            <div class="legend">
+                <span><span class="box" style="background: #38bdf8"></span>Normal</span>
+                <span><span class="box" style="background: #22c55e"></span>Pushed</span>
+                <span><span class="box" style="background: #ef4444"></span>Popped</span>
+            </div>
+
+            <div class="canvas" id="stackCanvas" style="display: flex; align-items: flex-end; justify-content: center; overflow-y: auto; padding-top: 20px;"></div>
+
+            <div class="step-box" id="stackStepText">▶ System Ready.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToStackStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepStackBack()">◀</button>
+                    <button class="btn-play" id="stackPlayPauseBtn" onclick="toggleStackPlay()">
+                        ▶ Play
+                    </button>
+                    <button class="btn-icon" onclick="stepStackForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToStackEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="stackProgressSlider" min="0" max="0" value="0" oninput="scrubStackTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-stack-slow" onclick="setStackSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-stack-normal" onclick="setStackSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-stack-fast" onclick="setStackSpeed(400, 'fast')">Fast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+
+        // 2. RENDER THE BACKEND FRAME
+        function renderFrame(frame, context = {}) {
+            if (!frame) return;
+            const canvasId = context.canvasId || "canvas";
+            const stepTextId = context.stepTextId || "stepText";
+            const sliderId = context.sliderId || "progressSlider";
+            const codeInputId = context.codeInputId || "codeInput";
+
+            let canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.innerHTML = "";
+
+            // Default to 'array' (bar chart) if the AI doesn't specify a type
+            const type = frame.type || "array"; 
+
+            // --- 2. RENDER STACK (VERTICAL) ---
+            if (type === "stack") {
+                let container = document.createElement("div");
+                container.classList.add("stack-container");
+                
+                // Stack is usually bottom to top. 
+                // `frame.array` is expected to have the bottom element at index 0
+                // Our CSS `flex-direction: column-reverse;` handles rendering index 0 at bottom.
+                frame.array.forEach((value, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("stack-item");
+                    item.innerText = value;
+                    
+                    let highlightArr = frame.highlight || [];
+                    if (highlightArr.includes(index)) {
+                        // Green for pushed item, Red for popped item
+                        item.style.background = frame.action === "pop" ? "#ef4444" : "#22c55e";
+                        item.style.color = "white";
+                    }
+                    container.appendChild(item);
+                });
+                canvas.appendChild(container);
+
+                // If popping, we might want to show the popped item leaving the stack briefly
+                if (frame.action === "pop" && frame.poppedValue !== undefined) {
+                    let poppedItem = document.createElement("div");
+                    poppedItem.classList.add("stack-item");
+                    poppedItem.innerText = frame.poppedValue;
+                    poppedItem.style.background = "#ef4444";
+                    poppedItem.style.color = "white";
+                    poppedItem.style.opacity = "0.7";
+                    poppedItem.style.transform = "translateY(-40px)"; 
+                    poppedItem.style.transition = "all 0.5s";
+                    container.appendChild(poppedItem);
+                    
+                    // Trigger animation right after appending
+                    setTimeout(() => {
+                        poppedItem.style.opacity = "0";
+                    }, 50);
+                }
+            } 
+
+            // Update text and timeline slider safely
+            const stepTextEl = document.getElementById(stepTextId);
+            if (stepTextEl) {
+                stepTextEl.innerText = "▶ " + (frame.explanation || "Processing...");
+            }
+            
+            let slider = document.getElementById(sliderId);
+            if (slider) {
+                if (context.currentStep !== undefined) {
+                    slider.value = context.currentStep;
+                } else if (frame.stepIndex !== undefined) {
+                    slider.value = frame.stepIndex;
+                }
+            }
+
+            // Highlight line in textarea
+            if (frame.line !== undefined && frame.line >= 0) {
+                const textarea = document.getElementById(codeInputId);
+                if (textarea) {
+                    const lines = textarea.value.split('\n');
+                    let startPos = 0;
+                    for (let i = 0; i < frame.line && i < lines.length; i++) {
+                        startPos += lines[i].length + 1;
+                    }
+                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
+                    
+                    const curScroll = textarea.scrollTop;
+                    textarea.focus();
+                    textarea.setSelectionRange(startPos, endPos);
+                    textarea.scrollTop = curScroll;
+                }
+            }
+        }
+
+        // --- STACK LOGIC ---
+        let stackSteps = [];
+        let stackCurrentStep = 0;
+        let stackIsPlaying = false;
+        let stackPlayInterval = null;
+        let stackSpeedMs = 1000;
+
+        const stackContext = {
+            canvasId: "stackCanvas",
+            stepTextId: "stackStepText",
+            sliderId: "stackProgressSlider",
+            codeInputId: "stackCodeInput"
+        };
+
+        function pushValue() {
+            const input = document.getElementById("stackInputVal");
+            const val = input.value.trim();
+            if(!val) return;
+            const textarea = document.getElementById("stackCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += "push(" + val + ")\n";
+            input.value = "";
+        }
+
+        function popValue() {
+            const textarea = document.getElementById("stackCodeInput");
+            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
+            textarea.value += "pop()\n";
+        }
+
+        function resetStack() {
+            document.getElementById("stackCodeInput").value = "";
+            stackSteps = [];
+            stackCurrentStep = 0;
+            renderFrame({ type: "stack", array: [], explanation: "Stack Reset.", action: "none" }, stackContext);
+            pauseStackPlayback();
+            let slider = document.getElementById("stackProgressSlider");
+            slider.max = 0;
+            slider.value = 0;
+            updateStackPlayBtnUI();
+        }
+
+        function analyzeStackCode() {
+            pauseStackPlayback();
+            const code = document.getElementById("stackCodeInput").value;
+            const lines = code.split('\n');
+            let stackArray = [];
+            stackSteps = [];
+            
+            stackSteps.push({
+                type: "stack",
+                array: [...stackArray],
+                highlight: [],
+                action: "none",
+                explanation: "Stack initialized.",
+                stepIndex: 0,
+                line: -1
+            });
+
+            lines.forEach((line, index) => {
+                let text = line.trim();
+                if (!text) return;
+                
+                if (text.startsWith("push(")) {
+                    let match = text.match(/push\((([^)]+))\)/);
+                    if (match) {
+                        let val = match[1].trim();
+                        stackArray.push(val); // Add to end (top of stack)
+                        stackSteps.push({
+                            type: "stack",
+                            array: [...stackArray],
+                            highlight: [stackArray.length - 1],
+                            action: "push",
+                            explanation: `Pushed ${val} onto the stack.`,
+                            stepIndex: stackSteps.length,
+                            line: index
+                        });
+                    }
+                } else if (text.startsWith("pop()")) {
+                    if (stackArray.length > 0) {
+                        let val = stackArray[stackArray.length - 1];
+                        stackSteps.push({
+                            type: "stack",
+                            array: [...stackArray], // Before actual removal in array, or we can just send it removing with action
+                            highlight: [stackArray.length - 1],
+                            action: "pop",
+                            explanation: `Popping ${val} from the stack.`,
+                            stepIndex: stackSteps.length,
+                            line: index
+                        });
+                        
+                        stackArray.pop();
+                        
+                        stackSteps.push({
+                            type: "stack",
+                            array: [...stackArray],
+                            highlight: [],
+                            poppedValue: val,
+                            action: "pop", // keep pop action for animation of popped value
+                            explanation: `${val} popped successfully.`,
+                            stepIndex: stackSteps.length,
+                            line: index
+                        });
+                    } else {
+                        stackSteps.push({
+                            type: "stack",
+                            array: [...stackArray],
+                            highlight: [],
+                            action: "error",
+                            explanation: `Cannot pop: Stack is empty (Underflow).`,
+                            stepIndex: stackSteps.length,
+                            line: index
+                        });
+                    }
+                }
+            });
+
+            document.getElementById("stackProgressSlider").max = Math.max(0, stackSteps.length - 1);
+            stackCurrentStep = 0;
+            
+            if (stackSteps.length > 0) {
+                toggleStackPlay();
+            } else {
+                document.getElementById("stackStepText").innerText = "▶ No valid operations found.";
+            }
+        }
+
+        function toggleStackPlay() {
+            if (stackSteps.length === 0) return alert("Click 'Visualize Code' to analyze code first!");
+            if (stackIsPlaying) {
+                pauseStackPlayback();
+            } else {
+                if (stackCurrentStep >= stackSteps.length - 1) {
+                    stackCurrentStep = 0;
+                }
+                startStackPlayback();
+            }
+        }
+
+        function startStackPlayback() {
+            stackIsPlaying = true;
+            updateStackPlayBtnUI();
+            renderFrame(stackSteps[stackCurrentStep], stackContext);
+
+            clearInterval(stackPlayInterval);
+            stackPlayInterval = setInterval(() => {
+                if (stackCurrentStep < stackSteps.length - 1) {
+                    stackCurrentStep++;
+                    renderFrame(stackSteps[stackCurrentStep], stackContext);
+                } else {
+                    pauseStackPlayback();
+                }
+            }, stackSpeedMs);
+        }
+
+        function pauseStackPlayback() {
+            stackIsPlaying = false;
+            clearInterval(stackPlayInterval);
+            updateStackPlayBtnUI();
+        }
+
+        function updateStackPlayBtnUI() {
+            let playBtn = document.getElementById("stackPlayPauseBtn");
+            if (!playBtn) return;
+
+            if (stackIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (stackCurrentStep >= stackSteps.length - 1 && stackSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToStackStart() {
+            if (stackSteps.length === 0) return;
+            stackCurrentStep = 0;
+            startStackPlayback();
+        }
+
+        function jumpToStackEnd() {
+            if (stackSteps.length === 0) return;
+            pauseStackPlayback();
+            stackCurrentStep = stackSteps.length - 1;
+            renderFrame(stackSteps[stackCurrentStep], stackContext);
+        }
+
+        function stepStackForward() {
+            if (stackSteps.length === 0) return;
+            pauseStackPlayback();
+            if (stackCurrentStep < stackSteps.length - 1) {
+                stackCurrentStep++;
+                renderFrame(stackSteps[stackCurrentStep], stackContext);
+            }
+        }
+
+        function stepStackBack() {
+            if (stackSteps.length === 0) return;
+            pauseStackPlayback();
+            if (stackCurrentStep > 0) {
+                stackCurrentStep--;
+                renderFrame(stackSteps[stackCurrentStep], stackContext);
+            }
+        }
+
+        function setStackSpeed(ms, type) {
+            stackSpeedMs = ms;
+            document.getElementById("btn-stack-slow").classList.remove("active");
+            document.getElementById("btn-stack-normal").classList.remove("active");
+            document.getElementById("btn-stack-fast").classList.remove("active");
+            document.getElementById("btn-stack-" + type).classList.add("active");
+
+            if (stackIsPlaying) {
+                startStackPlayback();
+            }
+        }
+
+        function scrubStackTimeline() {
+            if (stackSteps.length === 0) return;
+            pauseStackPlayback();
+            stackCurrentStep = parseInt(document.getElementById("stackProgressSlider").value);
+            renderFrame(stackSteps[stackCurrentStep], stackContext);
+        }
+    </script>
+</body>
+
+</html>
