@@ -7,7 +7,9 @@
 
     <title>LogicLens</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
 </head>
 
@@ -72,21 +74,33 @@ for(int i=0;i<n;i++){
 
             <div class="step-box" id="stepText">▶ System Ready.</div>
 
-            <div class="info-panel" id="infoPanel" style="display: none; margin-top: 10px; gap: 10px; justify-content: space-between;">
-                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
-                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Language</strong> 
+            <div class="info-panel" id="infoPanel"
+                style="display: none; margin-top: 10px; gap: 10px; justify-content: space-between;">
+                <div class="info-card"
+                    style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong
+                        style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Language</strong>
                     <span id="langText" style="color:var(--blue); font-weight:600;">-</span>
                 </div>
-                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
-                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Time Complexity</strong> 
+                <div class="info-card"
+                    style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong
+                        style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Time
+                        Complexity</strong>
                     <div style="display: flex; flex-direction: column; gap: 2px;">
-                        <span><span style="font-size: 8px; color: var(--text2);">Best:</span> <span id="timeBest" style="color:var(--glow); font-weight:600;">-</span></span>
-                        <span><span style="font-size: 8px; color: var(--text2);">Avg:</span> <span id="timeAvg" style="color:var(--glow); font-weight:600;">-</span></span>
-                        <span><span style="font-size: 8px; color: var(--text2);">Worst:</span> <span id="timeWorst" style="color:var(--glow); font-weight:600;">-</span></span>
+                        <span><span style="font-size: 8px; color: var(--text2);">Best:</span> <span id="timeBest"
+                                style="color:var(--glow); font-weight:600;">-</span></span>
+                        <span><span style="font-size: 8px; color: var(--text2);">Avg:</span> <span id="timeAvg"
+                                style="color:var(--glow); font-weight:600;">-</span></span>
+                        <span><span style="font-size: 8px; color: var(--text2);">Worst:</span> <span id="timeWorst"
+                                style="color:var(--glow); font-weight:600;">-</span></span>
                     </div>
                 </div>
-                <div class="info-card" style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
-                    <strong style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Space Complexity</strong> 
+                <div class="info-card"
+                    style="flex:1; background:var(--surface2); padding:10px 14px; border-radius:8px; border:1px solid var(--border); font-family:var(--fm); font-size:11px; color:var(--text2);">
+                    <strong
+                        style="color:var(--text); text-transform:uppercase; letter-spacing:0.05em; font-size:9px; display:block; margin-bottom:4px;">Space
+                        Complexity</strong>
                     <span id="spaceText" style="color:var(--amber); font-weight:600;">-</span>
                 </div>
             </div>
@@ -285,7 +299,7 @@ for(int i=0;i<n;i++){
             canvas.innerHTML = "";
 
             // Default to 'array' (bar chart) if the AI doesn't specify a type
-            const type = frame.type || "array"; 
+            const type = frame.type || "array";
 
             // --- 1. RENDER ARRAY (BAR CHART) ---
             if (type === "array") {
@@ -298,27 +312,27 @@ for(int i=0;i<n;i++){
                     let highlightArr = frame.highlight || [];
                     let sortedArr = frame.sorted || [];
 
-                    if (sortedArr.includes(index)) bar.style.background = "#22c55e"; 
-                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308"; 
-                    else bar.style.background = "#38bdf8"; 
+                    if (sortedArr.includes(index)) bar.style.background = "#22c55e";
+                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308";
+                    else bar.style.background = "#38bdf8";
 
                     let label = document.createElement("span");
                     label.innerText = value;
                     bar.appendChild(label);
                     canvas.appendChild(bar);
                 });
-            } 
-            
+            }
+
             // --- 2. RENDER STACK (VERTICAL) ---
             else if (type === "stack") {
                 let container = document.createElement("div");
                 container.classList.add("stack-container");
-                
+
                 frame.array.forEach((value, index) => {
                     let item = document.createElement("div");
                     item.classList.add("stack-item");
                     item.innerText = value;
-                    
+
                     let highlightArr = frame.highlight || [];
                     if (highlightArr.includes(index)) {
                         // Green for pushed item, Red for popped item
@@ -340,11 +354,11 @@ for(int i=0;i<n;i++){
                     frontLabel.classList.add("queue-pointer-label");
                     frontLabel.innerText = "Front";
                     if (index === 0 && frame.array.length > 0) frontLabel.classList.add("visible");
-                    
+
                     let item = document.createElement("div");
                     item.classList.add("queue-item");
                     item.innerText = value;
-                    
+
                     let highlightArr = frame.highlight || [];
                     if (highlightArr.includes(index)) {
                         if (frame.action === "dequeue") item.style.background = "#ef4444";
@@ -370,7 +384,7 @@ for(int i=0;i<n;i++){
             if (stepTextEl) {
                 stepTextEl.innerText = "▶ " + (frame.explanation || "Processing...");
             }
-            
+
             let slider = document.getElementById(sliderId);
             if (slider) {
                 if (context.currentStep !== undefined) {
@@ -395,7 +409,7 @@ for(int i=0;i<n;i++){
                         startPos += lines[i].length + 1;
                     }
                     let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    
+
                     const curScroll = textarea.scrollTop;
                     textarea.focus();
                     textarea.setSelectionRange(startPos, endPos);

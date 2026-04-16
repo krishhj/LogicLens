@@ -4,20 +4,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>LogicLens</title>
-
+    <title>LogicLens - Queue</title>
+    <meta name="description"
+        content="Visualize Simple, Circular, Double-Ended (Deque), and Priority Queues with animated steps and complexity analysis." />
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
+
 </head>
 
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            <a href="index.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span
+                    style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
             </a>
         </div>
         <label class="switch">
@@ -28,70 +31,230 @@
 
     <section class="hero" style="padding-bottom: 20px;">
         <h1>Queue Data Structure</h1>
-        <p>
-            Visualize Enqueue, Dequeue, and the FIFO flow interactively.
-        </p>
+        <p>Visualize Simple, Circular, Double-Ended (Deque), and Priority Queues dynamically.</p>
     </section>
 
     <div class="container" id="queueContainer" style="margin-top: 40px;">
+        <!-- ═══ LEFT: EDITOR PANEL ═══ -->
         <div class="editor">
             <h3>Queue Setup</h3>
 
-            <span class="input-label">Queue Value:</span>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="queueInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 10" />
-                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="enqueueValue()">Enqueue</button>
-                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 79, 106, 0.1); color: var(--red); border-color: var(--red);" onclick="dequeueValue()">Dequeue</button>
-                <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetQueue()">Reset</button>
+            <!-- Mode switcher -->
+            <div class="mode-tabs" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
+                <button class="mode-tab active" id="tab-simple" onclick="switchMode('simple')">Simple Queue</button>
+                <button class="mode-tab" id="tab-circular" onclick="switchMode('circular')">Circular Queue</button>
+                <button class="mode-tab" id="tab-deque" onclick="switchMode('deque')">Deque</button>
+                <button class="mode-tab" id="tab-priority" onclick="switchMode('priority')">Priority Queue</button>
             </div>
 
-            <span class="input-label" style="margin-top: 20px;">Recorded Operations:</span>
-            <textarea id="queueCodeInput" style="height: 140px;">
-enqueue(10)
-enqueue(20)
-dequeue()</textarea>
+            <!-- Capacity (Array/Circular Mode) -->
+            <div class="capacity-row" id="capacityRow" style="display: none;">
+                <label>Max Capacity:</label>
+                <input type="number" id="capacityInput" value="8" min="2" max="16" onchange="updateCapacity()" />
+                <span style="font-family: var(--fm); font-size: 10px; color: var(--text3);">slots</span>
+            </div>
 
+            <!-- Value input -->
+            <span class="input-label" style="margin-top:14px;">Element Input:</span>
+            <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                <input type="text" id="queueInputVal" style="flex: 1; margin-bottom: 0;" placeholder="Value (e.g. 42)"
+                    onkeydown="if(event.key==='Enter') doOp('enqueue')" />
+                <input type="number" id="queueInputPrio" style="display: none; width: 80px; margin-bottom: 0;"
+                    placeholder="Priority (1=High)" />
+            </div>
+
+            <!-- Operation grid -->
+            <div class="adv-section-head">
+                <h3>Operations</h3>
+            </div>
+            <div class="op-grid" id="opGridStandard" style="display: grid;">
+                <button class="op-btn push" onclick="doOp('enqueue')">➕ Enqueue</button>
+                <button class="op-btn pop" onclick="doOp('dequeue')">➖ Dequeue</button>
+                <button class="op-btn peek" onclick="doOp('peek')">👁 Peek</button>
+                <button class="op-btn check" onclick="doOp('traverse')">👣 Traverse</button>
+                <button class="op-btn size" onclick="doOp('size')">📊 Size</button>
+                <button class="op-btn clear" onclick="doOp('clear')">🗑 Clear</button>
+            </div>
+
+            <div class="op-grid" id="opGridDeque" style="display: none;">
+                <button class="op-btn push" onclick="doOp('enqueueFront')">➕ Enqueue Front</button>
+                <button class="op-btn push" onclick="doOp('enqueueRear')">➕ Enqueue Rear</button>
+                <button class="op-btn pop" onclick="doOp('dequeueFront')">➖ Dequeue Front</button>
+                <button class="op-btn pop" onclick="doOp('dequeueRear')">➖ Dequeue Rear</button>
+                <button class="op-btn peek" onclick="doOp('peekFront')">👁 Peek Front</button>
+                <button class="op-btn check" onclick="doOp('traverse')">👣 Traverse</button>
+                <button class="op-btn clear" onclick="doOp('clear')">🗑 Clear</button>
+            </div>
+
+            <!-- Recorded ops textarea (legacy visualize-code flow) -->
+            <div class="adv-section-head" style="margin-top: 6px;">
+                <h3>Recorded Operations</h3>
+            </div>
+            <textarea id="queueCodeInput" style="height: 100px;">enqueue(10)
+enqueue(20)
+enqueue(30)
+dequeue()
+peek()</textarea>
             <button class="viz-btn" id="queueVizBtn" onclick="analyzeQueueCode()">
                 Visualize Code
             </button>
+
+            <!-- Op Log -->
+            <div class="op-log-panel" style="margin-top: 20px;">
+                <div class="op-log-header">
+                    <span class="op-log-title">📋 Operation Log</span>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                </div>
+                <div class="op-log-entries" id="opLog">
+                    <div class="op-log-entry log-info">
+                        <span class="op-log-num">#0</span>
+                        <span class="op-log-icon">🚀</span>
+                        <span class="op-log-msg">Queue initialized. Ready for operations.</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- ═══ RIGHT: VISUALIZER PANEL ═══ -->
         <div class="visualizer">
             <h3>Queue Visualization</h3>
 
             <div class="legend">
-                <span><span class="box" style="background: #38bdf8"></span>Normal</span>
-                <span><span class="box" style="background: #22c55e"></span>Enqueued</span>
-                <span><span class="box" style="background: #ef4444"></span>Dequeued</span>
-                <span><span class="box" style="background: #eab308"></span>Active</span>
+                <span><span class="box"
+                        style="background:var(--surface2);border:1px dashed var(--border)"></span>Empty</span>
+                <span><span class="box" style="background:#22c55e"></span>Enqueued</span>
+                <span><span class="box" style="background:#ef4444"></span>Dequeued</span>
+                <span><span class="box" style="background:var(--amber)"></span>Peeked</span>
             </div>
 
-            <div class="canvas" id="queueCanvas" style="display: flex; align-items: center; justify-content: flex-start; overflow-x: auto; padding-left: 20px;"></div>
+            <div class="canvas" id="queueCanvas"
+                style="display: flex; align-items: stretch; justify-content: stretch; overflow-x: auto; padding: 20px; min-height: 250px; position: relative;">
+                <!-- rendered by JS -->
+            </div>
 
-            <div class="step-box" id="queueStepText">▶ System Ready.</div>
+            <div class="step-box" id="queueStepText">▶ System Ready. Choose a mode and start operating.</div>
 
+            <!-- Media controls (for Visualize Code playback) -->
             <div class="media-controls">
                 <div class="btn-group">
                     <button class="btn-icon" onclick="jumpToQueueStart()">⏮</button>
                     <button class="btn-icon" onclick="stepQueueBack()">◀</button>
-                    <button class="btn-play" id="queuePlayPauseBtn" onclick="toggleQueuePlay()">
-                        ▶ Play
-                    </button>
+                    <button class="btn-play" id="queuePlayPauseBtn" onclick="toggleQueuePlay()">▶ Play</button>
                     <button class="btn-icon" onclick="stepQueueForward()">▶</button>
                     <button class="btn-icon" onclick="jumpToQueueEnd()">⏭</button>
                 </div>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="queueProgressSlider" min="0" max="0" value="0" oninput="scrubQueueTimeline()" />
+                    <input type="range" id="queueProgressSlider" min="0" max="0" value="0"
+                        oninput="scrubQueueTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-queue-slow" onclick="setQueueSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-queue-normal" onclick="setQueueSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-queue-normal"
+                        onclick="setQueueSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-queue-fast" onclick="setQueueSpeed(400, 'fast')">Fast</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ COMPLEXITY SECTION ═══ -->
+    <div class="complexity-section">
+        <div class="section-head" style="padding: 0; margin-bottom: 16px;">
+            <h2 style="font-family: var(--ff); font-size: 18px; font-weight: 700;">Time & Space Complexity</h2>
+        </div>
+
+        <div class="complexity-grid">
+            <!-- Time Complexity -->
+            <div class="complexity-card">
+                <div class="complexity-card-head">
+                    <span class="complexity-dot"></span>
+                    <h4>Operation Complexity</h4>
+                </div>
+                <table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Simple Queue</th>
+                            <th>Circular Queue</th>
+                            <th>Deque</th>
+                            <th>Priority Queue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="op-cell">Enqueue</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="worst-cell">O(N)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Dequeue</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Peek / Front</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">isEmpty</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Space & Notes -->
+            <div class="complexity-card">
+                <div class="complexity-card-head">
+                    <span class="complexity-dot"
+                        style="background: var(--amber); box-shadow: 0 0 6px var(--amber);"></span>
+                    <h4>Space & Implementation Notes</h4>
+                </div>
+                <table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Queue Type</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="op-cell">Space Complexity</td>
+                            <td class="time-cell">All Types</td>
+                            <td class="avg-cell">O(N) Auxiliary Space</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Memory Waste</td>
+                            <td class="time-cell">Simple Queue</td>
+                            <td class="worst-cell">High (Array implementation shifts elements)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Memory Efficiency</td>
+                            <td class="time-cell">Circular Queue</td>
+                            <td class="best-cell">Ideal (Reuses empty space iteratively)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Sorting Requirement</td>
+                            <td class="time-cell">Priority Queue</td>
+                            <td class="worst-cell">Requires O(N) shift or Heap implementation O(Log N)</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -99,136 +262,624 @@ dequeue()</textarea>
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
+        // ══════════════════════════════════════════════════════════════
+        // THEME
+        // ══════════════════════════════════════════════════════════════
         document.getElementById("themeToggle").addEventListener("change", () => {
             document.body.classList.toggle("light");
         });
 
+        // ══════════════════════════════════════════════════════════════
+        // STATE
+        // ══════════════════════════════════════════════════════════════
+        let queueMode = 'simple'; // 'simple', 'circular', 'deque', 'priority'
+        let maxCapacity = 8;
 
+        let qData = [];
 
-        // 2. RENDER THE BACKEND FRAME
-        function renderFrame(frame, context = {}) {
-            if (!frame) return;
-            const canvasId = context.canvasId || "canvas";
-            const stepTextId = context.stepTextId || "stepText";
-            const sliderId = context.sliderId || "progressSlider";
-            const codeInputId = context.codeInputId || "codeInput";
+        // Circular Queue specific
+        let cQueue = new Array(maxCapacity).fill(null);
+        let front = -1;
+        let rear = -1;
+        let cSize = 0;
 
-            let canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            canvas.innerHTML = "";
+        let logCount = 0;
+        let peekActiveIndex = -1;
 
-            // Default to 'array' (bar chart) if the AI doesn't specify a type
-            const type = frame.type || "array"; 
+        // ══════════════════════════════════════════════════════════════
+        // MODE SWITCHING
+        // ══════════════════════════════════════════════════════════════
+        function switchMode(mode) {
+            queueMode = mode;
+            qData = [];
+            cQueue = new Array(maxCapacity).fill(null);
+            front = -1;
+            rear = -1;
+            cSize = 0;
+            peekActiveIndex = -1;
 
-            // --- 1. RENDER ARRAY (BAR CHART) ---
-            if (type === "array") {
-                const maxVal = Math.max(...frame.array, 1);
-                frame.array.forEach((value, index) => {
-                    let bar = document.createElement("div");
-                    bar.classList.add("bar");
-                    bar.style.height = (value / maxVal) * 260 + "px";
+            ['simple', 'circular', 'deque', 'priority'].forEach(m => {
+                document.getElementById(`tab-${m}`).classList.remove('active');
+            });
+            document.getElementById(`tab-${mode}`).classList.add('active');
 
-                    let highlightArr = frame.highlight || [];
-                    let sortedArr = frame.sorted || [];
+            if (mode === 'circular') {
+                document.getElementById('capacityRow').style.display = 'flex';
+                document.getElementById('opGridStandard').style.display = 'grid';
+                document.getElementById('opGridDeque').style.display = 'none';
+                document.getElementById('queueInputPrio').style.display = 'none';
+            } else if (mode === 'deque') {
+                document.getElementById('capacityRow').style.display = 'none';
+                document.getElementById('opGridStandard').style.display = 'none';
+                document.getElementById('opGridDeque').style.display = 'grid';
+                document.getElementById('queueInputPrio').style.display = 'none';
+            } else if (mode === 'priority') {
+                document.getElementById('capacityRow').style.display = 'none';
+                document.getElementById('opGridStandard').style.display = 'grid';
+                document.getElementById('opGridDeque').style.display = 'none';
+                document.getElementById('queueInputPrio').style.display = 'inline-block';
+            } else {
+                document.getElementById('capacityRow').style.display = 'none';
+                document.getElementById('opGridStandard').style.display = 'grid';
+                document.getElementById('opGridDeque').style.display = 'none';
+                document.getElementById('queueInputPrio').style.display = 'none';
+            }
 
-                    if (sortedArr.includes(index)) bar.style.background = "#22c55e"; 
-                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308"; 
-                    else bar.style.background = "#38bdf8"; 
+            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Queue mode. Queue cleared.`);
+            renderLiveQueue();
+            setStepText(`▶ ${mode.toUpperCase()} mode active.`);
+        }
 
-                    let label = document.createElement("span");
-                    label.innerText = value;
-                    bar.appendChild(label);
-                    canvas.appendChild(bar);
-                });
-            } 
-            
-            // --- 2. RENDER STACK (VERTICAL) ---
-            else if (type === "stack") {
-                let container = document.createElement("div");
-                container.classList.add("stack-container");
-                
-                frame.array.forEach((value, index) => {
-                    let item = document.createElement("div");
-                    item.classList.add("stack-item");
-                    item.innerText = value;
-                    
-                    let highlightArr = frame.highlight || [];
-                    if (highlightArr.includes(index)) {
-                        // Green for pushed item, Red for popped item
-                        item.style.background = frame.action === "pop" ? "#ef4444" : "#22c55e";
-                        item.style.color = "white";
+        function updateCapacity() {
+            const v = parseInt(document.getElementById('capacityInput').value);
+            if (!isNaN(v) && v >= 2 && v <= 16) {
+                maxCapacity = v;
+                cQueue = new Array(maxCapacity).fill(null);
+                front = -1; rear = -1; cSize = 0;
+                addLog('info', '⚙️', `Max capacity set to ${maxCapacity}. Queue reset.`);
+                renderLiveQueue();
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        // LIVE OPERATIONS
+        // ══════════════════════════════════════════════════════════════
+        function doOp(op) {
+            pauseQueuePlayback();
+            peekActiveIndex = -1;
+            const valInput = document.getElementById('queueInputVal');
+            const prioInput = document.getElementById('queueInputPrio');
+            const val = valInput.value.trim();
+            const prio = parseInt(prioInput.value) || 1;
+
+            const appendCode = (codeStr) => {
+                const ta = document.getElementById("queueCodeInput");
+                if (ta) {
+                    let cur = ta.value.trim();
+                    ta.value = cur ? cur + '\n' + codeStr : codeStr;
+                    ta.scrollTop = ta.scrollHeight;
+                }
+            };
+
+            if (op.includes('enqueue')) {
+                if (!val) { shakeCanvas(); addLog('error', '⚠️', 'Please enter a value to enqueue.'); return; }
+
+                if (queueMode === 'circular') {
+                    if (cSize >= maxCapacity) {
+                        addLog('error', '🚫', `Circular Queue OVERFLOW! Cannot enqueue "${val}".`);
+                        setStepText(`▶ ❌ OVERFLOW: Circular Queue is full (${maxCapacity}/${maxCapacity}).`);
+                        shakeCanvas();
+                        return;
                     }
+                    if (front === -1) { front = 0; }
+                    rear = (rear + 1) % maxCapacity;
+                    cQueue[rear] = val;
+                    cSize++;
+                    addLog('push', '➕', `Enqueue "${val}" at Rear (${rear}). Size: ${cSize}`);
+                    appendCode(`enqueue(${val})`);
+                    valInput.value = '';
+                    renderLiveQueue('enqueue', rear);
+                } else if (queueMode === 'priority') {
+                    let curr = 0;
+                    addLog('info', '🔍', `Scanning to place "${val}" (Priority: ${prio})...`);
+                    appendCode(`enqueue(${val}, ${prio})`);
+                    valInput.value = '';
+                    valInput.focus();
+                    
+                    const travInt = setInterval(() => {
+                        if (curr >= qData.length || prio < qData[curr].prio) {
+                            clearInterval(travInt);
+                            qData.splice(curr, 0, { val, prio });
+                            addLog('push', '➕', `Inserted "${val}" at pos ${curr}.`);
+                            peekActiveIndex = -1;
+                            renderLiveQueue('enqueue', curr);
+                        } else {
+                            peekActiveIndex = curr;
+                            renderLiveQueue('peek', curr);
+                            curr++;
+                        }
+                    }, 600);
+                } else if (queueMode === 'deque') {
+                    if (op === 'enqueueFront') {
+                        qData.unshift(val);
+                        addLog('push', '➕', `Enqueue Front "${val}". Size: ${qData.length}`);
+                        appendCode(`enqueueFront(${val})`);
+                        renderLiveQueue('enqueue', 0);
+                    } else { // enqueueRear
+                        qData.push(val);
+                        addLog('push', '➕', `Enqueue Rear "${val}". Size: ${qData.length}`);
+                        appendCode(`enqueueRear(${val})`);
+                        renderLiveQueue('enqueue', qData.length - 1);
+                    }
+                    valInput.value = '';
+                } else { // simple
+                    qData.push({ val });
+                    addLog('push', '➕', `Enqueue "${val}" at Rear. Size: ${qData.length}`);
+                    appendCode(`enqueue(${val})`);
+                    valInput.value = '';
+                    renderLiveQueue('enqueue', qData.length - 1);
+                }
+
+            } else if (op.includes('dequeue')) {
+                if (queueMode === 'circular') {
+                    if (cSize === 0) {
+                        addLog('error', '🚫', `Circular Queue UNDERFLOW! Cannot dequeue.`);
+                        setStepText(`▶ ❌ UNDERFLOW: Queue is empty!`);
+                        shakeCanvas();
+                        return;
+                    }
+                    const popped = cQueue[front];
+                    addLog('pop', '➖', `Dequeue → Removed "${popped}" from Front (${front}).`);
+                    setStepText(`▶ Dequeued "${popped}" from Front.`);
+                    appendCode(`dequeue()`);
+                    let popIdx = front;
+                    renderLiveQueue('dequeue', popIdx, () => {
+                        cQueue[front] = null;
+                        if (front === rear) { front = -1; rear = -1; }
+                        else { front = (front + 1) % maxCapacity; }
+                        cSize--;
+                        renderLiveQueue();
+                    });
+                } else {
+                    if (qData.length === 0) {
+                        addLog('error', '🚫', `Queue UNDERFLOW! Cannot dequeue.`);
+                        setStepText(`▶ ❌ UNDERFLOW: Queue is empty!`);
+                        shakeCanvas();
+                        return;
+                    }
+                    let popped, popIdx;
+                    if (queueMode === 'deque' && op === 'dequeueRear') {
+                        popped = qData[qData.length - 1];
+                        popIdx = qData.length - 1;
+                        addLog('pop', '➖', `Dequeue Rear → Removed "${popped.val || popped}".`);
+                        appendCode(`dequeueRear()`);
+                    } else {
+                        popped = qData[0];
+                        popIdx = 0;
+                        addLog('pop', '➖', `Dequeue Front → Removed "${popped.val || popped}".`);
+                        if (queueMode === 'deque') appendCode(`dequeueFront()`); else appendCode(`dequeue()`);
+                    }
+
+                    renderLiveQueue('dequeue', popIdx, () => {
+                        if (queueMode === 'deque' && op === 'dequeueRear') qData.pop();
+                        else qData.shift();
+                        renderLiveQueue();
+                    });
+                }
+
+            } else if (op.includes('peek')) {
+                if (queueMode === 'circular') {
+                    if (cSize === 0) {
+                        addLog('error', '🚫', `Peek on empty queue.`);
+                        shakeCanvas();
+                        return;
+                    }
+                    peekActiveIndex = front;
+                    addLog('peek', '👁️', `Peek → Front element is "${cQueue[front]}".`);
+                    setStepText(`▶ Peek: Front element is "${cQueue[front]}".`);
+                    appendCode(`peek()`);
+                    renderLiveQueue('peek', front);
+                    setTimeout(() => { peekActiveIndex = -1; renderLiveQueue(); }, 2000);
+                } else {
+                    if (qData.length === 0) {
+                        addLog('error', '🚫', `Peek on empty queue.`);
+                        shakeCanvas();
+                        return;
+                    }
+                    let peekIdx = 0;
+                    if (queueMode === 'deque' && op === 'peekRear') peekIdx = qData.length - 1;
+
+                    peekActiveIndex = peekIdx;
+                    let peekData = qData[peekIdx].val || qData[peekIdx];
+                    addLog('peek', '👁️', `Peek → Element is "${peekData}".`);
+                    setStepText(`▶ Peek: Element is "${peekData}".`);
+                    if (queueMode === 'deque' && op === 'peekRear') appendCode(`peekRear()`);
+                    else if (queueMode === 'deque') appendCode(`peekFront()`);
+                    else appendCode(`peek()`);
+                    renderLiveQueue('peek', peekIdx);
+                    setTimeout(() => { peekActiveIndex = -1; renderLiveQueue(); }, 2000);
+                }
+            } else if (op === 'traverse') {
+                if (queueMode === 'circular') {
+                    if (cSize === 0) { addLog('error', '🚫', `Queue empty.`); shakeCanvas(); return; }
+                    let currSteps = 0;
+                    let currIdx = front;
+                    addLog('info', '👣', `Traversing over circular loop...`);
+                    const travInt = setInterval(() => {
+                        if (currSteps >= cSize) {
+                            clearInterval(travInt);
+                            peekActiveIndex = -1;
+                            renderLiveQueue();
+                            return;
+                        }
+                        peekActiveIndex = currIdx;
+                        renderLiveQueue('peek', currIdx);
+                        currIdx = (currIdx + 1) % maxCapacity;
+                        currSteps++;
+                    }, 500);
+                } else {
+                    if (qData.length === 0) { addLog('error', '🚫', `Queue empty.`); shakeCanvas(); return; }
+                    let curr = 0;
+                    addLog('info', '👣', `Initiating linear pass-through traverse...`);
+                    const travInt = setInterval(() => {
+                        if (curr >= qData.length) {
+                            clearInterval(travInt);
+                            peekActiveIndex = -1;
+                            renderLiveQueue();
+                            return;
+                        }
+                        peekActiveIndex = curr;
+                        renderLiveQueue('peek', curr);
+                        curr++;
+                    }, 500);
+                }
+            } else if (op === 'isEmpty') {
+                const empty = queueMode === 'circular' ? (cSize === 0) : (qData.length === 0);
+                addLog('info', empty ? '✅' : '❌', `isEmpty → ${empty}.`);
+                setStepText(`▶ isEmpty: ${empty}`);
+                appendCode(`isEmpty()`);
+            } else if (op === 'size') {
+                const len = queueMode === 'circular' ? cSize : qData.length;
+                addLog('info', '📊', `Size → ${len} element(s).`);
+                setStepText(`▶ Size: ${len}`);
+                appendCode(`size()`);
+            } else if (op === 'clear') {
+                qData = [];
+                cQueue = new Array(maxCapacity).fill(null);
+                front = -1; rear = -1; cSize = 0;
+                addLog('info', '🗑️', `Clear → Removed all elements.`);
+                setStepText(`▶ Clear: All element(s) removed.`);
+                const ta = document.getElementById("queueCodeInput");
+                if (ta) ta.value = '';
+                renderLiveQueue();
+            }
+        }
+
+        function shakeCanvas() {
+            const c = document.getElementById('queueCanvas');
+            c.style.animation = 'none';
+            setTimeout(() => { c.style.animation = 'shake-container 0.5s ease'; }, 10);
+            setTimeout(() => { c.style.animation = ''; }, 600);
+        }
+
+        function setStepText(msg) {
+            document.getElementById('queueStepText').innerText = msg;
+        }
+
+        function addLog(type, icon, msg) {
+            logCount++;
+            const entries = document.getElementById('opLog');
+            const entry = document.createElement('div');
+            entry.className = `op-log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="op-log-num">#${logCount}</span>
+                <span class="op-log-icon">${icon}</span>
+                <span class="op-log-msg">${msg}</span>`;
+            entries.appendChild(entry);
+            entries.scrollTop = entries.scrollHeight;
+        }
+
+        function clearLog() {
+            logCount = 0;
+            document.getElementById('opLog').innerHTML = '';
+            addLog('info', '🧹', 'Log cleared.');
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        // LIVE RENDER
+        // ══════════════════════════════════════════════════════════════
+        function renderLiveQueue(action, highlightIdx, callback) {
+            const canvas = document.getElementById('queueCanvas');
+            canvas.innerHTML = '';
+
+            const wrap = document.createElement('div');
+            wrap.className = 'queue-vis-wrap';
+
+            const container = document.createElement('div');
+            container.className = 'queue-container-v2 queue-tube';
+            
+            if (queueMode === 'circular') container.classList.add('circular');
+            else if (queueMode === 'deque') container.classList.add('deque-mode');
+
+            if (queueMode === 'circular') {
+                for (let i = 0; i < maxCapacity; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'queue-item-v2';
+
+                    if (cQueue[i] === null) {
+                        item.classList.add('empty');
+                    } else {
+                        item.innerText = cQueue[i];
+                    }
+
+                    if (action === 'dequeue' && i === highlightIdx) {
+                        item.classList.add('popped');
+                        if (callback) {
+                            setTimeout(() => {
+                                item.style.opacity = '0';
+                                item.style.transform = 'translateY(-20px)';
+                            }, 50);
+                            setTimeout(callback, 450);
+                        }
+                    } else if (action === 'enqueue' && i === highlightIdx) {
+                        item.classList.add('pushed');
+                        setTimeout(() => { item.classList.remove('pushed'); item.classList.add('active'); }, 800);
+                    } else if (cQueue[i] !== null) {
+                        item.classList.add('active');
+                    }
+
+                    if ((action === 'peek' && i === highlightIdx) || i === peekActiveIndex) {
+                        item.classList.add('peek-highlight');
+                    }
+
+                    // Pointers
+                    if (front === i) {
+                        const fPtr = document.createElement('div');
+                        fPtr.className = 'queue-pointer bottom';
+                        fPtr.innerText = 'FRONT';
+                        item.appendChild(fPtr);
+                    }
+                    if (rear === i) {
+                        const rPtr = document.createElement('div');
+                        rPtr.className = 'queue-pointer top';
+                        rPtr.innerText = 'REAR';
+                        item.appendChild(rPtr);
+                    }
+
+                    container.appendChild(item);
+                }
+
+                // Append the circular loop connector tracking 0 and capacity boundaries
+                const activeLoop = cSize > 0 && front !== -1 && rear !== -1 && ((rear + 1) % maxCapacity === front || rear < front);
+                const loopArrow = document.createElement('div');
+                loopArrow.className = 'circular-link-arrow';
+                if (activeLoop || action === 'enqueue' || action === 'dequeue') {
+                    loopArrow.classList.add('active');
+                }
+                container.appendChild(loopArrow);
+
+            } else {
+                // Linear Modes (Simple, priority, deque)
+                qData.forEach((el, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'queue-item-v2 active';
+
+                    if (queueMode === 'priority') {
+                        item.innerHTML = `${el.val}<div class="prio-badge">P:${el.prio}</div>`;
+                    } else {
+                        item.innerText = el.val || el;
+                    }
+
+                    if (action === 'dequeue' && i === highlightIdx) {
+                        item.classList.add('popped');
+                        if (callback) {
+                            setTimeout(() => {
+                                item.style.opacity = '0';
+                                item.style.transform = 'translateX(-40px)';
+                            }, 50);
+                            setTimeout(callback, 450);
+                        }
+                    } else if (action === 'enqueue' && i === highlightIdx) {
+                        item.classList.add('pushed');
+                        setTimeout(() => { item.classList.remove('pushed'); }, 800);
+                    }
+
+                    if ((action === 'peek' && i === highlightIdx) || i === peekActiveIndex) {
+                        item.classList.add('peek-highlight');
+                    }
+
+                    if (i === 0) {
+                        const fPtr = document.createElement('div');
+                        fPtr.className = 'queue-pointer bottom';
+                        fPtr.innerText = 'FRONT';
+                        item.appendChild(fPtr);
+                    }
+                    if (i === qData.length - 1) {
+                        const rPtr = document.createElement('div');
+                        rPtr.className = 'queue-pointer top';
+                        rPtr.innerText = 'REAR';
+                        item.appendChild(rPtr);
+                    }
+
                     container.appendChild(item);
                 });
-                canvas.appendChild(container);
-            }
 
-            // --- 3. RENDER QUEUE (HORIZONTAL) ---
-            else if (type === "queue") {
-                frame.array.forEach((value, index) => {
-                    let wrap = document.createElement("div");
-                    wrap.classList.add("queue-item-wrap");
-
-                    let frontLabel = document.createElement("div");
-                    frontLabel.classList.add("queue-pointer-label");
-                    frontLabel.innerText = "Front";
-                    if (index === 0 && frame.array.length > 0) frontLabel.classList.add("visible");
-                    
-                    let item = document.createElement("div");
-                    item.classList.add("queue-item");
-                    item.innerText = value;
-                    
-                    let highlightArr = frame.highlight || [];
-                    if (highlightArr.includes(index)) {
-                        if (frame.action === "dequeue") item.style.background = "#ef4444";
-                        else if (frame.action === "enqueue") item.style.background = "#22c55e";
-                        else item.style.background = "#eab308";
-                        item.style.color = "white";
-                    }
-
-                    let rearLabel = document.createElement("div");
-                    rearLabel.classList.add("queue-pointer-label");
-                    rearLabel.innerText = "Rear";
-                    if (index === frame.array.length - 1 && frame.array.length > 0) rearLabel.classList.add("visible");
-
-                    wrap.appendChild(frontLabel);
-                    wrap.appendChild(item);
-                    wrap.appendChild(rearLabel);
-                    canvas.appendChild(wrap);
-                });
-            }
-
-            // Update text and timeline slider safely
-            const stepTextEl = document.getElementById(stepTextId);
-            if (stepTextEl) {
-                stepTextEl.innerText = "▶ " + (frame.explanation || "Processing...");
-            }
-            
-            let slider = document.getElementById(sliderId);
-            if (slider) {
-                if (context.currentStep !== undefined) {
-                    slider.value = context.currentStep;
-                } else if (frame.stepIndex !== undefined) {
-                    slider.value = frame.stepIndex;
-                } else {
-                    // Fallback to global currentStep if running sorting
-                    if (typeof currentStep !== 'undefined' && sliderId === "progressSlider") {
-                        slider.value = currentStep;
-                    }
+                if (qData.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.style.cssText = "font-family:var(--fm);color:var(--text3); font-size: 14px; opacity: 0.7;";
+                    emptyMsg.innerText = "Empty Buffer";
+                    container.appendChild(emptyMsg);
                 }
             }
 
-            // Highlight line in textarea
+            wrap.appendChild(container);
+            canvas.appendChild(wrap);
+        }
+
+        // INIT
+        renderLiveQueue();
+
+        // ══════════════════════════════════════════════════════════════
+        // VISUALIZE CODE (legacy code parsing logic for Timeline Playback)
+        // ══════════════════════════════════════════════════════════════
+        let queueSteps = [];
+        let queueCurrentStep = 0;
+        let queueIsPlaying = false;
+        let queuePlayInterval = null;
+        let queueSpeedMs = 1000;
+
+        function analyzeQueueCode() {
+            pauseQueuePlayback();
+            const code = document.getElementById("queueCodeInput").value;
+            const lines = code.split('\n');
+            let simQ = [];
+            let simCQueue = new Array(maxCapacity).fill(null);
+            let simFront = -1, simRear = -1, simCSize = 0;
+            
+            queueSteps = [];
+            
+            const recordState = (hl, act, expl, ln) => {
+                queueSteps.push({
+                    simQueue: JSON.parse(JSON.stringify(simQ)),
+                    cQueue: [...simCQueue], front: simFront, rear: simRear, cSize: simCSize,
+                    highlight: hl, action: act, explanation: expl, line: ln, stepIndex: queueSteps.length
+                });
+            };
+
+            recordState(-1, 'none', 'Queue initialized.', -1);
+
+            lines.forEach((line, index) => {
+                let text = line.trim();
+                if (!text) return;
+
+                if (text.startsWith('enqueue') || text.startsWith('dequeue') || text.startsWith('peek') || text.startsWith('size') || text.startsWith('isEmpty') || text.startsWith('clear')) {
+                    let opMatch = text.match(/^([a-zA-Z]+)\s*(?:\((.*?)\))?/);
+                    if (opMatch) {
+                        let cmd = opMatch[1];
+                        let rawVal = opMatch[2] ? opMatch[2].trim() : null;
+
+                        if (cmd.startsWith('enqueue')) {
+                            if (!rawVal) {
+                                recordState(-1, 'error', `Syntax Error: missing value.`, index);
+                                return;
+                            }
+                            if (queueMode === 'circular') {
+                                if (simCSize >= maxCapacity) recordState(-1, 'error', `OVERFLOW!`, index);
+                                else {
+                                    if (simFront === -1) simFront = 0;
+                                    simRear = (simRear + 1) % maxCapacity;
+                                    simCQueue[simRear] = rawVal;
+                                    simCSize++;
+                                    recordState(simRear, 'enqueue', `Enqueued "${rawVal}".`, index);
+                                }
+                            } else if (queueMode === 'deque') {
+                                if (cmd === 'enqueueFront') {
+                                    simQ.unshift(rawVal);
+                                    recordState(0, 'enqueue', `Enqueued Front "${rawVal}".`, index);
+                                } else {
+                                    simQ.push(rawVal);
+                                    recordState(simQ.length - 1, 'enqueue', `Enqueued Rear "${rawVal}".`, index);
+                                }
+                            } else {
+                                if (queueMode === 'priority') {
+                                    // Accept "value, priority" syntax or default priority 5
+                                    let pVals = rawVal.split(',');
+                                    let pushVal = pVals[0].trim();
+                                    let pushPrio = pVals.length > 1 ? parseInt(pVals[1].trim()) : 5;
+                                    simQ.push({val: pushVal, prio: pushPrio}); 
+                                    simQ.sort((a,b) => a.prio - b.prio);
+                                    recordState(simQ.findIndex(e=>e.val===pushVal && e.prio===pushPrio), 'enqueue', `Enqueued Priority "${pushVal}" (P:${pushPrio}).`, index);
+                                } else {
+                                    simQ.push(rawVal);
+                                    recordState(simQ.length - 1, 'enqueue', `Enqueued "${rawVal}".`, index);
+                                }
+                            }
+                        } else if (cmd.startsWith('dequeue')) {
+                            if (queueMode === 'circular') {
+                                if (simCSize === 0) recordState(-1, 'error', `UNDERFLOW!`, index);
+                                else {
+                                    let oldF = simFront;
+                                    recordState(oldF, 'dequeue', `Dequeueing "${simCQueue[oldF]}".`, index);
+                                    simCQueue[simFront] = null;
+                                    if (simFront === simRear) { simFront = -1; simRear = -1; }
+                                    else { simFront = (simFront + 1) % maxCapacity; }
+                                    simCSize--;
+                                    recordState(-1, 'none', `Dequeued.`, index);
+                                }
+                            } else {
+                                if (simQ.length === 0) recordState(-1, 'error', `UNDERFLOW!`, index);
+                                else {
+                                    if (queueMode === 'deque' && cmd === 'dequeueRear') {
+                                        recordState(simQ.length - 1, 'dequeue', `Dequeueing Rear "${simQ[simQ.length-1]}".`, index);
+                                        simQ.pop();
+                                    } else {
+                                        recordState(0, 'dequeue', `Dequeueing Front "${simQ[0].val || simQ[0]}".`, index);
+                                        simQ.shift();
+                                    }
+                                    recordState(-1, 'none', `Dequeued.`, index);
+                                }
+                            }
+                        } else if (cmd.startsWith('peek')) {
+                            if (queueMode === 'circular') {
+                                if (simCSize === 0) recordState(-1, 'error', `Empty Peek.`, index);
+                                else recordState(simFront, 'peek', `Peek Front: "${simCQueue[simFront]}".`, index);
+                            } else {
+                                if (simQ.length === 0) recordState(-1, 'error', `Empty Peek.`, index);
+                                else {
+                                    if (queueMode === 'deque' && cmd === 'peekRear') {
+                                        recordState(simQ.length-1, 'peek', `Peek Rear: "${simQ[simQ.length-1]}".`, index);
+                                    } else {
+                                        recordState(0, 'peek', `Peek Front: "${simQ[0].val || simQ[0]}".`, index);
+                                    }
+                                }
+                            }
+                        } else if (cmd === 'size') {
+                            let sz = queueMode === 'circular' ? simCSize : simQ.length;
+                            recordState(-1, 'none', `Size: ${sz}`, index);
+                        } else if (cmd === 'isEmpty') {
+                            let mt = queueMode === 'circular' ? simCSize===0 : simQ.length===0;
+                            recordState(-1, 'none', `isEmpty: ${mt}`, index);
+                        } else if (cmd === 'clear') {
+                            simQ = []; simCQueue = new Array(maxCapacity).fill(null); simFront = -1; simRear = -1; simCSize = 0;
+                            recordState(-1, 'none', `Cleared everything.`, index);
+                        }
+                    }
+                }
+            });
+
+            recordState(-1, 'none', 'Visualization complete.', -1);
+            
+            document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
+            queueCurrentStep = 0;
+            if (queueSteps.length > 0) toggleQueuePlay();
+        }
+
+        function renderQueueFrame(frame) {
+            if (!frame) return;
+            // Sync simulated queue with live view
+            if (queueMode === 'circular') {
+                cQueue = [...frame.cQueue];
+                front = frame.front;
+                rear = frame.rear;
+                cSize = frame.cSize;
+            } else {
+                qData = [...frame.simQueue];
+            }
+            
+            let action = frame.action === 'enqueue' ? 'enqueue' : frame.action === 'dequeue' ? 'dequeue' : frame.action === 'peek' ? 'peek' : null;
+            renderLiveQueue(action, frame.highlight >= 0 ? frame.highlight : undefined);
+            setStepText('▶ ' + (frame.explanation || 'Processing...'));
+
+            const slider = document.getElementById("queueProgressSlider");
+            if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
+
             if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById(codeInputId);
+                const textarea = document.getElementById("queueCodeInput");
                 if (textarea) {
                     const lines = textarea.value.split('\n');
                     let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) {
-                        startPos += lines[i].length + 1;
-                    }
-                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    
+                    for (let i = 0; i < frame.line && i < lines.length; i++) startPos += lines[i].length + 1;
+                    const endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
                     const curScroll = textarea.scrollTop;
                     textarea.focus();
                     textarea.setSelectionRange(startPos, endPos);
@@ -237,140 +888,11 @@ dequeue()</textarea>
             }
         }
 
-
-
-        // --- QUEUE LOGIC ---
-        let queueSteps = [];
-        let queueCurrentStep = 0;
-        let queueIsPlaying = false;
-        let queuePlayInterval = null;
-        let queueSpeedMs = 1000;
-
-        const queueContext = {
-            canvasId: "queueCanvas",
-            stepTextId: "queueStepText",
-            sliderId: "queueProgressSlider",
-            codeInputId: "queueCodeInput"
-        };
-
-        function enqueueValue() {
-            const input = document.getElementById("queueInputVal");
-            const val = input.value.trim();
-            if(!val) return;
-            const textarea = document.getElementById("queueCodeInput");
-            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
-            textarea.value += "enqueue(" + val + ")\n";
-            input.value = "";
-        }
-
-        function dequeueValue() {
-            const textarea = document.getElementById("queueCodeInput");
-            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
-            textarea.value += "dequeue()\n";
-        }
-
-        function resetQueue() {
-            document.getElementById("queueCodeInput").value = "";
-            queueSteps = [];
-            queueCurrentStep = 0;
-            renderFrame({ type: "queue", array: [], explanation: "Queue Reset.", action: "none" }, queueContext);
-            pauseQueuePlayback();
-            let slider = document.getElementById("queueProgressSlider");
-            slider.max = 0;
-            slider.value = 0;
-            updateQueuePlayBtnUI();
-        }
-
-        function analyzeQueueCode() {
-            pauseQueuePlayback();
-            const code = document.getElementById("queueCodeInput").value;
-            const lines = code.split('\n');
-            let queueArray = [];
-            queueSteps = [];
-            
-            queueSteps.push({
-                type: "queue",
-                array: [...queueArray],
-                highlight: [],
-                action: "none",
-                explanation: "Queue initialized.",
-                stepIndex: 0,
-                line: -1
-            });
-
-            lines.forEach((line, index) => {
-                let text = line.trim();
-                if (!text) return;
-                
-                if (text.startsWith("enqueue(")) {
-                    let match = text.match(/enqueue\((([^)]+))\)/);
-                    if (match) {
-                        let val = match[1].trim();
-                        queueArray.push(val);
-                        queueSteps.push({
-                            type: "queue",
-                            array: [...queueArray],
-                            highlight: [queueArray.length - 1],
-                            action: "enqueue",
-                            explanation: `Enqueued ${val} at the rear.`,
-                            stepIndex: queueSteps.length,
-                            line: index
-                        });
-                    }
-                } else if (text.startsWith("dequeue()")) {
-                    if (queueArray.length > 0) {
-                        let val = queueArray[0];
-                        queueSteps.push({
-                            type: "queue",
-                            array: [...queueArray],
-                            highlight: [0],
-                            action: "dequeue",
-                            explanation: `Dequeuing ${val} from the front.`,
-                            stepIndex: queueSteps.length,
-                            line: index
-                        });
-                        queueArray.shift();
-                        queueSteps.push({
-                            type: "queue",
-                            array: [...queueArray],
-                            highlight: [],
-                            action: "none",
-                            explanation: `${val} dequeued successfully.`,
-                            stepIndex: queueSteps.length,
-                            line: index
-                        });
-                    } else {
-                        queueSteps.push({
-                            type: "queue",
-                            array: [...queueArray],
-                            highlight: [],
-                            action: "error",
-                            explanation: `Cannot dequeue: Queue is empty.`,
-                            stepIndex: queueSteps.length,
-                            line: index
-                        });
-                    }
-                }
-            });
-
-            document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
-            queueCurrentStep = 0;
-            
-            if (queueSteps.length > 0) {
-                toggleQueuePlay();
-            } else {
-                document.getElementById("queueStepText").innerText = "▶ No valid operations found.";
-            }
-        }
-
         function toggleQueuePlay() {
-            if (queueSteps.length === 0) return alert("Click 'Visualize Code' to analyze code first!");
-            if (queueIsPlaying) {
-                pauseQueuePlayback();
-            } else {
-                if (queueCurrentStep >= queueSteps.length - 1) {
-                    queueCurrentStep = 0;
-                }
+            if (queueSteps.length === 0) return alert("Click 'Visualize Code' first!");
+            if (queueIsPlaying) { pauseQueuePlayback(); }
+            else {
+                if (queueCurrentStep >= queueSteps.length - 1) queueCurrentStep = 0;
                 startQueuePlayback();
             }
         }
@@ -378,13 +900,12 @@ dequeue()</textarea>
         function startQueuePlayback() {
             queueIsPlaying = true;
             updateQueuePlayBtnUI();
-            renderFrame(queueSteps[queueCurrentStep], queueContext);
-
+            renderQueueFrame(queueSteps[queueCurrentStep]);
             clearInterval(queuePlayInterval);
             queuePlayInterval = setInterval(() => {
                 if (queueCurrentStep < queueSteps.length - 1) {
                     queueCurrentStep++;
-                    renderFrame(queueSteps[queueCurrentStep], queueContext);
+                    renderQueueFrame(queueSteps[queueCurrentStep]);
                 } else {
                     pauseQueuePlayback();
                 }
@@ -398,68 +919,46 @@ dequeue()</textarea>
         }
 
         function updateQueuePlayBtnUI() {
-            let playBtn = document.getElementById("queuePlayPauseBtn");
-            if (!playBtn) return;
-
-            if (queueIsPlaying) {
-                playBtn.innerHTML = "⏸ Pause";
-            } else if (queueCurrentStep >= queueSteps.length - 1 && queueSteps.length > 0) {
-                playBtn.innerHTML = "🔄 Replay";
-            } else {
-                playBtn.innerHTML = "▶ Play";
-            }
+            const btn = document.getElementById("queuePlayPauseBtn");
+            if (!btn) return;
+            if (queueIsPlaying) btn.innerHTML = "⏸ Pause";
+            else if (queueCurrentStep >= queueSteps.length - 1 && queueSteps.length > 0) btn.innerHTML = "🔄 Replay";
+            else btn.innerHTML = "▶ Play";
         }
 
         function jumpToQueueStart() {
-            if (queueSteps.length === 0) return;
-            queueCurrentStep = 0;
-            startQueuePlayback();
+            if (!queueSteps.length) return;
+            queueCurrentStep = 0; startQueuePlayback();
         }
-
         function jumpToQueueEnd() {
-            if (queueSteps.length === 0) return;
+            if (!queueSteps.length) return;
             pauseQueuePlayback();
             queueCurrentStep = queueSteps.length - 1;
-            renderFrame(queueSteps[queueCurrentStep], queueContext);
+            renderQueueFrame(queueSteps[queueCurrentStep]);
         }
-
         function stepQueueForward() {
-            if (queueSteps.length === 0) return;
+            if (!queueSteps.length) return;
             pauseQueuePlayback();
-            if (queueCurrentStep < queueSteps.length - 1) {
-                queueCurrentStep++;
-                renderFrame(queueSteps[queueCurrentStep], queueContext);
-            }
+            if (queueCurrentStep < queueSteps.length - 1) { queueCurrentStep++; renderQueueFrame(queueSteps[queueCurrentStep]); }
         }
-
         function stepQueueBack() {
-            if (queueSteps.length === 0) return;
+            if (!queueSteps.length) return;
             pauseQueuePlayback();
-            if (queueCurrentStep > 0) {
-                queueCurrentStep--;
-                renderFrame(queueSteps[queueCurrentStep], queueContext);
-            }
+            if (queueCurrentStep > 0) { queueCurrentStep--; renderQueueFrame(queueSteps[queueCurrentStep]); }
         }
-
         function setQueueSpeed(ms, type) {
             queueSpeedMs = ms;
-            document.getElementById("btn-queue-slow").classList.remove("active");
-            document.getElementById("btn-queue-normal").classList.remove("active");
-            document.getElementById("btn-queue-fast").classList.remove("active");
-            document.getElementById("btn-queue-" + type).classList.add("active");
-
-            if (queueIsPlaying) {
-                startQueuePlayback();
-            }
+            ['slow', 'normal', 'fast'].forEach(t => document.getElementById(`btn-queue-${t}`).classList.remove('active'));
+            document.getElementById(`btn-queue-${type}`).classList.add('active');
+            if (queueIsPlaying) startQueuePlayback();
         }
-
         function scrubQueueTimeline() {
-            if (queueSteps.length === 0) return;
+            if (!queueSteps.length) return;
             pauseQueuePlayback();
-            queueCurrentStep = parseInt(document.getElementById("queueProgressSlider").value);
-            renderFrame(queueSteps[queueCurrentStep], queueContext);
+            const slider = document.getElementById("queueProgressSlider");
+            queueCurrentStep = parseInt(slider.value);
+            renderQueueFrame(queueSteps[queueCurrentStep]);
         }
     </script>
 </body>
-
 </html>

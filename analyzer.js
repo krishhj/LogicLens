@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // WE NOW ACCEPT THE USER'S ARRAY AS A PARAMETER
 const analyzeCodeWithAI = async (code, baseArray) => {
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash", // Using the latest active model
         generationConfig: {
             responseMimeType: "application/json",

@@ -1,17 +1,23 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogicLens - Graphs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
 </head>
+
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            <a href="index.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span
+                    style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
             </a>
         </div>
         <label class="switch">
@@ -29,32 +35,57 @@
         <div class="editor">
             <h3>Graph Setup</h3>
 
-            <div style="display: flex; gap: 8px; flex-direction: column; margin-bottom: 12px">
-                <span class="input-label">Node / Edge / Algorithm command:</span>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="graphInputVal" style="flex: 1; margin-bottom: 0;" placeholder="ex: node(A) or edge(A,B) or bfs(A)" />
-                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="addGraphCommand()">Add</button>
-                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetGraph()">Reset</button>
-                </div>
+            <!-- Context Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 20px;">
+                <button class="mode-tab active" id="tab-undirected" onclick="switchMode('undirected')">UNDIRECTED</button>
+                <button class="mode-tab" id="tab-directed" onclick="switchMode('directed')">DIRECTED</button>
+                <button class="mode-tab" id="tab-weighted" onclick="switchMode('weighted')">WEIGHTED</button>
             </div>
 
-            <span class="input-label" style="margin-top: 20px;">Recorded Topology & Algorithms:</span>
-            <textarea id="graphCodeInput" style="height: 180px;">
-node(A)
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="graphInputNode" placeholder="Node (e.g. A)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="graphInputTarget" placeholder="Target (e.g. B)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="number" id="graphInputWeight" placeholder="Weight (e.g. 5)" style="flex:1; margin-bottom:0; display:none;" autocomplete="off" />
+            </div>
+
+            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+                <button class="op-btn push" onclick="doOp('addNode')"><span style="color:var(--green)">➕</span> Add Node</button>
+                <button class="op-btn enqueue" onclick="doOp('addEdge')">🔗 Add Edge</button>
+                <button class="op-btn check" onclick="doOp('runBFS')">👣 Run BFS</button>
+                <button class="op-btn check" onclick="doOp('runDFS')">👣 Run DFS</button>
+                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Graph</button>
+            </div>
+
+            <div class="adv-section-head" style="margin-top: 6px;">
+                <h3>Recorded Operations</h3>
+            </div>
+            <textarea id="graphCodeInput" style="height: 120px;">node(A)
 node(B)
 node(C)
 node(D)
-node(E)
 edge(A,B)
-edge(A,C)
-edge(B,D)
-edge(C,E)
-edge(D,E)
+edge(B,C)
+edge(C,D)
 bfs(A)</textarea>
 
             <button class="viz-btn" id="graphVizBtn" onclick="analyzeGraphCode()">
                 Visualize Graph
             </button>
+
+            <!-- Op Log -->
+            <div class="op-log-panel" style="margin-top: 20px;">
+                <div class="op-log-header">
+                    <span class="op-log-title">📋 Operation Log</span>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                </div>
+                <div class="op-log-entries" id="opLog">
+                    <div class="op-log-entry log-info">
+                        <span class="op-log-num">#0</span>
+                        <span class="op-log-icon">🚀</span>
+                        <span class="op-log-msg">Graph initialized. Undirected mode active.</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="visualizer">
@@ -67,7 +98,16 @@ bfs(A)</textarea>
             </div>
 
             <div class="canvas graph-canvas-wrapper" id="graphCanvasWrapper">
-                <svg id="graphEdges"></svg>
+                <svg id="graphEdges" preserveAspectRatio="none">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="var(--text3)" />
+                        </marker>
+                        <marker id="arrowhead-highlight" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#eab308" />
+                        </marker>
+                    </defs>
+                </svg>
                 <div id="graphCanvas"></div>
             </div>
 
@@ -84,13 +124,15 @@ bfs(A)</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="graphProgressSlider" min="0" max="0" value="0" oninput="scrubGraphTimeline()" />
+                    <input type="range" id="graphProgressSlider" min="0" max="0" value="0"
+                        oninput="scrubGraphTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-graph-slow" onclick="setGraphSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-graph-normal" onclick="setGraphSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-graph-normal"
+                        onclick="setGraphSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-graph-fast" onclick="setGraphSpeed(400, 'fast')">Fast</button>
                 </div>
             </div>
@@ -104,28 +146,129 @@ bfs(A)</textarea>
             document.body.classList.toggle("light");
         });
 
-        function addGraphCommand() {
-            const input = document.getElementById("graphInputVal");
-            const val = input.value.trim();
-            if(!val) return;
-            const textarea = document.getElementById("graphCodeInput");
-            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
-            textarea.value += val + "\n";
-            input.value = "";
+        let graphMode = 'undirected'; // undefined, directed, weighted
+        let logCount = 0;
+
+        function switchMode(mode) {
+            pauseGraphPlayback();
+            graphMode = mode;
+            ['undirected', 'directed', 'weighted'].forEach(m => {
+                document.getElementById(`tab-${m}`).classList.remove('active');
+            });
+            document.getElementById(`tab-${mode}`).classList.add('active');
+
+            if (mode === 'weighted') {
+                document.getElementById('graphInputWeight').style.display = 'block';
+            } else {
+                document.getElementById('graphInputWeight').style.display = 'none';
+            }
+
+            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Graph mode. Graph cleared.`);
+            doOp('clear');
         }
 
-        function resetGraph() {
-            document.getElementById("graphCodeInput").value = "";
-            graphSteps = [];
-            graphNodes = [];
-            adjacencyList = {};
-            graphCurrentStep = 0;
-            renderGraphFrame({ visited: [], comparing: [], action: "none", explanation: "Graph Reset." });
+        const appendCode = (codeStr) => {
+            const ta = document.getElementById("graphCodeInput");
+            if (ta) {
+                let cur = ta.value.trim();
+                ta.value = cur ? cur + '\n' + codeStr : codeStr;
+                ta.scrollTop = ta.scrollHeight;
+            }
+        };
+
+        function addLog(type, icon, msg) {
+            logCount++;
+            const entries = document.getElementById('opLog');
+            const entry = document.createElement('div');
+            entry.className = `op-log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="op-log-num">#${logCount}</span>
+                <span class="op-log-icon">${icon}</span>
+                <span class="op-log-msg">${msg}</span>`;
+            entries.appendChild(entry);
+            entries.scrollTop = entries.scrollHeight;
+        }
+
+        function clearLog() {
+            logCount = 0;
+            document.getElementById('opLog').innerHTML = '';
+            addLog('info', '🧹', 'Log cleared.');
+        }
+
+        function doOp(op) {
             pauseGraphPlayback();
-            let slider = document.getElementById("graphProgressSlider");
-            slider.max = 0;
-            slider.value = 0;
+            const nodeIn = document.getElementById('graphInputNode');
+            const targetIn = document.getElementById('graphInputTarget');
+            const weightIn = document.getElementById('graphInputWeight');
+            
+            const n = nodeIn.value.trim();
+            const t = targetIn.value.trim();
+            const w = parseFloat(weightIn.value) || 1;
+
+            if (op === 'addNode') {
+                if (!n) { addLog('error', '⚠️', 'Enter a Node Name.'); return; }
+                if (graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" already exists.`); return; }
+                
+                graphNodes.push(n);
+                adjacencyList[n] = [];
+                addLog('push', '➕', `Added Node "${n}".`);
+                appendCode(`node(${n})`);
+                nodeIn.value = '';
+                generateNewStaticGraphState();
+
+            } else if (op === 'addEdge') {
+                if (!n || !t) { addLog('error', '⚠️', 'Enter both source and target nodes.'); return; }
+                if (!graphNodes.includes(n) || !graphNodes.includes(t)) { addLog('error', '⚠️', 'Both nodes must exist in the graph.'); return; }
+                
+                // Add relation depending on mode
+                let exists = adjacencyList[n].some(edge => edge.to === t);
+                if (exists) { addLog('error', '⚠️', `Edge ${n}→${t} already exists.`); return; }
+
+                if (graphMode === 'weighted') {
+                    adjacencyList[n].push({ to: t, weight: w });
+                    if (n !== t) adjacencyList[t].push({ to: n, weight: w });
+                    addLog('push', '🔗', `Added Weighted Edge ${n}↔${t} (W: ${w}).`);
+                    appendCode(`edge(${n},${t},${w})`);
+                } else if (graphMode === 'directed') {
+                    adjacencyList[n].push({ to: t, weight: 1 });
+                    addLog('push', '🔗', `Added Directed Edge ${n}→${t}.`);
+                    appendCode(`edge(${n},${t})`);
+                } else {
+                    adjacencyList[n].push({ to: t, weight: 1 });
+                    if (n !== t) adjacencyList[t].push({ to: n, weight: 1 });
+                    addLog('push', '🔗', `Added Undirected Edge ${n}↔${t}.`);
+                    appendCode(`edge(${n},${t})`);
+                }
+
+                targetIn.value = '';
+                weightIn.value = '';
+                generateNewStaticGraphState();
+
+            } else if (op === 'runBFS' || op === 'runDFS') {
+                if (!n) { addLog('error', '⚠️', `Enter a starting node first.`); return; }
+                if (!graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" does not exist.`); return; }
+                addLog('info', '👣', `Initiated ${op.replace('run','')} from "${n}".`);
+                if (op === 'runBFS') appendCode(`bfs(${n})`); else appendCode(`dfs(${n})`);
+                analyzeGraphCode(); // Boot timeline analyzer magically!
+
+            } else if (op === 'clear') {
+                graphNodes = [];
+                adjacencyList = {};
+                graphSteps = [];
+                graphCurrentStep = 0;
+                addLog('info', '🗑️', `Cleared graph topological mappings.`);
+                document.getElementById('graphCodeInput').value = '';
+                generateNewStaticGraphState();
+            }
+        }
+
+        function generateNewStaticGraphState() {
+            // A pseudo-step to render live graph editing instantly before algorithms run
+            graphSteps = [{ visited: [], comparing: [], action: "none", explanation: "Live Editing...", stepIndex: 0 }];
+            document.getElementById("graphProgressSlider").max = 0;
+            graphCurrentStep = 0;
             updateGraphPlayBtnUI();
+            renderGraphFrame(graphSteps[0]);
         }
 
         let graphSteps = [];
@@ -133,15 +276,15 @@ bfs(A)</textarea>
         let graphIsPlaying = false;
         let graphPlayInterval = null;
         let graphSpeedMs = 1000;
-        
-        let graphNodes = []; 
-        let adjacencyList = {}; 
+
+        let graphNodes = [];
+        let adjacencyList = {};
 
         function analyzeGraphCode() {
             pauseGraphPlayback();
             const code = document.getElementById("graphCodeInput").value;
             const lines = code.split('\n');
-            
+
             graphNodes = [];
             adjacencyList = {};
             graphSteps = [];
@@ -150,7 +293,7 @@ bfs(A)</textarea>
             lines.forEach((line, idx) => {
                 let text = line.trim();
                 if (!text) return;
-                
+
                 let matchNode = text.match(/node\(([^)]+)\)/);
                 if (matchNode) {
                     let n = matchNode[1].trim();
@@ -159,22 +302,35 @@ bfs(A)</textarea>
                         adjacencyList[n] = [];
                     }
                 }
-                
-                let matchEdge = text.match(/edge\(([^,]+),([^)]+)\)/);
+
+                let matchEdge = text.match(/edge\(([^,]+),([^,)]+)(?:,([^)]+))?\)/);
                 if (matchEdge) {
                     let u = matchEdge[1].trim();
                     let v = matchEdge[2].trim();
-                    if (adjacencyList[u] && adjacencyList[v]) {
-                        if (!adjacencyList[u].includes(v)) adjacencyList[u].push(v);
-                        if (!adjacencyList[v].includes(u)) adjacencyList[v].push(u);
+                    let w = matchEdge[3] ? parseFloat(matchEdge[3].trim()) : 1;
+                    
+                    if (!graphNodes.includes(u)) { graphNodes.push(u); adjacencyList[u] = []; }
+                    if (!graphNodes.includes(v)) { graphNodes.push(v); adjacencyList[v] = []; }
+
+                    let exists = adjacencyList[u].some(edge => edge.to === v);
+                    if (!exists) {
+                        if (graphMode === 'weighted') {
+                            adjacencyList[u].push({ to: v, weight: w });
+                            if (u !== v) adjacencyList[v].push({ to: u, weight: w });
+                        } else if (graphMode === 'directed') {
+                            adjacencyList[u].push({ to: v, weight: 1 });
+                        } else {
+                            adjacencyList[u].push({ to: v, weight: 1 });
+                            if (u !== v) adjacencyList[v].push({ to: u, weight: 1 });
+                        }
                     }
                 }
-                
+
                 let matchBFS = text.match(/bfs\((([^)]+))\)/);
                 if (matchBFS) {
                     commands.push({ type: 'bfs', node: matchBFS[1].trim(), line: idx });
                 }
-                
+
                 let matchDFS = text.match(/dfs\((([^)]+))\)/);
                 if (matchDFS) {
                     commands.push({ type: 'dfs', node: matchDFS[1].trim(), line: idx });
@@ -196,7 +352,7 @@ bfs(A)</textarea>
             });
 
             if (graphSteps.length === 1 && commands.length === 0) {
-                 graphSteps.push({
+                graphSteps.push({
                     visited: [],
                     comparing: [],
                     action: "none",
@@ -209,7 +365,7 @@ bfs(A)</textarea>
             if (graphSteps.length > 0) {
                 document.getElementById("graphProgressSlider").max = graphSteps.length - 1;
                 graphCurrentStep = 0;
-                toggleGraphPlay(); 
+                toggleGraphPlay();
             }
         }
 
@@ -218,7 +374,7 @@ bfs(A)</textarea>
             let visited = new Set();
             let queue = [start];
             visited.add(start);
-            
+
             let visitedList = [start];
 
             graphSteps.push({
@@ -232,7 +388,7 @@ bfs(A)</textarea>
 
             while (queue.length > 0) {
                 let u = queue.shift();
-                
+
                 graphSteps.push({
                     visited: [...visitedList],
                     comparing: [u],
@@ -242,12 +398,13 @@ bfs(A)</textarea>
                     line: lineIdx
                 });
 
-                for (let v of adjacencyList[u]) {
+                for (let edge of adjacencyList[u]) {
+                    let v = edge.to;
                     if (!visited.has(v)) {
                         visited.add(v);
                         queue.push(v);
                         visitedList.push(v);
-                        
+
                         graphSteps.push({
                             visited: [...visitedList],
                             comparing: [u, v],
@@ -259,7 +416,7 @@ bfs(A)</textarea>
                     }
                 }
             }
-            
+
             graphSteps.push({
                 visited: [...visitedList],
                 comparing: [],
@@ -274,11 +431,11 @@ bfs(A)</textarea>
             if (!adjacencyList[start]) return;
             let visited = new Set();
             let visitedList = [];
-            
+
             function dfsHelper(u) {
                 visited.add(u);
                 visitedList.push(u);
-                
+
                 graphSteps.push({
                     visited: [...visitedList],
                     comparing: [u],
@@ -287,8 +444,9 @@ bfs(A)</textarea>
                     stepIndex: graphSteps.length,
                     line: lineIdx
                 });
-                
-                for (let v of adjacencyList[u]) {
+
+                for (let edge of adjacencyList[u]) {
+                    let v = edge.to;
                     if (!visited.has(v)) {
                         graphSteps.push({
                             visited: [...visitedList],
@@ -302,9 +460,9 @@ bfs(A)</textarea>
                     }
                 }
             }
-            
+
             dfsHelper(start);
-            
+
             graphSteps.push({
                 visited: [...visitedList],
                 comparing: [],
@@ -318,61 +476,83 @@ bfs(A)</textarea>
         // RENDER LOGIC MULTI-POINT
         function getGraphCoordinate(nodeName) {
             let idx = graphNodes.indexOf(nodeName);
-            if(idx === -1) return {x: 50, y: 50};
-            
+            if (idx === -1) return { x: 50, y: 50 };
+
             let total = graphNodes.length;
-            if (total === 1) return {x: 50, y: 50};
-            
+            if (total === 1) return { x: 50, y: 50 };
+
             let angle = (idx * 2 * Math.PI) / total - (Math.PI / 2);
             let radius = 35; // 35% of container
-            
+
             let xPerc = 50 + radius * Math.cos(angle);
             let yPerc = 50 + radius * Math.sin(angle);
-            
+
             return { x: xPerc, y: yPerc };
         }
 
-        function drawGraphLine(svg, pos1, pos2, isHighlighted) {
+        function drawGraphLine(svg, pos1, pos2, isHighlighted, isDirected, weight) {
             let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("x1", pos1.x + "%");
             line.setAttribute("y1", pos1.y + "%");
             line.setAttribute("x2", pos2.x + "%");
             line.setAttribute("y2", pos2.y + "%");
-            
+
             line.classList.add("graph-edge");
             if (isHighlighted) {
                 line.style.stroke = "#eab308";
                 line.style.strokeWidth = "3.5px";
                 line.style.opacity = "1";
+                if (isDirected) line.setAttribute("marker-end", "url(#arrowhead-highlight)");
+            } else {
+                if (isDirected) line.setAttribute("marker-end", "url(#arrowhead)");
             }
             svg.appendChild(line);
+
+            if (weight !== undefined && weight !== null && graphMode === 'weighted') {
+                let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", (pos1.x + pos2.x) / 2 + "%");
+                text.setAttribute("y", (pos1.y + pos2.y) / 2 + "%");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("fill", "var(--green)");
+                text.setAttribute("font-size", "14px");
+                text.setAttribute("font-weight", "bold");
+                text.setAttribute("dy", "-8");
+                text.setAttribute("class", "graph-weight-badge");
+                // Optional glowing drop shadow for readability over edges
+                text.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.8))";
+                text.textContent = weight;
+                svg.appendChild(text);
+            }
         }
 
         function renderGraphFrame(frame) {
             if (!frame) return;
-            
+
             const canvas = document.getElementById("graphCanvas");
             const svgEdges = document.getElementById("graphEdges");
             canvas.innerHTML = "";
             svgEdges.innerHTML = "";
-            
+
             // Draw Edges (deduplicate)
             let drawnEdges = new Set();
             graphNodes.forEach(u => {
-                adjacencyList[u].forEach(v => {
-                    let hash1 = u + "-" + v;
-                    let hash2 = v + "-" + u;
-                    if (!drawnEdges.has(hash1) && !drawnEdges.has(hash2)) {
-                        drawnEdges.add(hash1);
+                adjacencyList[u].forEach(edge => {
+                    let v = edge.to;
+                    let w = edge.weight;
+                    let isDirected = (graphMode === 'directed');
+
+                    let hash = isDirected ? (u + "->" + v) : (u < v ? u + "-" + v : v + "-" + u);
+                    if (!drawnEdges.has(hash)) {
+                        drawnEdges.add(hash);
                         let p1 = getGraphCoordinate(u);
                         let p2 = getGraphCoordinate(v);
-                        
+
                         let isHighlighted = false;
                         if (frame.comparing && frame.comparing.includes(u) && frame.comparing.includes(v)) {
                             isHighlighted = true;
                         }
-                        
-                        drawGraphLine(svgEdges, p1, p2, isHighlighted);
+
+                        drawGraphLine(svgEdges, p1, p2, isHighlighted, isDirected, w);
                     }
                 });
             });
@@ -385,14 +565,14 @@ bfs(A)</textarea>
                 node.style.left = pos.x + "%";
                 node.style.top = pos.y + "%";
                 node.innerText = n;
-                
+
                 if (frame.visited && frame.visited.includes(n)) {
                     node.classList.add("highlight-visited");
                 }
                 if (frame.comparing && frame.comparing.includes(n)) {
                     node.classList.add("highlight-compare"); // Yellow overrides implicitly
                 }
-                
+
                 canvas.appendChild(node);
             });
 
@@ -517,4 +697,5 @@ bfs(A)</textarea>
         }
     </script>
 </body>
+
 </html>
