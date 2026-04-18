@@ -1,17 +1,23 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogicLens - Strings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
 </head>
+
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            <a href="index.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                LogicLens <span
+                    style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
             </a>
         </div>
         <label class="switch">
@@ -29,30 +35,56 @@
         <div class="editor">
             <h3>String Setup</h3>
 
-            <div style="display: flex; gap: 8px; flex-direction: column; margin-bottom: 12px">
-                <span class="input-label">Command (e.g., string(helloworld) / search(owo)):</span>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="stringInputVal" style="flex: 1; margin-bottom: 0;" placeholder="search(ow)" />
-                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); border-color: var(--glow);" onclick="addStringCommand()">Add</button>
-                    <button class="sample-btn" style="padding: 10px 15px; border-radius: 8px; background: rgba(255, 181, 71, 0.1); color: var(--amber); border-color: var(--amber);" onclick="resetString()">Reset</button>
-                </div>
+            <!-- Context Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 20px;">
+                <button class="mode-tab active" id="tab-naive" onclick="switchMode('naive')">NAIVE</button>
+                <button class="mode-tab" id="tab-kmp" onclick="switchMode('kmp')">KMP</button>
+                <button class="mode-tab" id="tab-rabin" onclick="switchMode('rabin')">RABIN-KARP</button>
             </div>
 
-            <span class="input-label" style="margin-top: 20px;">Recorded Parsing Engine:</span>
-            <textarea id="stringCodeInput" style="height: 180px;">
-string(concatenate)
-search(cat)</textarea>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+            </div>
+
+            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base String</button>
+                <button class="op-btn enqueue" onclick="doOp('search')">🔍 Search Pattern</button>
+                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
+            </div>
+
+            <div class="adv-section-head" style="margin-top: 6px;">
+                <h3>Recorded Operations</h3>
+            </div>
+            <textarea id="stringCodeInput" style="height: 100px;">string(ABC ABCDAB ABCDABCDABDE)
+search(ABCDABD)</textarea>
 
             <button class="viz-btn" id="stringVizBtn" onclick="analyzeStringCode()">
                 Visualize Pattern
             </button>
+
+            <!-- Op Log -->
+            <div class="op-log-panel" style="margin-top: 20px;">
+                <div class="op-log-header">
+                    <span class="op-log-title">📋 Operation Log</span>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                </div>
+                <div class="op-log-entries" id="opLog">
+                    <div class="op-log-entry log-info">
+                        <span class="op-log-num">#0</span>
+                        <span class="op-log-icon">🚀</span>
+                        <span class="op-log-msg">String Engine initialized. Naive mode active.</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="visualizer">
             <h3>String Analysis Output</h3>
 
             <div class="legend">
-                <span><span class="box" style="background: var(--bg2); border:1px solid var(--border)"></span>Inactive</span>
+                <span><span class="box"
+                        style="background: var(--bg2); border:1px solid var(--border)"></span>Inactive</span>
                 <span><span class="box" style="background: #eab308"></span>Scanning</span>
                 <span><span class="box" style="background: #22c55e"></span>Match Found</span>
             </div>
@@ -72,13 +104,15 @@ search(cat)</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="stringProgressSlider" min="0" max="0" value="0" oninput="scrubStringTimeline()" />
+                    <input type="range" id="stringProgressSlider" min="0" max="0" value="0"
+                        oninput="scrubStringTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-string-slow" onclick="setStringSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-string-normal" onclick="setStringSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-string-normal"
+                        onclick="setStringSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-string-fast" onclick="setStringSpeed(400, 'fast')">Fast</button>
                 </div>
             </div>
@@ -92,26 +126,80 @@ search(cat)</textarea>
             document.body.classList.toggle("light");
         });
 
-        function addStringCommand() {
-            const input = document.getElementById("stringInputVal");
-            const val = input.value.trim();
-            if(!val) return;
-            const textarea = document.getElementById("stringCodeInput");
-            if (textarea.value && !textarea.value.endsWith('\n')) textarea.value += "\n";
-            textarea.value += val + "\n";
-            input.value = "";
+        let stringMode = 'naive';
+        let logCount = 0;
+
+        function switchMode(mode) {
+            pauseStringPlayback();
+            stringMode = mode;
+            ['naive', 'kmp', 'rabin'].forEach(m => {
+                document.getElementById(`tab-${m}`).classList.remove('active');
+            });
+            document.getElementById(`tab-${mode}`).classList.add('active');
+
+            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Search Mode. Sequence cleared.`);
+            doOp('clear');
         }
 
-        function resetString() {
-            document.getElementById("stringCodeInput").value = "";
-            stringSteps = [];
-            stringCurrentStep = 0;
-            renderStringFrame({ characters: [], comparing: [], matching: [], explanation: "Engine Reset." });
+        const appendCode = (codeStr) => {
+            const ta = document.getElementById("stringCodeInput");
+            if (ta) {
+                let cur = ta.value.trim();
+                ta.value = cur ? cur + '\n' + codeStr : codeStr;
+                ta.scrollTop = ta.scrollHeight;
+            }
+        };
+
+        function addLog(type, icon, msg) {
+            logCount++;
+            const entries = document.getElementById('opLog');
+            const entry = document.createElement('div');
+            entry.className = `op-log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="op-log-num">#${logCount}</span>
+                <span class="op-log-icon">${icon}</span>
+                <span class="op-log-msg">${msg}</span>`;
+            entries.appendChild(entry);
+            entries.scrollTop = entries.scrollHeight;
+        }
+
+        function clearLog() {
+            logCount = 0;
+            document.getElementById('opLog').innerHTML = '';
+            addLog('info', '🧹', 'Log cleared.');
+        }
+
+        function doOp(op) {
             pauseStringPlayback();
-            let slider = document.getElementById("stringProgressSlider");
-            slider.max = 0;
-            slider.value = 0;
-            updateStringPlayBtnUI();
+            const baseIn = document.getElementById('stringInputBase');
+            const targetIn = document.getElementById('stringInputQuery');
+            
+            const b = baseIn.value;
+            const t = targetIn.value;
+
+            if (op === 'setBase') {
+                if (!b) { addLog('error', '⚠️', 'Enter a Base String.'); return; }
+                addLog('push', '➕', `Established Base String: "${b}".`);
+                appendCode(`string(${b})`);
+                baseIn.value = '';
+                analyzeStringCode();
+            } else if (op === 'search') {
+                if (!t) { addLog('error', '⚠️', 'Enter a Search Pattern.'); return; }
+                addLog('push', '🔍', `Searching Pattern: "${t}".`);
+                appendCode(`search(${t})`);
+                targetIn.value = '';
+                analyzeStringCode();
+            } else if (op === 'clear') {
+                stringSteps = [];
+                stringCurrentStep = 0;
+                addLog('info', '🗑️', `Cleared parsing sequence.`);
+                document.getElementById('stringCodeInput').value = '';
+                document.getElementById('stringCanvas').innerHTML = '';
+                let slider = document.getElementById("stringProgressSlider");
+                if (slider) slider.max = 0;
+                updateStringPlayBtnUI();
+                renderStringFrame({ characters: [], comparing: [], matching: [], explanation: "Engine Reset.", stepIndex: 0 });
+            }
         }
 
         let stringSteps = [];
@@ -119,19 +207,19 @@ search(cat)</textarea>
         let stringIsPlaying = false;
         let stringPlayInterval = null;
         let stringSpeedMs = 1000;
-        
+
         function analyzeStringCode() {
             pauseStringPlayback();
             const code = document.getElementById("stringCodeInput").value;
             const lines = code.split('\n');
-            
+
             stringSteps = [];
             let activeString = [];
 
             lines.forEach((line, idx) => {
                 let text = line.trim();
                 if (!text) return;
-                
+
                 let matchString = text.match(/string\(([^)]+)\)/);
                 if (matchString) {
                     let str = matchString[1];
@@ -146,62 +234,214 @@ search(cat)</textarea>
                         line: idx
                     });
                 }
-                
+
                 let matchSearch = text.match(/search\(([^)]+)\)/);
                 if (matchSearch) {
                     let query = matchSearch[1];
                     let qLen = query.length;
-                    
-                    if(activeString.length === 0) return;
-                    
+
+                    if (activeString.length === 0) return;
+                    if (qLen > activeString.length) {
+                        stringSteps.push({ characters: [...activeString], comparing: [], matching: [], action: "none", explanation: `Query length exceeds Base String length. Ignored.`, stepIndex: stringSteps.length, line: idx });
+                        return;
+                    }
+
                     stringSteps.push({
                         characters: [...activeString],
                         comparing: [],
                         matching: [],
                         action: "none",
-                        explanation: `Started Naive Pattern Search for query: "${query}"`,
+                        explanation: `Started ${stringMode.toUpperCase()} Pattern Search for: "${query}"`,
                         stepIndex: stringSteps.length,
                         line: idx
                     });
 
                     let foundAny = false;
-                    
-                    for (let i = 0; i <= activeString.length - qLen; i++) {
-                        let comparingIndices = [];
-                        for(let j=0; j<qLen; j++) comparingIndices.push(i+j);
-                        
-                        stringSteps.push({
-                            characters: [...activeString],
-                            comparing: [...comparingIndices],
-                            matching: [],
-                            action: "compare",
-                            explanation: `Scanning substring layer starting at index ${i}...`,
-                            stepIndex: stringSteps.length,
-                            line: idx
-                        });
-                        
-                        let match = true;
-                        for(let j=0; j<qLen; j++) {
-                            if (activeString[i+j] !== query[j]) {
-                                match = false;
-                                break;
-                            }
-                        }
-                        
-                        if (match) {
-                            foundAny = true;
+
+                    if (stringMode === 'naive') {
+                        for (let i = 0; i <= activeString.length - qLen; i++) {
+                            let comparingIndices = [];
+                            for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
+
                             stringSteps.push({
                                 characters: [...activeString],
-                                comparing: [],
-                                matching: [...comparingIndices],
-                                action: "match",
-                                explanation: `Match successfully located at index ${i}!`,
+                                comparing: [...comparingIndices],
+                                matching: [],
+                                action: "compare",
+                                explanation: `Naive: Scanning substring layer starting at index ${i}...`,
                                 stepIndex: stringSteps.length,
                                 line: idx
                             });
+
+                            let match = true;
+                            for (let j = 0; j < qLen; j++) {
+                                if (activeString[i + j] !== query[j]) {
+                                    match = false;
+                                    break;
+                                }
+                            }
+
+                            if (match) {
+                                foundAny = true;
+                                stringSteps.push({
+                                    characters: [...activeString],
+                                    comparing: [],
+                                    matching: [...comparingIndices],
+                                    action: "match",
+                                    explanation: `Match successfully located at index ${i}!`,
+                                    stepIndex: stringSteps.length,
+                                    line: idx
+                                });
+                            }
+                        }
+                    } else if (stringMode === 'kmp') {
+                        // KMP Logic
+                        let lps = new Array(qLen).fill(0);
+                        let length = 0;
+                        let i = 1;
+                        while (i < qLen) {
+                            if (query[i] === query[length]) {
+                                length++;
+                                lps[i] = length;
+                                i++;
+                            } else {
+                                if (length !== 0) {
+                                    length = lps[length - 1];
+                                } else {
+                                    lps[i] = 0;
+                                    i++;
+                                }
+                            }
+                        }
+                        
+                        let iStr = 0; 
+                        let jPtr = 0; 
+                        
+                        while (iStr < activeString.length) {
+                            let comparingIndices = [];
+                            for(let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
+                                comparingIndices.push(iStr - jPtr + k);
+                            }
+
+                            if (query[jPtr] === activeString[iStr]) {
+                                stringSteps.push({
+                                    characters: [...activeString],
+                                    comparing: [...comparingIndices],
+                                    matching: [iStr],
+                                    action: "compare",
+                                    explanation: `KMP: Character '${query[jPtr]}' matches at index ${iStr}. Advancing...`,
+                                    stepIndex: stringSteps.length,
+                                    line: idx
+                                });
+                                jPtr++;
+                                iStr++;
+                            } else {
+                                stringSteps.push({
+                                    characters: [...activeString],
+                                    comparing: [...comparingIndices],
+                                    matching: [],
+                                    action: "compare",
+                                    explanation: `KMP Mismatch at index ${iStr} (char '${activeString[iStr]}'). Pattern index ${jPtr}.`,
+                                    stepIndex: stringSteps.length,
+                                    line: idx
+                                });
+                                
+                                if (jPtr !== 0) {
+                                    jPtr = lps[jPtr - 1];
+                                    stringSteps.push({
+                                        characters: [...activeString],
+                                        comparing: [],
+                                        matching: [],
+                                        action: "none",
+                                        explanation: `KMP: Skipping backwards optimally using LPS array to pattern index ${jPtr}.`,
+                                        stepIndex: stringSteps.length,
+                                        line: idx
+                                    });
+                                } else {
+                                    iStr++;
+                                }
+                            }
+                            
+                            // Check match
+                            if (jPtr === qLen) {
+                                foundAny = true;
+                                let matchIndices = [];
+                                for(let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
+                                stringSteps.push({
+                                    characters: [...activeString],
+                                    comparing: [],
+                                    matching: [...matchIndices],
+                                    action: "match",
+                                    explanation: `KMP: Match completely resolved at index ${iStr - qLen}!`,
+                                    stepIndex: stringSteps.length,
+                                    line: idx
+                                });
+                                jPtr = lps[jPtr - 1];
+                            }
+                        }
+
+                    } else if (stringMode === 'rabin') {
+                        // Rabin-Karp Math
+                        let d = 256;
+                        let q = 101; // prime
+                        let h = 1;
+                        let pHash = 0;
+                        let tHash = 0;
+                        
+                        for (let i = 0; i < qLen - 1; i++) h = (h * d) % q;
+
+                        // Calculate initial hash
+                        for (let i = 0; i < qLen; i++) {
+                            pHash = (d * pHash + query.charCodeAt(i)) % q;
+                            tHash = (d * tHash + activeString[i].charCodeAt(0)) % q;
+                        }
+
+                        for (let i = 0; i <= activeString.length - qLen; i++) {
+                            let comparingIndices = [];
+                            for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
+
+                            let matchLogic = (pHash === tHash) ? "Hash Collision detected! Verifying exact char match." : "Hashes differ. Rolling window forward.";
+                            
+                            stringSteps.push({
+                                characters: [...activeString],
+                                comparing: [...comparingIndices],
+                                matching: [],
+                                action: "compare",
+                                explanation: `Rabin-Karp Hashes → Target: ${pHash} | Window: ${tHash}. ${matchLogic}`,
+                                stepIndex: stringSteps.length,
+                                line: idx
+                            });
+                            
+                            if (pHash === tHash) {
+                                let match = true;
+                                for (let j = 0; j < qLen; j++) {
+                                    if (activeString[i + j] !== query[j]) {
+                                        match = false;
+                                        break;
+                                    }
+                                }
+                                if (match) {
+                                    foundAny = true;
+                                    stringSteps.push({
+                                        characters: [...activeString],
+                                        comparing: [],
+                                        matching: [...comparingIndices],
+                                        action: "match",
+                                        explanation: `Rabin-Karp: Verified char sequence equality at index ${i}!`,
+                                        stepIndex: stringSteps.length,
+                                        line: idx
+                                    });
+                                }
+                            }
+                            
+                            // Roll hash
+                            if (i < activeString.length - qLen) {
+                                tHash = (d * (tHash - activeString[i].charCodeAt(0) * h) + activeString[i + qLen].charCodeAt(0)) % q;
+                                if (tHash < 0) tHash = (tHash + q);
+                            }
                         }
                     }
-                    
+
                     if (!foundAny) {
                         stringSteps.push({
                             characters: [...activeString],
@@ -217,33 +457,33 @@ search(cat)</textarea>
             });
 
             if (stringSteps.length === 0) {
-                 stringSteps.push({ characters: [], comparing: [], matching: [], explanation: "No valid commands found.", stepIndex: 0 });
+                stringSteps.push({ characters: [], comparing: [], matching: [], explanation: "No valid commands found.", stepIndex: 0 });
             }
 
             if (stringSteps.length > 0) {
                 document.getElementById("stringProgressSlider").max = stringSteps.length - 1;
                 stringCurrentStep = 0;
-                toggleStringPlay(); 
+                toggleStringPlay();
             }
         }
 
         function renderStringFrame(frame) {
             if (!frame) return;
-            
+
             const canvas = document.getElementById("stringCanvas");
             canvas.innerHTML = "";
-            
+
             frame.characters.forEach((char, idx) => {
                 let div = document.createElement("div");
                 div.classList.add("string-char");
                 div.innerText = char;
-                
+
                 if (frame.matching && frame.matching.includes(idx)) {
                     div.classList.add("highlight-match");
                 } else if (frame.comparing && frame.comparing.includes(idx)) {
                     div.classList.add("highlight-compare");
                 }
-                
+
                 canvas.appendChild(div);
             });
 
@@ -361,4 +601,5 @@ search(cat)</textarea>
         }
     </script>
 </body>
+
 </html>
