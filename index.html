@@ -168,22 +168,42 @@ for(int i=0;i<n;i++){
             <div class="scaling-item">
                 <h4>O(1)</h4>
                 <p>Constant time operations independent of input size.</p>
+                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
+                    <strong>Math Calculation:</strong> Regardless of the input size <code>N</code>, the algorithm executes the exact same number of operations. Evaluating an array index like <code>arr[5]</code> fundamentally calculates <code>Base_Address + (5 * Element_Size)</code> executing in exactly 1 hardware clock cycle.
+                </div>
+                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
             </div>
             <div class="scaling-item">
                 <h4>O(log n)</h4>
                 <p>Logarithmic algorithms like binary search.</p>
+                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
+                    <strong>Math Calculation:</strong> The problem space is aggressively quartered/halved per loop cycle. If <code>N = 100</code>, halving it drops to 50, then 25, then 12... meaning it takes roughly <code>log₂(100) ≈ 7</code> operations instead of 100 loops. This makes sorting scaling practically flat.
+                </div>
+                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
             </div>
             <div class="scaling-item">
                 <h4>O(n)</h4>
                 <p>Linear complexity processing each element.</p>
+                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
+                    <strong>Math Calculation:</strong> The algorithm strictly executes one operation sequentially per element. So for iterating across an Array constraint of <code>length N</code>, the logic engine must loop exactly <code>N</code> times. E.g. finding the Maximum number via naive linear checks.
+                </div>
+                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
             </div>
             <div class="scaling-item">
                 <h4>O(n log n)</h4>
                 <p>Efficient sorting algorithms like Merge Sort.</p>
+                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
+                    <strong>Math Calculation:</strong> A hybrid structure: the algorithm iterates structurally parsing exactly <code>N</code> items sequentially during compilation blocks, but recursively halves the physical tree mappings exactly <code>log₂(n)</code> times, resulting algorithmically in <code>N * log₂(N)</code> execution jumps natively.
+                </div>
+                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
             </div>
             <div class="scaling-item">
                 <h4>O(n²)</h4>
                 <p>Nested loop algorithms like Bubble Sort.</p>
+                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
+                    <strong>Math Calculation:</strong> When evaluating arrays, deploying double-loops inherently forces you to multiply lengths. A loop checking <code>N</code> elements, wrapping another internal nested loop scanning <code>N</code> elements explicitly triggers mathematically <code>N * N = N²</code> operations natively.
+                </div>
+                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
             </div>
         </div>
     </section>
