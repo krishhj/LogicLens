@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LogicLens - Welcome</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+
+    <style>
+        /* Cover page custom styles embedded to prevent editing existing css files */
+        .cover-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .overview-panel {
+            background: rgba(12, 17, 32, 0.65);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        body.light .overview-panel {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: var(--border);
+            box-shadow: 0 12px 40px rgba(0, 100, 200, 0.05);
+        }
+
+        .overview-panel:hover {
+            border-color: var(--border2);
+            box-shadow: 0 16px 48px rgba(0, 229, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .overview-title {
+            font-family: var(--ff);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, var(--text), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .overview-text {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text2);
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .choice-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--glow), var(--glow2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--glow);
+            box-shadow: 0 16px 40px rgba(0, 229, 255, 0.15);
+        }
+
+        .choice-card:hover::before {
+            opacity: 1;
+        }
+
+        .choice-card.dsa::before {
+            background: linear-gradient(90deg, var(--amber), var(--glow2));
+        }
+
+        .choice-card.dsa:hover {
+            border-color: var(--amber);
+            box-shadow: 0 16px 40px rgba(255, 181, 71, 0.15);
+        }
+
+        .card-header {
+            margin-bottom: 24px;
+        }
+
+        .card-badge {
+            display: inline-block;
+            font-family: var(--fm);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid;
+        }
+
+        .choice-card.custom .card-badge {
+            color: var(--glow);
+            border-color: rgba(0, 229, 255, 0.2);
+            background: rgba(0, 229, 255, 0.03);
+        }
+
+        .choice-card.dsa .card-badge {
+            color: var(--amber);
+            border-color: rgba(255, 181, 71, 0.2);
+            background: rgba(255, 181, 71, 0.03);
+        }
+
+        .card-title {
+            font-family: var(--ff);
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .choice-card.custom .card-title {
+            background: linear-gradient(90deg, var(--text), var(--glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .choice-card.dsa .card-title {
+            background: linear-gradient(90deg, var(--text), var(--amber));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .card-desc {
+            color: var(--text2);
+            line-height: 1.6;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 40px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .feature-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .choice-card.custom .feature-item svg {
+            color: var(--glow);
+        }
+
+        .choice-card.dsa .feature-item svg {
+            color: var(--amber);
+        }
+
+        .cta-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-family: var(--ff);
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .choice-card.custom .cta-btn {
+            background: linear-gradient(135deg, var(--glow), var(--glow2));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
+        }
+
+        .choice-card.custom:hover .cta-btn {
+            box-shadow: 0 6px 22px rgba(0, 229, 255, 0.4);
+            transform: scale(1.02);
+        }
+
+        .choice-card.dsa .cta-btn {
+            background: linear-gradient(135deg, var(--amber), var(--glow2));
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 181, 71, 0.2);
+        }
+
+        .choice-card.dsa:hover .cta-btn {
+            box-shadow: 0 6px 22px rgba(255, 181, 71, 0.4);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <div class="logo-mark">L</div>
+                <div class="logo-text">LogicLens</div>
+            </a>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="cover.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">Home</a>
+            <a href="index.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">DSA Learning</a>
+            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+        </label>
+    </nav>
+
+    <div class="cover-wrapper">
+        <section class="hero" style="margin-bottom: 40px;">
+            <h1 style="font-size: 54px; letter-spacing: -1.5px; line-height: 1.1;">See Your Code in Motion</h1>
+            <p style="font-size: 18px; max-width: 650px; margin: 12px auto 0;">
+                Trace custom algorithms, compile logic line-by-line, and explore visual data structure states.
+            </p>
+        </section>
+
+        <!-- Project Overview Section -->
+        <div class="overview-panel">
+            <div class="overview-title">Project Overview</div>
+            <p class="overview-text">
+                <strong>LogicLens</strong> is an interactive developer learning platform and dry-run emulator. It translates complex program logic into dynamic, step-by-step graphical frames. By combining localized execution tracking with visual animations, LogicLens helps developers and computer science learners debug algorithms, inspect array transformations, and grasp memory flows intuitively.
+            </p>
+        </div>
+
+        <!-- Choice Navigation Section -->
+        <div class="choices-grid">
+            <!-- Choice 1: Custom Code Visualizer -->
+            <a href="custom.html" class="choice-card custom">
+                <div class="card-header">
+                    <span class="card-badge">Engine Mode</span>
+                    <h2 class="card-title">Custom Code Visualizer</h2>
+                    <p class="card-desc">
+                        Write or paste your custom code snippets to dry-run logic. Trace how arrays change, highlight execution lines, and view complexity metrics.
+                    </p>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Support for C++, Java, Python, and JavaScript</span>
+                        </li>
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Line-by-line custom dry-run emulation</span>
+                        </li>
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>AI complexity & dry-run generation</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-action">
+                    <span class="cta-btn">Launch Custom Visualizer</span>
+                </div>
+            </a>
+
+            <!-- Choice 2: DSA Learning Hub -->
+            <a href="index.html" class="choice-card dsa">
+                <div class="card-header">
+                    <span class="card-badge">Sandbox Mode</span>
+                    <h2 class="card-title">DSA Learning Hub</h2>
+                    <p class="card-desc">
+                        Explore standard visual sandboxes for structural algorithms. Play around with interactive animations for Stacks, Queues, Trees, Graphs, and more.
+                    </p>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Interactive Stack & Queue visualizers</span>
+                        </li>
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>BST traversals & Graph BFS/DFS search paths</span>
+                        </li>
+                        <li class="feature-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Complexity Big-O calculations and comparisons</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-action">
+                    <span class="cta-btn">Enter DSA Learning Hub</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
+    </script>
+</body>
+
+</html>

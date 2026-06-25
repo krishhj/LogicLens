@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>LogicLens</title>
+    <title>LogicLens - Custom Code Visualizer</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
@@ -16,15 +16,23 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
         <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">Custom
+                Code</a>
         </div>
         <label class="switch">
             <input type="checkbox" id="themeToggle" />
@@ -33,9 +41,9 @@
     </nav>
 
     <section class="hero">
-        <h1>Visualize Code Logic</h1>
+        <h1>Visualize Custom Code</h1>
         <p>
-            Understand algorithms, data structures, and program behavior visually.
+            Write custom algorithms, dry-run code, and trace array execution steps visually.
         </p>
     </section>
 
@@ -115,6 +123,27 @@ for(int i=0;i<n;i++){
                 </div>
             </div>
 
+            <!-- Feedback Prompt -->
+            <div id="feedbackPrompt"
+                style="display: none; margin-top: 15px; padding: 14px 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="font-size: 13px; font-weight: 500; color: var(--text); font-family: var(--fb);">Is this
+                    visualization correct?</div>
+                <div style="display: flex; gap: 12px; width: 100%; justify-content: center;">
+                    <button type="button" onclick="submitFeedback(event, true)"
+                        style="padding: 6px 20px; background: rgba(0, 224, 150, 0.15); border: 1px solid var(--green); color: var(--green); border-radius: 6px; cursor: pointer; font-family: var(--ff); font-weight: 700; font-size: 12px; transition: all 0.2s;"
+                        onmouseover="this.style.background='rgba(0, 224, 150, 0.3)'"
+                        onmouseout="this.style.background='rgba(0, 224, 150, 0.15)'">Yes</button>
+                    <button type="button" onclick="submitFeedback(event, false)"
+                        style="padding: 6px 20px; background: rgba(255, 79, 106, 0.15); border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-family: var(--ff); font-weight: 700; font-size: 12px; transition: all 0.2s;"
+                        onmouseover="this.style.background='rgba(255, 79, 106, 0.3)'"
+                        onmouseout="this.style.background='rgba(255, 79, 106, 0.15)'">No</button>
+                </div>
+            </div>
+
+            <div id="feedbackResponse"
+                style="display: none; margin-top: 15px; padding: 12px 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--glow); font-family: var(--fb); text-align: center;">
+            </div>
+
             <div class="media-controls">
                 <div class="btn-group">
                     <button class="btn-icon" onclick="jumpToStart()">⏮</button>
@@ -140,83 +169,6 @@ for(int i=0;i<n;i++){
             </div>
         </div>
     </div>
-
-
-    <section class="structures">
-        <h2 style="margin-bottom: 25px">Data Structures</h2>
-        <div class="cards">
-            <div class="card" onclick="window.location.href='stack.html'">
-                <h3>Stack</h3>
-                <p>Push / Pop animation</p>
-            </div>
-            <div class="card" onclick="window.location.href='queue.html'">
-                <h3>Queue</h3>
-                <p>Enqueue / Dequeue flow</p>
-            </div>
-            <div class="card" onclick="window.location.href='trees.html'">
-                <h3>Trees</h3>
-                <p>Binary tree traversal</p>
-            </div>
-            <div class="card" onclick="window.location.href='graphs.html'">
-                <h3>Graphs</h3>
-                <p>BFS / DFS exploration</p>
-            </div>
-            <div class="card" onclick="window.location.href='strings.html'">
-                <h3>Strings</h3>
-                <p>Pattern matching</p>
-            </div>
-            <div class="card" onclick="window.location.href='sentences.html'">
-                <h3>Sentences</h3>
-                <p>Text structure visualization</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="scaling-section">
-        <h2 style="margin-bottom: 20px">Technical Scaling</h2>
-        <div class="scaling-box">
-            <div class="scaling-item">
-                <h4>O(1)</h4>
-                <p>Constant time operations independent of input size.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> Regardless of the input size <code>N</code>, the algorithm executes the exact same number of operations. Evaluating an array index like <code>arr[5]</code> fundamentally calculates <code>Base_Address + (5 * Element_Size)</code> executing in exactly 1 hardware clock cycle.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(log n)</h4>
-                <p>Logarithmic algorithms like binary search.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The problem space is aggressively quartered/halved per loop cycle. If <code>N = 100</code>, halving it drops to 50, then 25, then 12... meaning it takes roughly <code>log₂(100) ≈ 7</code> operations instead of 100 loops. This makes sorting scaling practically flat.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n)</h4>
-                <p>Linear complexity processing each element.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The algorithm strictly executes one operation sequentially per element. So for iterating across an Array constraint of <code>length N</code>, the logic engine must loop exactly <code>N</code> times. E.g. finding the Maximum number via naive linear checks.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n log n)</h4>
-                <p>Efficient sorting algorithms like Merge Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> A hybrid structure: the algorithm iterates structurally parsing exactly <code>N</code> items sequentially during compilation blocks, but recursively halves the physical tree mappings exactly <code>log₂(n)</code> times, resulting algorithmically in <code>N * log₂(N)</code> execution jumps natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n²)</h4>
-                <p>Nested loop algorithms like Bubble Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> When evaluating arrays, deploying double-loops inherently forces you to multiply lengths. A loop checking <code>N</code> elements, wrapping another internal nested loop scanning <code>N</code> elements explicitly triggers mathematically <code>N * N = N²</code> operations natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-        </div>
-    </section>
 
     <footer>LogicLens • Visualizing Code Logic</footer>
 
@@ -267,7 +219,13 @@ for(int i=0;i<n;i++){
             let stepText = document.getElementById("stepText");
 
             pausePlayback();
-            // ... (keep the rest of your fetch try/catch block exactly the same below this line!)
+
+            // Hide feedback containers on new analysis
+            const fPrompt = document.getElementById("feedbackPrompt");
+            const fResp = document.getElementById("feedbackResponse");
+            if (fPrompt) fPrompt.style.display = "none";
+            if (fResp) fResp.style.display = "none";
+
             btn.innerText = "Analyzing...";
             btn.disabled = true;
             stepText.innerText = "▶ Analysing and preparing Visualisation";
@@ -365,7 +323,6 @@ for(int i=0;i<n;i++){
 
                     let highlightArr = frame.highlight || [];
                     if (highlightArr.includes(index)) {
-                        // Green for pushed item, Red for popped item
                         item.style.background = frame.action === "pop" ? "#ef4444" : "#22c55e";
                         item.style.color = "white";
                     }
@@ -422,7 +379,6 @@ for(int i=0;i<n;i++){
                 } else if (frame.stepIndex !== undefined) {
                     slider.value = frame.stepIndex;
                 } else {
-                    // Fallback to global currentStep if running sorting
                     if (typeof currentStep !== 'undefined' && sliderId === "progressSlider") {
                         slider.value = currentStep;
                     }
@@ -446,6 +402,24 @@ for(int i=0;i<n;i++){
                     textarea.scrollTop = curScroll;
                 }
             }
+
+            // Check if this is the final step, and display the feedback prompt
+            if (steps.length > 0) {
+                const currentStepIndex = context.currentStep !== undefined ? context.currentStep : frame.stepIndex;
+                const actualStep = currentStepIndex !== undefined ? currentStepIndex : currentStep;
+
+                const prompt = document.getElementById("feedbackPrompt");
+                const resp = document.getElementById("feedbackResponse");
+                if (prompt) {
+                    if (actualStep === steps.length - 1) {
+                        if (resp && resp.style.display === "none") {
+                            prompt.style.display = "flex";
+                        }
+                    } else {
+                        prompt.style.display = "none";
+                    }
+                }
+            }
         }
 
         // 3. BULLETPROOF MEDIA CONTROLS LOGIC
@@ -455,7 +429,6 @@ for(int i=0;i<n;i++){
             if (isPlaying) {
                 pausePlayback();
             } else {
-                // If at the end, restart from the beginning
                 if (currentStep >= steps.length - 1) {
                     currentStep = 0;
                 }
@@ -468,7 +441,6 @@ for(int i=0;i<n;i++){
             updatePlayBtnUI();
             renderFrame(steps[currentStep]);
 
-            // Clear any existing clocks to prevent bugs
             clearInterval(playInterval);
 
             playInterval = setInterval(() => {
@@ -476,7 +448,7 @@ for(int i=0;i<n;i++){
                     currentStep++;
                     renderFrame(steps[currentStep]);
                 } else {
-                    pausePlayback(); // Auto-pause at the end
+                    pausePlayback();
                 }
             }, speedMs);
         }
@@ -500,7 +472,6 @@ for(int i=0;i<n;i++){
             }
         }
 
-        // The button you clicked (⏮). It now automatically plays!
         function jumpToStart() {
             if (steps.length === 0) return;
             currentStep = 0;
@@ -540,7 +511,6 @@ for(int i=0;i<n;i++){
             document.getElementById("btn-fast").classList.remove("active");
             document.getElementById("btn-" + type).classList.add("active");
 
-            // If it's currently playing, seamlessly restart the interval at the new speed
             if (isPlaying) {
                 startPlayback();
             }
@@ -553,7 +523,49 @@ for(int i=0;i<n;i++){
             renderFrame(steps[currentStep]);
         }
 
+        async function submitFeedback(event, correct) {
+            if (event) event.preventDefault();
+            const prompt = document.getElementById("feedbackPrompt");
+            const resp = document.getElementById("feedbackResponse");
 
+            if (prompt) prompt.style.display = "none";
+
+            if (resp) {
+                resp.style.display = "block";
+                resp.innerText = "Submitting feedback...";
+            }
+
+            const code = document.getElementById("codeInput").value;
+            const rawInput = document.getElementById("arrayInput").value;
+            let parsedArray = rawInput.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
+            if (parsedArray.length === 0) parsedArray = [30, 10, 45, 20, 15];
+
+            const feedbackUrl = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+                ? "http://localhost:5000/api/feedback"
+                : "/api/feedback";
+
+            try {
+                const response = await fetch(feedbackUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        code: code,
+                        array: parsedArray,
+                        correct: correct
+                    })
+                });
+
+                if (response.ok) {
+                    resp.innerText = correct
+                        ? "✨ Thank you! We appreciate your confirmation."
+                        : "💾 Saved! We have recorded this run to help improve custom dry-run accuracy.";
+                } else {
+                    resp.innerText = "⚠️ Could not save feedback to backend server.";
+                }
+            } catch (err) {
+                resp.innerText = "⚠️ Network Error: Unable to reach feedback server.";
+            }
+        }
     </script>
 </body>
 
