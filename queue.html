@@ -17,11 +17,23 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html"
+            <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span
-                    style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+                <div class="logo-mark">L</div>
+                <div class="logo-text">LogicLens</div>
             </a>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
         </div>
         <label class="switch">
             <input type="checkbox" id="themeToggle" />
@@ -385,7 +397,7 @@ peek()</textarea>
                     appendCode(`enqueue(${val}, ${prio})`);
                     valInput.value = '';
                     valInput.focus();
-                    
+
                     const travInt = setInterval(() => {
                         if (curr >= qData.length || prio < qData[curr].prio) {
                             clearInterval(travInt);
@@ -597,7 +609,7 @@ peek()</textarea>
 
             const container = document.createElement('div');
             container.className = 'queue-container-v2 queue-tube';
-            
+
             if (queueMode === 'circular') container.classList.add('circular');
             else if (queueMode === 'deque') container.classList.add('deque-mode');
 
@@ -735,9 +747,9 @@ peek()</textarea>
             let simQ = [];
             let simCQueue = new Array(maxCapacity).fill(null);
             let simFront = -1, simRear = -1, simCSize = 0;
-            
+
             queueSteps = [];
-            
+
             const recordState = (hl, act, expl, ln) => {
                 queueSteps.push({
                     simQueue: JSON.parse(JSON.stringify(simQ)),
@@ -786,9 +798,9 @@ peek()</textarea>
                                     let pVals = rawVal.split(',');
                                     let pushVal = pVals[0].trim();
                                     let pushPrio = pVals.length > 1 ? parseInt(pVals[1].trim()) : 5;
-                                    simQ.push({val: pushVal, prio: pushPrio}); 
-                                    simQ.sort((a,b) => a.prio - b.prio);
-                                    recordState(simQ.findIndex(e=>e.val===pushVal && e.prio===pushPrio), 'enqueue', `Enqueued Priority "${pushVal}" (P:${pushPrio}).`, index);
+                                    simQ.push({ val: pushVal, prio: pushPrio });
+                                    simQ.sort((a, b) => a.prio - b.prio);
+                                    recordState(simQ.findIndex(e => e.val === pushVal && e.prio === pushPrio), 'enqueue', `Enqueued Priority "${pushVal}" (P:${pushPrio}).`, index);
                                 } else {
                                     simQ.push(rawVal);
                                     recordState(simQ.length - 1, 'enqueue', `Enqueued "${rawVal}".`, index);
@@ -810,7 +822,7 @@ peek()</textarea>
                                 if (simQ.length === 0) recordState(-1, 'error', `UNDERFLOW!`, index);
                                 else {
                                     if (queueMode === 'deque' && cmd === 'dequeueRear') {
-                                        recordState(simQ.length - 1, 'dequeue', `Dequeueing Rear "${simQ[simQ.length-1]}".`, index);
+                                        recordState(simQ.length - 1, 'dequeue', `Dequeueing Rear "${simQ[simQ.length - 1]}".`, index);
                                         simQ.pop();
                                     } else {
                                         recordState(0, 'dequeue', `Dequeueing Front "${simQ[0].val || simQ[0]}".`, index);
@@ -827,7 +839,7 @@ peek()</textarea>
                                 if (simQ.length === 0) recordState(-1, 'error', `Empty Peek.`, index);
                                 else {
                                     if (queueMode === 'deque' && cmd === 'peekRear') {
-                                        recordState(simQ.length-1, 'peek', `Peek Rear: "${simQ[simQ.length-1]}".`, index);
+                                        recordState(simQ.length - 1, 'peek', `Peek Rear: "${simQ[simQ.length - 1]}".`, index);
                                     } else {
                                         recordState(0, 'peek', `Peek Front: "${simQ[0].val || simQ[0]}".`, index);
                                     }
@@ -837,7 +849,7 @@ peek()</textarea>
                             let sz = queueMode === 'circular' ? simCSize : simQ.length;
                             recordState(-1, 'none', `Size: ${sz}`, index);
                         } else if (cmd === 'isEmpty') {
-                            let mt = queueMode === 'circular' ? simCSize===0 : simQ.length===0;
+                            let mt = queueMode === 'circular' ? simCSize === 0 : simQ.length === 0;
                             recordState(-1, 'none', `isEmpty: ${mt}`, index);
                         } else if (cmd === 'clear') {
                             simQ = []; simCQueue = new Array(maxCapacity).fill(null); simFront = -1; simRear = -1; simCSize = 0;
@@ -848,7 +860,7 @@ peek()</textarea>
             });
 
             recordState(-1, 'none', 'Visualization complete.', -1);
-            
+
             document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
             queueCurrentStep = 0;
             if (queueSteps.length > 0) toggleQueuePlay();
@@ -865,7 +877,7 @@ peek()</textarea>
             } else {
                 qData = [...frame.simQueue];
             }
-            
+
             let action = frame.action === 'enqueue' ? 'enqueue' : frame.action === 'dequeue' ? 'dequeue' : frame.action === 'peek' ? 'peek' : null;
             renderLiveQueue(action, frame.highlight >= 0 ? frame.highlight : undefined);
             setStepText('▶ ' + (frame.explanation || 'Processing...'));
@@ -961,4 +973,5 @@ peek()</textarea>
         }
     </script>
 </body>
+
 </html>

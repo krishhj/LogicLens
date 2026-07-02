@@ -5,17 +5,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogicLens - Trees</title>
-    <meta name="description" content="Visualize Binary Search Tree and AVL Tree with insert, search, delete operations and 4 traversal modes — with rotation animations and complexity analysis." />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="Visualize Binary Search Tree and AVL Tree with insert, search, delete operations and 4 traversal modes — with rotation animations and complexity analysis." />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
 </head>
 
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <div class="logo-mark">L</div>
+                <div class="logo-text">LogicLens</div>
             </a>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
+            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
         </div>
         <label class="switch">
             <input type="checkbox" id="themeToggle" />
@@ -42,34 +51,44 @@
             <!-- Value input -->
             <span class="input-label">Node Value (integer):</span>
             <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                <input type="number" id="treeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 50" onkeydown="if(event.key==='Enter') doTreeOp('insert')" />
+                <input type="number" id="treeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 50"
+                    onkeydown="if(event.key==='Enter') doTreeOp('insert')" />
             </div>
 
             <!-- Tree operations -->
-            <div class="adv-section-head"><h3>Operations</h3></div>
+            <div class="adv-section-head">
+                <h3>Operations</h3>
+            </div>
             <div class="tree-ops-row">
                 <button class="tree-op-btn insert" onclick="doTreeOp('insert')">➕ Insert</button>
                 <button class="tree-op-btn search" onclick="doTreeOp('search')">🔍 Search</button>
                 <button class="tree-op-btn delete" onclick="doTreeOp('delete')">🗑 Delete</button>
             </div>
-            <button class="op-btn clear" style="width:100%; margin-bottom: 14px;" onclick="resetTree()">🔄 Reset Tree</button>
+            <button class="op-btn clear" style="width:100%; margin-bottom: 14px;" onclick="resetTree()">🔄 Reset
+                Tree</button>
 
             <!-- Traversals -->
-            <div class="adv-section-head"><h3>Traversals</h3></div>
+            <div class="adv-section-head">
+                <h3>Traversals</h3>
+            </div>
             <div class="traversal-btns">
-                <button class="traversal-btn" id="trav-inorder"    onclick="doTraversal('inorder')">Inorder</button>
-                <button class="traversal-btn" id="trav-preorder"   onclick="doTraversal('preorder')">Preorder</button>
-                <button class="traversal-btn" id="trav-postorder"  onclick="doTraversal('postorder')">Postorder</button>
-                <button class="traversal-btn" id="trav-levelorder" onclick="doTraversal('levelorder')">Level-Order</button>
+                <button class="traversal-btn" id="trav-inorder" onclick="doTraversal('inorder')">Inorder</button>
+                <button class="traversal-btn" id="trav-preorder" onclick="doTraversal('preorder')">Preorder</button>
+                <button class="traversal-btn" id="trav-postorder" onclick="doTraversal('postorder')">Postorder</button>
+                <button class="traversal-btn" id="trav-levelorder"
+                    onclick="doTraversal('levelorder')">Level-Order</button>
             </div>
 
             <div class="traversal-output-wrap" id="traversalOutput">
                 <span class="traversal-label">Output:</span>
-                <span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the output sequence.</span>
+                <span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the
+                    output sequence.</span>
             </div>
 
             <!-- Recorded Operations (legacy) -->
-            <div class="adv-section-head" style="margin-top: 14px;"><h3>Recorded Operations</h3></div>
+            <div class="adv-section-head" style="margin-top: 14px;">
+                <h3>Recorded Operations</h3>
+            </div>
             <textarea id="treeCodeInput" style="height: 100px;">insert(50)
 insert(20)
 insert(70)
@@ -97,8 +116,10 @@ insert(80)</textarea>
             </div>
 
             <!-- Tree canvas -->
-            <div class="canvas tree-canvas-wrapper" id="treeCanvasWrapper" style="height: 420px; overflow: auto; display: block; padding: 0; position: relative;">
-                <svg id="treeEdges" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></svg>
+            <div class="canvas tree-canvas-wrapper" id="treeCanvasWrapper"
+                style="height: 420px; overflow: auto; display: block; padding: 0; position: relative;">
+                <svg id="treeEdges"
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></svg>
                 <div id="treeCanvas" style="position:relative;min-height:400px;min-width:600px;"></div>
                 <div id="rotationBadge" class="rotation-badge" style="display:none;"></div>
             </div>
@@ -107,7 +128,8 @@ insert(80)</textarea>
             <div class="tree-info-row" id="treeInfoRow">
                 <div class="tree-info-chip">Nodes: <span id="nodeCount">0</span></div>
                 <div class="tree-info-chip">Height: <span id="treeHeight">0</span></div>
-                <div class="tree-info-chip" id="avlInfo" style="display:none;">AVL Balanced: <span id="avlBalanced">—</span></div>
+                <div class="tree-info-chip" id="avlInfo" style="display:none;">AVL Balanced: <span
+                        id="avlBalanced">—</span></div>
             </div>
 
             <div class="step-box" id="treeStepText">▶ System Ready. Insert nodes to begin.</div>
@@ -124,13 +146,15 @@ insert(80)</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="treeProgressSlider" min="0" max="0" value="0" oninput="scrubTreeTimeline()" />
+                    <input type="range" id="treeProgressSlider" min="0" max="0" value="0"
+                        oninput="scrubTreeTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-tree-slow" onclick="setTreeSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-tree-normal" onclick="setTreeSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-tree-normal"
+                        onclick="setTreeSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-tree-fast" onclick="setTreeSpeed(400, 'fast')">Fast</button>
                 </div>
             </div>
@@ -152,14 +176,50 @@ insert(80)</textarea>
                 </div>
                 <table class="complexity-table">
                     <thead>
-                        <tr><th>Operation</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                            <th>Space</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="op-cell">Insert</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Search</td><td class="best-cell">O(1)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Delete</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Traversal</td><td class="best-cell">O(n)</td><td class="avg-cell">O(n)</td><td class="worst-cell">O(n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Height</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(n)</td><td class="space-cell">O(1)</td></tr>
+                        <tr>
+                            <td class="op-cell">Insert</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Search</td>
+                            <td class="best-cell">O(1)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Delete</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Traversal</td>
+                            <td class="best-cell">O(n)</td>
+                            <td class="avg-cell">O(n)</td>
+                            <td class="worst-cell">O(n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Height</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(n)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -167,19 +227,56 @@ insert(80)</textarea>
             <!-- AVL Complexity -->
             <div class="complexity-card">
                 <div class="complexity-card-head">
-                    <span class="complexity-dot" style="background:var(--glow2);box-shadow:0 0 6px var(--glow2);"></span>
+                    <span class="complexity-dot"
+                        style="background:var(--glow2);box-shadow:0 0 6px var(--glow2);"></span>
                     <h4>AVL Tree — Self-Balancing BST</h4>
                 </div>
                 <table class="complexity-table">
                     <thead>
-                        <tr><th>Operation</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                            <th>Space</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="op-cell">Insert</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(log n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Search</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(log n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Delete</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(log n)</td><td class="space-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Rotation (LL/RR/LR/RL)</td><td class="best-cell">O(1)</td><td class="avg-cell">O(1)</td><td class="worst-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">Height (always balanced)</td><td class="best-cell">O(log n)</td><td class="avg-cell">O(log n)</td><td class="worst-cell">O(log n)</td><td class="space-cell">O(1)</td></tr>
+                        <tr>
+                            <td class="op-cell">Insert</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(log n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Search</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(log n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Delete</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(log n)</td>
+                            <td class="space-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Rotation (LL/RR/LR/RL)</td>
+                            <td class="best-cell">O(1)</td>
+                            <td class="avg-cell">O(1)</td>
+                            <td class="worst-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Height (always balanced)</td>
+                            <td class="best-cell">O(log n)</td>
+                            <td class="avg-cell">O(log n)</td>
+                            <td class="worst-cell">O(log n)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -189,684 +286,684 @@ insert(80)</textarea>
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
-    // ════════════════════════════════════════════════════════════════
-    // THEME
-    // ════════════════════════════════════════════════════════════════
-    document.getElementById("themeToggle").addEventListener("change", () => {
-        document.body.classList.toggle("light");
-    });
+        // ════════════════════════════════════════════════════════════════
+        // THEME
+        // ════════════════════════════════════════════════════════════════
+        document.getElementById("themeToggle").addEventListener("change", () => {
+            document.body.classList.toggle("light");
+        });
 
-    // ════════════════════════════════════════════════════════════════
-    // TREE NODE CLASS
-    // ════════════════════════════════════════════════════════════════
-    class TreeNode {
-        constructor(val) {
-            this.val = val;
-            this.left = null;
-            this.right = null;
-            this.height = 1;   // for AVL
-        }
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // STATE
-    // ════════════════════════════════════════════════════════════════
-    let treeMode = 'bst';      // 'bst' | 'avl'
-    let treeRoot = null;
-    let treeSteps = [];
-    let treeCurrentStep = 0;
-    let treeIsPlaying = false;
-    let treePlayInterval = null;
-    let treeSpeedMs = 1000;
-
-    // ════════════════════════════════════════════════════════════════
-    // MODE SWITCH
-    // ════════════════════════════════════════════════════════════════
-    function switchTreeMode(mode) {
-        treeMode = mode;
-        treeRoot = null;
-        treeSteps = [];
-        treeCurrentStep = 0;
-        pauseTreePlayback();
-        document.getElementById('tab-bst').classList.toggle('active', mode === 'bst');
-        document.getElementById('tab-avl').classList.toggle('active', mode === 'avl');
-        document.getElementById('treeTypeLabel').innerText = mode === 'bst' ? 'BST Visualization' : 'AVL Tree Visualization';
-        document.getElementById('avlInfo').style.display = mode === 'avl' ? 'flex' : 'none';
-        renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: `${mode.toUpperCase()} mode active. Insert nodes to begin.`, rotation: null });
-        updateTreeInfo();
-    }
-
-    function resetTree() {
-        treeRoot = null;
-        treeSteps = [];
-        treeCurrentStep = 0;
-        pauseTreePlayback();
-        document.getElementById('treeProgressSlider').max = 0;
-        document.getElementById('treeProgressSlider').value = 0;
-        clearTraversalOutput();
-        renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'Tree reset. Ready for new nodes.', rotation: null });
-        updateTreeInfo();
-        document.getElementById('treeStepText').innerText = '▶ Tree reset. Ready for new insertions.';
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // AVL HELPERS
-    // ════════════════════════════════════════════════════════════════
-    function height(n) { return n ? n.height : 0; }
-    function bfactor(n) { return n ? height(n.left) - height(n.right) : 0; }
-    function updateHeight(n) { if (n) n.height = 1 + Math.max(height(n.left), height(n.right)); }
-
-    function rotateRight(y, steps, edgeMap) {
-        const x = y.left;
-        const T2 = x.right;
-        x.right = y;
-        y.left = T2;
-        updateHeight(y);
-        updateHeight(x);
-        if (steps) {
-            steps.push({
-                nodes: captureNodes(x),
-                edges: captureEdges(x),
-                highlighted: [y.val, x.val],
-                highlightClass: 'highlight-rotate',
-                explanation: `LL Rotation: Right-rotate at ${y.val}. Pivot is ${x.val}.`,
-                rotation: 'LL Rotation'
-            });
-        }
-        return x;
-    }
-
-    function rotateLeft(x, steps) {
-        const y = x.right;
-        const T2 = y.left;
-        y.left = x;
-        x.right = T2;
-        updateHeight(x);
-        updateHeight(y);
-        if (steps) {
-            steps.push({
-                nodes: captureNodes(y),
-                edges: captureEdges(y),
-                highlighted: [x.val, y.val],
-                highlightClass: 'highlight-rotate',
-                explanation: `RR Rotation: Left-rotate at ${x.val}. Pivot is ${y.val}.`,
-                rotation: 'RR Rotation'
-            });
-        }
-        return y;
-    }
-
-    function avlBalance(node, steps) {
-        updateHeight(node);
-        const bf = bfactor(node);
-
-        if (bf > 1) {
-            if (bfactor(node.left) < 0) {
-                // LR Case
-                if (steps) steps.push({
-                    nodes: captureNodes(node), edges: captureEdges(node),
-                    highlighted: [node.left.val], highlightClass: 'highlight-rotate',
-                    explanation: `LR Case detected at ${node.val}: Left-rotate on left child ${node.left.val} first.`,
-                    rotation: 'LR Rotation (Step 1)'
-                });
-                node.left = rotateLeft(node.left, null);
-                if (steps) steps.push({
-                    nodes: captureNodes(node), edges: captureEdges(node),
-                    highlighted: [node.val], highlightClass: 'highlight-rotate',
-                    explanation: `LR Case: Now right-rotate at ${node.val}.`,
-                    rotation: 'LR Rotation (Step 2)'
-                });
-                return rotateRight(node, null);
+        // ════════════════════════════════════════════════════════════════
+        // TREE NODE CLASS
+        // ════════════════════════════════════════════════════════════════
+        class TreeNode {
+            constructor(val) {
+                this.val = val;
+                this.left = null;
+                this.right = null;
+                this.height = 1;   // for AVL
             }
-            // LL Case
-            return rotateRight(node, steps);
         }
 
-        if (bf < -1) {
-            if (bfactor(node.right) > 0) {
-                // RL Case
-                if (steps) steps.push({
-                    nodes: captureNodes(node), edges: captureEdges(node),
-                    highlighted: [node.right.val], highlightClass: 'highlight-rotate',
-                    explanation: `RL Case detected at ${node.val}: Right-rotate on right child ${node.right.val} first.`,
-                    rotation: 'RL Rotation (Step 1)'
+        // ════════════════════════════════════════════════════════════════
+        // STATE
+        // ════════════════════════════════════════════════════════════════
+        let treeMode = 'bst';      // 'bst' | 'avl'
+        let treeRoot = null;
+        let treeSteps = [];
+        let treeCurrentStep = 0;
+        let treeIsPlaying = false;
+        let treePlayInterval = null;
+        let treeSpeedMs = 1000;
+
+        // ════════════════════════════════════════════════════════════════
+        // MODE SWITCH
+        // ════════════════════════════════════════════════════════════════
+        function switchTreeMode(mode) {
+            treeMode = mode;
+            treeRoot = null;
+            treeSteps = [];
+            treeCurrentStep = 0;
+            pauseTreePlayback();
+            document.getElementById('tab-bst').classList.toggle('active', mode === 'bst');
+            document.getElementById('tab-avl').classList.toggle('active', mode === 'avl');
+            document.getElementById('treeTypeLabel').innerText = mode === 'bst' ? 'BST Visualization' : 'AVL Tree Visualization';
+            document.getElementById('avlInfo').style.display = mode === 'avl' ? 'flex' : 'none';
+            renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: `${mode.toUpperCase()} mode active. Insert nodes to begin.`, rotation: null });
+            updateTreeInfo();
+        }
+
+        function resetTree() {
+            treeRoot = null;
+            treeSteps = [];
+            treeCurrentStep = 0;
+            pauseTreePlayback();
+            document.getElementById('treeProgressSlider').max = 0;
+            document.getElementById('treeProgressSlider').value = 0;
+            clearTraversalOutput();
+            renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'Tree reset. Ready for new nodes.', rotation: null });
+            updateTreeInfo();
+            document.getElementById('treeStepText').innerText = '▶ Tree reset. Ready for new insertions.';
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // AVL HELPERS
+        // ════════════════════════════════════════════════════════════════
+        function height(n) { return n ? n.height : 0; }
+        function bfactor(n) { return n ? height(n.left) - height(n.right) : 0; }
+        function updateHeight(n) { if (n) n.height = 1 + Math.max(height(n.left), height(n.right)); }
+
+        function rotateRight(y, steps, edgeMap) {
+            const x = y.left;
+            const T2 = x.right;
+            x.right = y;
+            y.left = T2;
+            updateHeight(y);
+            updateHeight(x);
+            if (steps) {
+                steps.push({
+                    nodes: captureNodes(x),
+                    edges: captureEdges(x),
+                    highlighted: [y.val, x.val],
+                    highlightClass: 'highlight-rotate',
+                    explanation: `LL Rotation: Right-rotate at ${y.val}. Pivot is ${x.val}.`,
+                    rotation: 'LL Rotation'
                 });
-                node.right = rotateRight(node.right, null);
-                if (steps) steps.push({
-                    nodes: captureNodes(node), edges: captureEdges(node),
-                    highlighted: [node.val], highlightClass: 'highlight-rotate',
-                    explanation: `RL Case: Now left-rotate at ${node.val}.`,
-                    rotation: 'RL Rotation (Step 2)'
-                });
-                return rotateLeft(node, null);
             }
-            // RR Case
-            return rotateLeft(node, steps);
+            return x;
         }
 
-        return node;
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // BST INSERT
-    // ════════════════════════════════════════════════════════════════
-    function bstInsert(node, val, steps) {
-        if (!node) {
-            const newNode = new TreeNode(val);
-            // We return the node but first record the step by rebuilding after insert
-            return newNode;
+        function rotateLeft(x, steps) {
+            const y = x.right;
+            const T2 = y.left;
+            y.left = x;
+            x.right = T2;
+            updateHeight(x);
+            updateHeight(y);
+            if (steps) {
+                steps.push({
+                    nodes: captureNodes(y),
+                    edges: captureEdges(y),
+                    highlighted: [x.val, y.val],
+                    highlightClass: 'highlight-rotate',
+                    explanation: `RR Rotation: Left-rotate at ${x.val}. Pivot is ${y.val}.`,
+                    rotation: 'RR Rotation'
+                });
+            }
+            return y;
         }
-        steps.push({
-            nodes: captureNodes(treeRoot),
-            edges: captureEdges(treeRoot),
-            highlighted: [node.val],
-            highlightClass: 'highlight-compare',
-            explanation: `Comparing ${val} with ${node.val}: go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
-            rotation: null
-        });
-        if (val < node.val) node.left = bstInsert(node.left, val, steps);
-        else if (val > node.val) node.right = bstInsert(node.right, val, steps);
-        else {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists in the tree.`, rotation: null });
-        }
-        return node;
-    }
 
-    // ════════════════════════════════════════════════════════════════
-    // AVL INSERT
-    // ════════════════════════════════════════════════════════════════
-    function avlInsert(node, val, steps) {
-        if (!node) return new TreeNode(val);
-        steps.push({
-            nodes: captureNodes(treeRoot),
-            edges: captureEdges(treeRoot),
-            highlighted: [node.val],
-            highlightClass: 'highlight-compare',
-            explanation: `AVL Compare: ${val} vs ${node.val} → go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
-            rotation: null
-        });
-        if (val < node.val) node.left = avlInsert(node.left, val, steps);
-        else if (val > node.val) node.right = avlInsert(node.right, val, steps);
-        else { steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists.`, rotation: null }); return node; }
-        return avlBalance(node, steps);
-    }
+        function avlBalance(node, steps) {
+            updateHeight(node);
+            const bf = bfactor(node);
 
-    // ════════════════════════════════════════════════════════════════
-    // BST / AVL SEARCH
-    // ════════════════════════════════════════════════════════════════
-    function treeSearch(node, val, steps) {
-        if (!node) {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} NOT FOUND in the tree.`, rotation: null, notFound: true });
-            return;
-        }
-        steps.push({
-            nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
-            highlighted: [node.val], highlightClass: 'highlight-search',
-            explanation: `Searching: Checking node ${node.val}. ${val === node.val ? 'MATCH FOUND! ✅' : val < node.val ? `${val} < ${node.val}, go LEFT.` : `${val} > ${node.val}, go RIGHT.`}`,
-            rotation: null
-        });
-        if (val === node.val) {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-found', explanation: `✅ Found ${val}! Node located successfully.`, rotation: null });
-            return;
-        }
-        treeSearch(val < node.val ? node.left : node.right, val, steps);
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // BST / AVL DELETE
-    // ════════════════════════════════════════════════════════════════
-    function minValueNode(node) {
-        let curr = node;
-        while (curr.left) curr = curr.left;
-        return curr;
-    }
-
-    function bstDelete(node, val, steps, isRoot) {
-        if (!node) {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} not found in tree — nothing to delete.`, rotation: null });
-            return null;
-        }
-        steps.push({ nodes: captureNodes(isRoot ? treeRoot : treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Delete search: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val} — deleting.`}`, rotation: null });
-
-        if (val < node.val) { node.left = bstDelete(node.left, val, steps, false); }
-        else if (val > node.val) { node.right = bstDelete(node.right, val, steps, false); }
-        else {
-            // Mark for deletion
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Case: ${!node.left && !node.right ? 'Leaf node' : !node.left || !node.right ? 'One child' : 'Two children — find inorder successor'}.`, rotation: null });
-            if (!node.left) return node.right;
-            if (!node.right) return node.left;
-            // Two children: inorder successor
-            const succ = minValueNode(node.right);
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor is ${succ.val} — replacing ${val} with ${succ.val}.`, rotation: null });
-            node.val = succ.val;
-            node.right = bstDelete(node.right, succ.val, steps, false);
-        }
-        return node;
-    }
-
-    function avlDelete(node, val, steps) {
-        if (!node) return null;
-        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `AVL Delete: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val}.`}`, rotation: null });
-        if (val < node.val) node.left = avlDelete(node.left, val, steps);
-        else if (val > node.val) node.right = avlDelete(node.right, val, steps);
-        else {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Rebalancing will follow.`, rotation: null });
-            if (!node.left) return node.right;
-            if (!node.right) return node.left;
-            const succ = minValueNode(node.right);
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor ${succ.val} replaces ${val}.`, rotation: null });
-            node.val = succ.val;
-            node.right = avlDelete(node.right, succ.val, steps);
-        }
-        return avlBalance(node, steps);
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // LIVE OPERATIONS
-    // ════════════════════════════════════════════════════════════════
-    function doTreeOp(op) {
-        const input = document.getElementById('treeInputVal');
-        const val = parseInt(input.value.trim());
-
-        if (op !== 'insert' && op !== 'delete' && op !== 'search') return;
-        if (isNaN(val)) { alert('Please enter a valid integer.'); return; }
-        input.value = '';
-
-        const steps = [];
-
-        if (op === 'insert') {
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Inserting ${val} into the ${treeMode.toUpperCase()} tree...`, rotation: null });
-            if (!treeRoot) {
-                treeRoot = new TreeNode(val);
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `${val} inserted as ROOT node.`, rotation: null });
-            } else {
-                if (treeMode === 'bst') {
-                    treeRoot = bstInsert(treeRoot, val, steps);
-                    // Final highlight after insert
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted successfully.`, rotation: null });
-                } else {
-                    treeRoot = avlInsert(treeRoot, val, steps);
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted. AVL tree rebalanced. Height: ${height(treeRoot)}.`, rotation: null });
+            if (bf > 1) {
+                if (bfactor(node.left) < 0) {
+                    // LR Case
+                    if (steps) steps.push({
+                        nodes: captureNodes(node), edges: captureEdges(node),
+                        highlighted: [node.left.val], highlightClass: 'highlight-rotate',
+                        explanation: `LR Case detected at ${node.val}: Left-rotate on left child ${node.left.val} first.`,
+                        rotation: 'LR Rotation (Step 1)'
+                    });
+                    node.left = rotateLeft(node.left, null);
+                    if (steps) steps.push({
+                        nodes: captureNodes(node), edges: captureEdges(node),
+                        highlighted: [node.val], highlightClass: 'highlight-rotate',
+                        explanation: `LR Case: Now right-rotate at ${node.val}.`,
+                        rotation: 'LR Rotation (Step 2)'
+                    });
+                    return rotateRight(node, null);
                 }
+                // LL Case
+                return rotateRight(node, steps);
             }
 
-        } else if (op === 'search') {
-            if (!treeRoot) { alert('Tree is empty!'); return; }
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Searching for ${val} in the ${treeMode.toUpperCase()} tree...`, rotation: null });
-            treeSearch(treeRoot, val, steps);
-
-        } else if (op === 'delete') {
-            if (!treeRoot) { alert('Tree is empty!'); return; }
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Deleting ${val} from the ${treeMode.toUpperCase()} tree...`, rotation: null });
-            if (treeMode === 'bst') {
-                treeRoot = bstDelete(treeRoot, val, steps, true);
-            } else {
-                treeRoot = avlDelete(treeRoot, val, steps);
+            if (bf < -1) {
+                if (bfactor(node.right) > 0) {
+                    // RL Case
+                    if (steps) steps.push({
+                        nodes: captureNodes(node), edges: captureEdges(node),
+                        highlighted: [node.right.val], highlightClass: 'highlight-rotate',
+                        explanation: `RL Case detected at ${node.val}: Right-rotate on right child ${node.right.val} first.`,
+                        rotation: 'RL Rotation (Step 1)'
+                    });
+                    node.right = rotateRight(node.right, null);
+                    if (steps) steps.push({
+                        nodes: captureNodes(node), edges: captureEdges(node),
+                        highlighted: [node.val], highlightClass: 'highlight-rotate',
+                        explanation: `RL Case: Now left-rotate at ${node.val}.`,
+                        rotation: 'RL Rotation (Step 2)'
+                    });
+                    return rotateLeft(node, null);
+                }
+                // RR Case
+                return rotateLeft(node, steps);
             }
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `✅ Delete operation complete. Tree updated.`, rotation: null });
+
+            return node;
         }
 
-        // Add step indices
-        steps.forEach((s, i) => s.stepIndex = i);
-
-        treeSteps = steps;
-        treeCurrentStep = 0;
-        document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-        updateTreeInfo();
-        if (steps.length) toggleTreePlay();
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // TRAVERSALS
-    // ════════════════════════════════════════════════════════════════
-    function doTraversal(type) {
-        if (!treeRoot) { alert('Tree is empty!'); return; }
-
-        // Reset traversal button highlights
-        ['inorder','preorder','postorder','levelorder'].forEach(t => {
-            document.getElementById('trav-' + t).classList.remove('active');
-        });
-        document.getElementById('trav-' + type).classList.add('active');
-
-        const sequence = [];
-        if (type === 'inorder')    inorder(treeRoot, sequence);
-        if (type === 'preorder')   preorder(treeRoot, sequence);
-        if (type === 'postorder')  postorder(treeRoot, sequence);
-        if (type === 'levelorder') levelOrder(treeRoot, sequence);
-
-        // Build traversal steps
-        const steps = [];
-        const visitedSet = new Set();
-        sequence.forEach((val, i) => {
-            visitedSet.add(val);
+        // ════════════════════════════════════════════════════════════════
+        // BST INSERT
+        // ════════════════════════════════════════════════════════════════
+        function bstInsert(node, val, steps) {
+            if (!node) {
+                const newNode = new TreeNode(val);
+                // We return the node but first record the step by rebuilding after insert
+                return newNode;
+            }
             steps.push({
                 nodes: captureNodes(treeRoot),
                 edges: captureEdges(treeRoot),
-                highlighted: [val],
-                traversedSoFar: [...visitedSet],
-                highlightClass: 'highlight-traverse',
-                explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal: Visiting node ${val} (step ${i+1}/${sequence.length})`,
-                rotation: null,
-                traversalSequence: [...sequence],
-                traversalActiveIndex: i
+                highlighted: [node.val],
+                highlightClass: 'highlight-compare',
+                explanation: `Comparing ${val} with ${node.val}: go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
+                rotation: null
             });
-        });
-        steps.push({
-            nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
-            highlighted: [], highlightClass: '',
-            explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal complete! Sequence: [${sequence.join(', ')}]`,
-            rotation: null, traversalSequence: sequence, traversalActiveIndex: -1
-        });
-        steps.forEach((s, i) => s.stepIndex = i);
-
-        treeSteps = steps;
-        treeCurrentStep = 0;
-        document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-
-        // Show output chips immediately
-        showTraversalOutput(type, sequence);
-        toggleTreePlay();
-    }
-
-    function inorder(node, result) {
-        if (!node) return;
-        inorder(node.left, result);
-        result.push(node.val);
-        inorder(node.right, result);
-    }
-    function preorder(node, result) {
-        if (!node) return;
-        result.push(node.val);
-        preorder(node.left, result);
-        preorder(node.right, result);
-    }
-    function postorder(node, result) {
-        if (!node) return;
-        postorder(node.left, result);
-        postorder(node.right, result);
-        result.push(node.val);
-    }
-    function levelOrder(root, result) {
-        if (!root) return;
-        const queue = [root];
-        while (queue.length) {
-            const node = queue.shift();
-            result.push(node.val);
-            if (node.left) queue.push(node.left);
-            if (node.right) queue.push(node.right);
-        }
-    }
-
-    function showTraversalOutput(type, sequence) {
-        const out = document.getElementById('traversalOutput');
-        out.innerHTML = `<span class="traversal-label">${type.toUpperCase()}:</span>`;
-        sequence.forEach((val, i) => {
-            if (i > 0) {
-                const arrow = document.createElement('span');
-                arrow.className = 'traversal-arrow';
-                arrow.textContent = '→';
-                out.appendChild(arrow);
+            if (val < node.val) node.left = bstInsert(node.left, val, steps);
+            else if (val > node.val) node.right = bstInsert(node.right, val, steps);
+            else {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists in the tree.`, rotation: null });
             }
-            const chip = document.createElement('span');
-            chip.className = 'traversal-chip';
-            chip.id = `trav-chip-${i}`;
-            chip.textContent = val;
-            out.appendChild(chip);
-        });
-    }
-
-    function clearTraversalOutput() {
-        const out = document.getElementById('traversalOutput');
-        out.innerHTML = '<span class="traversal-label">Output:</span><span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the sequence.</span>';
-        ['inorder','preorder','postorder','levelorder'].forEach(t => document.getElementById('trav-' + t).classList.remove('active'));
-    }
-
-    // ════════════════════════════════════════════════════════════════
-    // CAPTURE STATE (for step recording)
-    // ════════════════════════════════════════════════════════════════
-    function captureNodes(root) {
-        const nodes = [];
-        function traverse(node, x, y, spread) {
-            if (!node) return;
-            nodes.push({ val: node.val, x, y, h: height(node), bf: bfactor(node) });
-            if (node.left)  traverse(node.left,  x - spread, y + 80, spread / 2);
-            if (node.right) traverse(node.right, x + spread, y + 80, spread / 2);
+            return node;
         }
-        traverse(root, 300, 40, 140);
-        return nodes;
-    }
 
-    function captureEdges(root) {
-        const edges = [];
-        function traverse(node, x, y, spread) {
-            if (!node) return;
-            if (node.left)  { edges.push({ x1: x, y1: y, x2: x - spread, y2: y + 80 }); traverse(node.left,  x - spread, y + 80, spread / 2); }
-            if (node.right) { edges.push({ x1: x, y1: y, x2: x + spread, y2: y + 80 }); traverse(node.right, x + spread, y + 80, spread / 2); }
+        // ════════════════════════════════════════════════════════════════
+        // AVL INSERT
+        // ════════════════════════════════════════════════════════════════
+        function avlInsert(node, val, steps) {
+            if (!node) return new TreeNode(val);
+            steps.push({
+                nodes: captureNodes(treeRoot),
+                edges: captureEdges(treeRoot),
+                highlighted: [node.val],
+                highlightClass: 'highlight-compare',
+                explanation: `AVL Compare: ${val} vs ${node.val} → go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
+                rotation: null
+            });
+            if (val < node.val) node.left = avlInsert(node.left, val, steps);
+            else if (val > node.val) node.right = avlInsert(node.right, val, steps);
+            else { steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists.`, rotation: null }); return node; }
+            return avlBalance(node, steps);
         }
-        traverse(root, 300, 40, 140);
-        return edges;
-    }
 
-    // ════════════════════════════════════════════════════════════════
-    // RENDER FRAME
-    // ════════════════════════════════════════════════════════════════
-    function renderTreeFrame(frame) {
-        if (!frame) return;
-
-        const canvas = document.getElementById('treeCanvas');
-        const svgEdges = document.getElementById('treeEdges');
-        const wrapper = document.getElementById('treeCanvasWrapper');
-        canvas.innerHTML = '';
-        svgEdges.innerHTML = '';
-
-        // Compute canvas size
-        let maxX = 10, maxY = 10;
-        (frame.nodes || []).forEach(n => { if (n.x > maxX) maxX = n.x; if (n.y > maxY) maxY = n.y; });
-        const canvasW = Math.max(600, maxX + 100);
-        const canvasH = Math.max(400, maxY + 100);
-        canvas.style.width = canvasW + 'px';
-        canvas.style.height = canvasH + 'px';
-        svgEdges.style.width = canvasW + 'px';
-        svgEdges.style.height = canvasH + 'px';
-
-        // Draw edges
-        (frame.edges || []).forEach(e => {
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', e.x1);
-            line.setAttribute('y1', e.y1);
-            line.setAttribute('x2', e.x2);
-            line.setAttribute('y2', e.y2);
-            line.classList.add('tree-edge');
-            svgEdges.appendChild(line);
-        });
-
-        // Draw nodes
-        (frame.nodes || []).forEach(n => {
-            const node = document.createElement('div');
-            node.classList.add('tree-node', 'visible');
-            node.style.left = n.x + 'px';
-            node.style.top  = n.y + 'px';
-            node.innerText = n.val;
-
-            // Apply highlight
-            if (frame.highlighted && frame.highlighted.includes(n.val) && frame.highlightClass) {
-                node.classList.add(frame.highlightClass);
-            } else if (frame.traversedSoFar && frame.traversedSoFar.has && frame.traversedSoFar.has(n.val)) {
-                node.classList.add('highlight-found');
+        // ════════════════════════════════════════════════════════════════
+        // BST / AVL SEARCH
+        // ════════════════════════════════════════════════════════════════
+        function treeSearch(node, val, steps) {
+            if (!node) {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} NOT FOUND in the tree.`, rotation: null, notFound: true });
+                return;
             }
-
-            // AVL badge
-            if (treeMode === 'avl') {
-                const badge = document.createElement('div');
-                badge.className = 'avl-badge';
-                const balClass = Math.abs(n.bf) <= 1 ? 'balanced' : 'unbalanced';
-                badge.classList.add(balClass);
-                badge.textContent = `h:${n.h} bf:${n.bf > 0 ? '+' : ''}${n.bf}`;
-                node.appendChild(badge);
+            steps.push({
+                nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
+                highlighted: [node.val], highlightClass: 'highlight-search',
+                explanation: `Searching: Checking node ${node.val}. ${val === node.val ? 'MATCH FOUND! ✅' : val < node.val ? `${val} < ${node.val}, go LEFT.` : `${val} > ${node.val}, go RIGHT.`}`,
+                rotation: null
+            });
+            if (val === node.val) {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-found', explanation: `✅ Found ${val}! Node located successfully.`, rotation: null });
+                return;
             }
-
-            canvas.appendChild(node);
-        });
-
-        // Rotation badge
-        const badge = document.getElementById('rotationBadge');
-        if (frame.rotation) {
-            badge.textContent = '🔄 ' + frame.rotation;
-            badge.style.display = 'block';
-            setTimeout(() => { badge.style.display = 'none'; }, 1800);
+            treeSearch(val < node.val ? node.left : node.right, val, steps);
         }
 
-        // Step text
-        document.getElementById('treeStepText').innerText = '▶ ' + (frame.explanation || '...');
-
-        // Slider sync
-        const slider = document.getElementById('treeProgressSlider');
-        if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
-
-        // Traversal chip highlight
-        if (frame.traversalActiveIndex !== undefined && frame.traversalActiveIndex >= 0) {
-            setTimeout(() => {
-                const chip = document.getElementById(`trav-chip-${frame.traversalActiveIndex}`);
-                if (chip) {
-                    document.querySelectorAll('.traversal-chip').forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                }
-            }, 50);
+        // ════════════════════════════════════════════════════════════════
+        // BST / AVL DELETE
+        // ════════════════════════════════════════════════════════════════
+        function minValueNode(node) {
+            let curr = node;
+            while (curr.left) curr = curr.left;
+            return curr;
         }
 
-        // Update info
-        updateTreeInfo();
-    }
+        function bstDelete(node, val, steps, isRoot) {
+            if (!node) {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} not found in tree — nothing to delete.`, rotation: null });
+                return null;
+            }
+            steps.push({ nodes: captureNodes(isRoot ? treeRoot : treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Delete search: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val} — deleting.`}`, rotation: null });
 
-    function updateTreeInfo() {
-        const count = countNodes(treeRoot);
-        const h = treeRoot ? height(treeRoot) : 0;
-        document.getElementById('nodeCount').textContent = count;
-        document.getElementById('treeHeight').textContent = h;
-        if (treeMode === 'avl' && treeRoot) {
-            const bf = bfactor(treeRoot);
-            const bal = Math.abs(bf) <= 1;
-            document.getElementById('avlBalanced').textContent = bal ? `Yes (bf: ${bf > 0 ? '+':''} ${bf})` : `No (bf: ${bf})`;
-            document.getElementById('avlBalanced').style.color = bal ? 'var(--green)' : 'var(--red)';
+            if (val < node.val) { node.left = bstDelete(node.left, val, steps, false); }
+            else if (val > node.val) { node.right = bstDelete(node.right, val, steps, false); }
+            else {
+                // Mark for deletion
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Case: ${!node.left && !node.right ? 'Leaf node' : !node.left || !node.right ? 'One child' : 'Two children — find inorder successor'}.`, rotation: null });
+                if (!node.left) return node.right;
+                if (!node.right) return node.left;
+                // Two children: inorder successor
+                const succ = minValueNode(node.right);
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor is ${succ.val} — replacing ${val} with ${succ.val}.`, rotation: null });
+                node.val = succ.val;
+                node.right = bstDelete(node.right, succ.val, steps, false);
+            }
+            return node;
         }
-    }
 
-    function countNodes(node) {
-        if (!node) return 0;
-        return 1 + countNodes(node.left) + countNodes(node.right);
-    }
+        function avlDelete(node, val, steps) {
+            if (!node) return null;
+            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `AVL Delete: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val}.`}`, rotation: null });
+            if (val < node.val) node.left = avlDelete(node.left, val, steps);
+            else if (val > node.val) node.right = avlDelete(node.right, val, steps);
+            else {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Rebalancing will follow.`, rotation: null });
+                if (!node.left) return node.right;
+                if (!node.right) return node.left;
+                const succ = minValueNode(node.right);
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor ${succ.val} replaces ${val}.`, rotation: null });
+                node.val = succ.val;
+                node.right = avlDelete(node.right, succ.val, steps);
+            }
+            return avlBalance(node, steps);
+        }
 
-    // ════════════════════════════════════════════════════════════════
-    // VISUALIZE CODE (legacy textarea flow)
-    // ════════════════════════════════════════════════════════════════
-    function analyzeTreeCode() {
-        pauseTreePlayback();
-        treeRoot = null;
-        const code = document.getElementById('treeCodeInput').value;
-        const lines = code.split('\n');
-        const steps = [];
+        // ════════════════════════════════════════════════════════════════
+        // LIVE OPERATIONS
+        // ════════════════════════════════════════════════════════════════
+        function doTreeOp(op) {
+            const input = document.getElementById('treeInputVal');
+            const val = parseInt(input.value.trim());
 
-        steps.push({ nodes: [], edges: [], highlighted: [], explanation: `${treeMode.toUpperCase()} initialized.`, rotation: null });
+            if (op !== 'insert' && op !== 'delete' && op !== 'search') return;
+            if (isNaN(val)) { alert('Please enter a valid integer.'); return; }
+            input.value = '';
 
-        lines.forEach((line, lineIndex) => {
-            const text = line.trim();
-            if (!text) return;
-            const insertMatch = text.match(/insert\((\d+)\)/);
-            const deleteMatch = text.match(/delete\((\d+)\)/);
-            const searchMatch = text.match(/search\((\d+)\)/);
+            const steps = [];
 
-            if (insertMatch) {
-                const val = parseInt(insertMatch[1]);
+            if (op === 'insert') {
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Inserting ${val} into the ${treeMode.toUpperCase()} tree...`, rotation: null });
                 if (!treeRoot) {
                     treeRoot = new TreeNode(val);
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `Inserted ${val} as ROOT.`, rotation: null, line: lineIndex });
+                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `${val} inserted as ROOT node.`, rotation: null });
                 } else {
-                    if (treeMode === 'bst') treeRoot = bstInsert(treeRoot, val, steps);
-                    else treeRoot = avlInsert(treeRoot, val, steps);
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ Inserted ${val}.`, rotation: null, line: lineIndex });
+                    if (treeMode === 'bst') {
+                        treeRoot = bstInsert(treeRoot, val, steps);
+                        // Final highlight after insert
+                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted successfully.`, rotation: null });
+                    } else {
+                        treeRoot = avlInsert(treeRoot, val, steps);
+                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted. AVL tree rebalanced. Height: ${height(treeRoot)}.`, rotation: null });
+                    }
                 }
-            } else if (deleteMatch) {
-                const val = parseInt(deleteMatch[1]);
-                if (treeMode === 'bst') treeRoot = bstDelete(treeRoot, val, steps, true);
-                else treeRoot = avlDelete(treeRoot, val, steps);
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: `Deleted ${val}.`, rotation: null, line: lineIndex });
-            } else if (searchMatch) {
-                const val = parseInt(searchMatch[1]);
+
+            } else if (op === 'search') {
+                if (!treeRoot) { alert('Tree is empty!'); return; }
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Searching for ${val} in the ${treeMode.toUpperCase()} tree...`, rotation: null });
                 treeSearch(treeRoot, val, steps);
+
+            } else if (op === 'delete') {
+                if (!treeRoot) { alert('Tree is empty!'); return; }
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Deleting ${val} from the ${treeMode.toUpperCase()} tree...`, rotation: null });
+                if (treeMode === 'bst') {
+                    treeRoot = bstDelete(treeRoot, val, steps, true);
+                } else {
+                    treeRoot = avlDelete(treeRoot, val, steps);
+                }
+                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `✅ Delete operation complete. Tree updated.`, rotation: null });
             }
-        });
 
-        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: 'Visualization complete!', rotation: null });
-        steps.forEach((s, i) => s.stepIndex = i);
+            // Add step indices
+            steps.forEach((s, i) => s.stepIndex = i);
 
-        treeSteps = steps;
-        treeCurrentStep = 0;
-        document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-        updateTreeInfo();
-        if (steps.length) toggleTreePlay();
-    }
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            updateTreeInfo();
+            if (steps.length) toggleTreePlay();
+        }
 
-    // ════════════════════════════════════════════════════════════════
-    // PLAYBACK
-    // ════════════════════════════════════════════════════════════════
-    function toggleTreePlay() {
-        if (!treeSteps.length) return alert("Generate steps first!");
-        if (treeIsPlaying) pauseTreePlayback();
-        else { if (treeCurrentStep >= treeSteps.length - 1) treeCurrentStep = 0; startTreePlayback(); }
-    }
+        // ════════════════════════════════════════════════════════════════
+        // TRAVERSALS
+        // ════════════════════════════════════════════════════════════════
+        function doTraversal(type) {
+            if (!treeRoot) { alert('Tree is empty!'); return; }
 
-    function startTreePlayback() {
-        treeIsPlaying = true;
-        updateTreePlayBtnUI();
-        renderTreeFrame(treeSteps[treeCurrentStep]);
-        clearInterval(treePlayInterval);
-        treePlayInterval = setInterval(() => {
-            if (treeCurrentStep < treeSteps.length - 1) {
-                treeCurrentStep++;
-                renderTreeFrame(treeSteps[treeCurrentStep]);
-            } else {
-                pauseTreePlayback();
+            // Reset traversal button highlights
+            ['inorder', 'preorder', 'postorder', 'levelorder'].forEach(t => {
+                document.getElementById('trav-' + t).classList.remove('active');
+            });
+            document.getElementById('trav-' + type).classList.add('active');
+
+            const sequence = [];
+            if (type === 'inorder') inorder(treeRoot, sequence);
+            if (type === 'preorder') preorder(treeRoot, sequence);
+            if (type === 'postorder') postorder(treeRoot, sequence);
+            if (type === 'levelorder') levelOrder(treeRoot, sequence);
+
+            // Build traversal steps
+            const steps = [];
+            const visitedSet = new Set();
+            sequence.forEach((val, i) => {
+                visitedSet.add(val);
+                steps.push({
+                    nodes: captureNodes(treeRoot),
+                    edges: captureEdges(treeRoot),
+                    highlighted: [val],
+                    traversedSoFar: [...visitedSet],
+                    highlightClass: 'highlight-traverse',
+                    explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal: Visiting node ${val} (step ${i + 1}/${sequence.length})`,
+                    rotation: null,
+                    traversalSequence: [...sequence],
+                    traversalActiveIndex: i
+                });
+            });
+            steps.push({
+                nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
+                highlighted: [], highlightClass: '',
+                explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal complete! Sequence: [${sequence.join(', ')}]`,
+                rotation: null, traversalSequence: sequence, traversalActiveIndex: -1
+            });
+            steps.forEach((s, i) => s.stepIndex = i);
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+
+            // Show output chips immediately
+            showTraversalOutput(type, sequence);
+            toggleTreePlay();
+        }
+
+        function inorder(node, result) {
+            if (!node) return;
+            inorder(node.left, result);
+            result.push(node.val);
+            inorder(node.right, result);
+        }
+        function preorder(node, result) {
+            if (!node) return;
+            result.push(node.val);
+            preorder(node.left, result);
+            preorder(node.right, result);
+        }
+        function postorder(node, result) {
+            if (!node) return;
+            postorder(node.left, result);
+            postorder(node.right, result);
+            result.push(node.val);
+        }
+        function levelOrder(root, result) {
+            if (!root) return;
+            const queue = [root];
+            while (queue.length) {
+                const node = queue.shift();
+                result.push(node.val);
+                if (node.left) queue.push(node.left);
+                if (node.right) queue.push(node.right);
             }
-        }, treeSpeedMs);
-    }
+        }
 
-    function pauseTreePlayback() {
-        treeIsPlaying = false;
-        clearInterval(treePlayInterval);
-        updateTreePlayBtnUI();
-    }
+        function showTraversalOutput(type, sequence) {
+            const out = document.getElementById('traversalOutput');
+            out.innerHTML = `<span class="traversal-label">${type.toUpperCase()}:</span>`;
+            sequence.forEach((val, i) => {
+                if (i > 0) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'traversal-arrow';
+                    arrow.textContent = '→';
+                    out.appendChild(arrow);
+                }
+                const chip = document.createElement('span');
+                chip.className = 'traversal-chip';
+                chip.id = `trav-chip-${i}`;
+                chip.textContent = val;
+                out.appendChild(chip);
+            });
+        }
 
-    function updateTreePlayBtnUI() {
-        const btn = document.getElementById("treePlayPauseBtn");
-        if (!btn) return;
-        if (treeIsPlaying) btn.innerHTML = "⏸ Pause";
-        else if (treeCurrentStep >= treeSteps.length - 1 && treeSteps.length > 0) btn.innerHTML = "🔄 Replay";
-        else btn.innerHTML = "▶ Play";
-    }
+        function clearTraversalOutput() {
+            const out = document.getElementById('traversalOutput');
+            out.innerHTML = '<span class="traversal-label">Output:</span><span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the sequence.</span>';
+            ['inorder', 'preorder', 'postorder', 'levelorder'].forEach(t => document.getElementById('trav-' + t).classList.remove('active'));
+        }
 
-    function jumpToTreeStart() { if (!treeSteps.length) return; treeCurrentStep = 0; startTreePlayback(); }
-    function jumpToTreeEnd() { if (!treeSteps.length) return; pauseTreePlayback(); treeCurrentStep = treeSteps.length - 1; renderTreeFrame(treeSteps[treeCurrentStep]); }
-    function stepTreeForward() { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep < treeSteps.length - 1) { treeCurrentStep++; renderTreeFrame(treeSteps[treeCurrentStep]); } }
-    function stepTreeBack()    { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep > 0) { treeCurrentStep--; renderTreeFrame(treeSteps[treeCurrentStep]); } }
+        // ════════════════════════════════════════════════════════════════
+        // CAPTURE STATE (for step recording)
+        // ════════════════════════════════════════════════════════════════
+        function captureNodes(root) {
+            const nodes = [];
+            function traverse(node, x, y, spread) {
+                if (!node) return;
+                nodes.push({ val: node.val, x, y, h: height(node), bf: bfactor(node) });
+                if (node.left) traverse(node.left, x - spread, y + 80, spread / 2);
+                if (node.right) traverse(node.right, x + spread, y + 80, spread / 2);
+            }
+            traverse(root, 300, 40, 140);
+            return nodes;
+        }
 
-    function setTreeSpeed(ms, type) {
-        treeSpeedMs = ms;
-        ['slow','normal','fast'].forEach(t => document.getElementById(`btn-tree-${t}`).classList.remove('active'));
-        document.getElementById(`btn-tree-${type}`).classList.add('active');
-        if (treeIsPlaying) startTreePlayback();
-    }
+        function captureEdges(root) {
+            const edges = [];
+            function traverse(node, x, y, spread) {
+                if (!node) return;
+                if (node.left) { edges.push({ x1: x, y1: y, x2: x - spread, y2: y + 80 }); traverse(node.left, x - spread, y + 80, spread / 2); }
+                if (node.right) { edges.push({ x1: x, y1: y, x2: x + spread, y2: y + 80 }); traverse(node.right, x + spread, y + 80, spread / 2); }
+            }
+            traverse(root, 300, 40, 140);
+            return edges;
+        }
 
-    function scrubTreeTimeline() {
-        if (!treeSteps.length) return;
-        pauseTreePlayback();
-        treeCurrentStep = parseInt(document.getElementById("treeProgressSlider").value);
-        renderTreeFrame(treeSteps[treeCurrentStep]);
-    }
+        // ════════════════════════════════════════════════════════════════
+        // RENDER FRAME
+        // ════════════════════════════════════════════════════════════════
+        function renderTreeFrame(frame) {
+            if (!frame) return;
 
-    // ════════════════════════════════════════════════════════════════
-    // INIT
-    // ════════════════════════════════════════════════════════════════
-    renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'BST mode active. Insert nodes to begin.', rotation: null });
+            const canvas = document.getElementById('treeCanvas');
+            const svgEdges = document.getElementById('treeEdges');
+            const wrapper = document.getElementById('treeCanvasWrapper');
+            canvas.innerHTML = '';
+            svgEdges.innerHTML = '';
+
+            // Compute canvas size
+            let maxX = 10, maxY = 10;
+            (frame.nodes || []).forEach(n => { if (n.x > maxX) maxX = n.x; if (n.y > maxY) maxY = n.y; });
+            const canvasW = Math.max(600, maxX + 100);
+            const canvasH = Math.max(400, maxY + 100);
+            canvas.style.width = canvasW + 'px';
+            canvas.style.height = canvasH + 'px';
+            svgEdges.style.width = canvasW + 'px';
+            svgEdges.style.height = canvasH + 'px';
+
+            // Draw edges
+            (frame.edges || []).forEach(e => {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', e.x1);
+                line.setAttribute('y1', e.y1);
+                line.setAttribute('x2', e.x2);
+                line.setAttribute('y2', e.y2);
+                line.classList.add('tree-edge');
+                svgEdges.appendChild(line);
+            });
+
+            // Draw nodes
+            (frame.nodes || []).forEach(n => {
+                const node = document.createElement('div');
+                node.classList.add('tree-node', 'visible');
+                node.style.left = n.x + 'px';
+                node.style.top = n.y + 'px';
+                node.innerText = n.val;
+
+                // Apply highlight
+                if (frame.highlighted && frame.highlighted.includes(n.val) && frame.highlightClass) {
+                    node.classList.add(frame.highlightClass);
+                } else if (frame.traversedSoFar && frame.traversedSoFar.has && frame.traversedSoFar.has(n.val)) {
+                    node.classList.add('highlight-found');
+                }
+
+                // AVL badge
+                if (treeMode === 'avl') {
+                    const badge = document.createElement('div');
+                    badge.className = 'avl-badge';
+                    const balClass = Math.abs(n.bf) <= 1 ? 'balanced' : 'unbalanced';
+                    badge.classList.add(balClass);
+                    badge.textContent = `h:${n.h} bf:${n.bf > 0 ? '+' : ''}${n.bf}`;
+                    node.appendChild(badge);
+                }
+
+                canvas.appendChild(node);
+            });
+
+            // Rotation badge
+            const badge = document.getElementById('rotationBadge');
+            if (frame.rotation) {
+                badge.textContent = '🔄 ' + frame.rotation;
+                badge.style.display = 'block';
+                setTimeout(() => { badge.style.display = 'none'; }, 1800);
+            }
+
+            // Step text
+            document.getElementById('treeStepText').innerText = '▶ ' + (frame.explanation || '...');
+
+            // Slider sync
+            const slider = document.getElementById('treeProgressSlider');
+            if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
+
+            // Traversal chip highlight
+            if (frame.traversalActiveIndex !== undefined && frame.traversalActiveIndex >= 0) {
+                setTimeout(() => {
+                    const chip = document.getElementById(`trav-chip-${frame.traversalActiveIndex}`);
+                    if (chip) {
+                        document.querySelectorAll('.traversal-chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                    }
+                }, 50);
+            }
+
+            // Update info
+            updateTreeInfo();
+        }
+
+        function updateTreeInfo() {
+            const count = countNodes(treeRoot);
+            const h = treeRoot ? height(treeRoot) : 0;
+            document.getElementById('nodeCount').textContent = count;
+            document.getElementById('treeHeight').textContent = h;
+            if (treeMode === 'avl' && treeRoot) {
+                const bf = bfactor(treeRoot);
+                const bal = Math.abs(bf) <= 1;
+                document.getElementById('avlBalanced').textContent = bal ? `Yes (bf: ${bf > 0 ? '+' : ''} ${bf})` : `No (bf: ${bf})`;
+                document.getElementById('avlBalanced').style.color = bal ? 'var(--green)' : 'var(--red)';
+            }
+        }
+
+        function countNodes(node) {
+            if (!node) return 0;
+            return 1 + countNodes(node.left) + countNodes(node.right);
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // VISUALIZE CODE (legacy textarea flow)
+        // ════════════════════════════════════════════════════════════════
+        function analyzeTreeCode() {
+            pauseTreePlayback();
+            treeRoot = null;
+            const code = document.getElementById('treeCodeInput').value;
+            const lines = code.split('\n');
+            const steps = [];
+
+            steps.push({ nodes: [], edges: [], highlighted: [], explanation: `${treeMode.toUpperCase()} initialized.`, rotation: null });
+
+            lines.forEach((line, lineIndex) => {
+                const text = line.trim();
+                if (!text) return;
+                const insertMatch = text.match(/insert\((\d+)\)/);
+                const deleteMatch = text.match(/delete\((\d+)\)/);
+                const searchMatch = text.match(/search\((\d+)\)/);
+
+                if (insertMatch) {
+                    const val = parseInt(insertMatch[1]);
+                    if (!treeRoot) {
+                        treeRoot = new TreeNode(val);
+                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `Inserted ${val} as ROOT.`, rotation: null, line: lineIndex });
+                    } else {
+                        if (treeMode === 'bst') treeRoot = bstInsert(treeRoot, val, steps);
+                        else treeRoot = avlInsert(treeRoot, val, steps);
+                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ Inserted ${val}.`, rotation: null, line: lineIndex });
+                    }
+                } else if (deleteMatch) {
+                    const val = parseInt(deleteMatch[1]);
+                    if (treeMode === 'bst') treeRoot = bstDelete(treeRoot, val, steps, true);
+                    else treeRoot = avlDelete(treeRoot, val, steps);
+                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: `Deleted ${val}.`, rotation: null, line: lineIndex });
+                } else if (searchMatch) {
+                    const val = parseInt(searchMatch[1]);
+                    treeSearch(treeRoot, val, steps);
+                }
+            });
+
+            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: 'Visualization complete!', rotation: null });
+            steps.forEach((s, i) => s.stepIndex = i);
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            updateTreeInfo();
+            if (steps.length) toggleTreePlay();
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // PLAYBACK
+        // ════════════════════════════════════════════════════════════════
+        function toggleTreePlay() {
+            if (!treeSteps.length) return alert("Generate steps first!");
+            if (treeIsPlaying) pauseTreePlayback();
+            else { if (treeCurrentStep >= treeSteps.length - 1) treeCurrentStep = 0; startTreePlayback(); }
+        }
+
+        function startTreePlayback() {
+            treeIsPlaying = true;
+            updateTreePlayBtnUI();
+            renderTreeFrame(treeSteps[treeCurrentStep]);
+            clearInterval(treePlayInterval);
+            treePlayInterval = setInterval(() => {
+                if (treeCurrentStep < treeSteps.length - 1) {
+                    treeCurrentStep++;
+                    renderTreeFrame(treeSteps[treeCurrentStep]);
+                } else {
+                    pauseTreePlayback();
+                }
+            }, treeSpeedMs);
+        }
+
+        function pauseTreePlayback() {
+            treeIsPlaying = false;
+            clearInterval(treePlayInterval);
+            updateTreePlayBtnUI();
+        }
+
+        function updateTreePlayBtnUI() {
+            const btn = document.getElementById("treePlayPauseBtn");
+            if (!btn) return;
+            if (treeIsPlaying) btn.innerHTML = "⏸ Pause";
+            else if (treeCurrentStep >= treeSteps.length - 1 && treeSteps.length > 0) btn.innerHTML = "🔄 Replay";
+            else btn.innerHTML = "▶ Play";
+        }
+
+        function jumpToTreeStart() { if (!treeSteps.length) return; treeCurrentStep = 0; startTreePlayback(); }
+        function jumpToTreeEnd() { if (!treeSteps.length) return; pauseTreePlayback(); treeCurrentStep = treeSteps.length - 1; renderTreeFrame(treeSteps[treeCurrentStep]); }
+        function stepTreeForward() { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep < treeSteps.length - 1) { treeCurrentStep++; renderTreeFrame(treeSteps[treeCurrentStep]); } }
+        function stepTreeBack() { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep > 0) { treeCurrentStep--; renderTreeFrame(treeSteps[treeCurrentStep]); } }
+
+        function setTreeSpeed(ms, type) {
+            treeSpeedMs = ms;
+            ['slow', 'normal', 'fast'].forEach(t => document.getElementById(`btn-tree-${t}`).classList.remove('active'));
+            document.getElementById(`btn-tree-${type}`).classList.add('active');
+            if (treeIsPlaying) startTreePlayback();
+        }
+
+        function scrubTreeTimeline() {
+            if (!treeSteps.length) return;
+            pauseTreePlayback();
+            treeCurrentStep = parseInt(document.getElementById("treeProgressSlider").value);
+            renderTreeFrame(treeSteps[treeCurrentStep]);
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // INIT
+        // ════════════════════════════════════════════════════════════════
+        renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'BST mode active. Insert nodes to begin.', rotation: null });
     </script>
 </body>
 

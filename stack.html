@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogicLens - Stack</title>
-    <meta name="description" content="Visualize array-based and linked-list stacks with push, pop, peek, isEmpty, size, and clear operations — with animated steps and complexity analysis." />
+    <meta name="description"
+        content="Visualize array-based and linked-list stacks with push, pop, peek, isEmpty, size, and clear operations — with animated steps and complexity analysis." />
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
@@ -15,9 +16,15 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                LogicLens <span style="font-size:10px; color:var(--text3); border:1px solid var(--border); padding:2px 6px; border-radius:4px;">Home</span>
+            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <div class="logo-mark">L</div>
+                <div class="logo-text">LogicLens</div>
             </a>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
+            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
         </div>
         <label class="switch">
             <input type="checkbox" id="themeToggle" />
@@ -51,22 +58,27 @@
             <!-- Value input -->
             <span class="input-label">Value:</span>
             <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                <input type="text" id="stackInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 42" onkeydown="if(event.key==='Enter') doOp('push')" />
+                <input type="text" id="stackInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 42"
+                    onkeydown="if(event.key==='Enter') doOp('push')" />
             </div>
 
             <!-- Operation grid -->
-            <div class="adv-section-head"><h3>Operations</h3></div>
+            <div class="adv-section-head">
+                <h3>Operations</h3>
+            </div>
             <div class="op-grid">
-                <button class="op-btn push"  onclick="doOp('push')">⬆ Push</button>
-                <button class="op-btn pop"   onclick="doOp('pop')">⬇ Pop</button>
-                <button class="op-btn peek"  onclick="doOp('peek')">👁 Peek</button>
+                <button class="op-btn push" onclick="doOp('push')">⬆ Push</button>
+                <button class="op-btn pop" onclick="doOp('pop')">⬇ Pop</button>
+                <button class="op-btn peek" onclick="doOp('peek')">👁 Peek</button>
                 <button class="op-btn check" onclick="doOp('isEmpty')">❓ isEmpty</button>
-                <button class="op-btn size"  onclick="doOp('size')">📊 Size</button>
+                <button class="op-btn size" onclick="doOp('size')">📊 Size</button>
                 <button class="op-btn clear" onclick="doOp('clear')">🗑 Clear</button>
             </div>
 
             <!-- Recorded ops textarea (legacy visualize-code flow) -->
-            <div class="adv-section-head" style="margin-top: 6px;"><h3>Recorded Operations</h3></div>
+            <div class="adv-section-head" style="margin-top: 6px;">
+                <h3>Recorded Operations</h3>
+            </div>
             <textarea id="stackCodeInput" style="height: 100px;">push(10)
 push(20)
 push(30)
@@ -105,7 +117,8 @@ peek()</textarea>
                 <span><span class="box" style="background:#ef4444"></span>Error / Pop</span>
             </div>
 
-            <div class="canvas" id="stackCanvas" style="display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; min-height: 300px; position: relative;">
+            <div class="canvas" id="stackCanvas"
+                style="display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; min-height: 300px; position: relative;">
                 <!-- rendered by JS -->
             </div>
 
@@ -123,13 +136,15 @@ peek()</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="stackProgressSlider" min="0" max="0" value="0" oninput="scrubStackTimeline()" />
+                    <input type="range" id="stackProgressSlider" min="0" max="0" value="0"
+                        oninput="scrubStackTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-stack-slow" onclick="setStackSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-stack-normal" onclick="setStackSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-stack-normal"
+                        onclick="setStackSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-stack-fast" onclick="setStackSpeed(400, 'fast')">Fast</button>
                 </div>
             </div>
@@ -159,12 +174,42 @@ peek()</textarea>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="op-cell">Push</td><td class="time-cell">O(1)</td><td class="time-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">Pop</td><td class="time-cell">O(1)</td><td class="time-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">Peek / Top</td><td class="time-cell">O(1)</td><td class="time-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">isEmpty</td><td class="time-cell">O(1)</td><td class="time-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">Size</td><td class="time-cell">O(1)</td><td class="time-cell">O(1)</td><td class="space-cell">O(1)</td></tr>
-                        <tr><td class="op-cell">Clear</td><td class="time-cell">O(n)</td><td class="time-cell">O(n)</td><td class="space-cell">O(1)</td></tr>
+                        <tr>
+                            <td class="op-cell">Push</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Pop</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Peek / Top</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">isEmpty</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Size</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="time-cell">O(1)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Clear</td>
+                            <td class="time-cell">O(n)</td>
+                            <td class="time-cell">O(n)</td>
+                            <td class="space-cell">O(1)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -172,7 +217,8 @@ peek()</textarea>
             <!-- Space & Notes -->
             <div class="complexity-card">
                 <div class="complexity-card-head">
-                    <span class="complexity-dot" style="background: var(--amber); box-shadow: 0 0 6px var(--amber);"></span>
+                    <span class="complexity-dot"
+                        style="background: var(--amber); box-shadow: 0 0 6px var(--amber);"></span>
                     <h4>Space & Implementation Notes</h4>
                 </div>
                 <table class="complexity-table">
@@ -184,12 +230,36 @@ peek()</textarea>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="op-cell">Auxiliary Space</td><td class="avg-cell">O(n)</td><td class="avg-cell">O(n)</td></tr>
-                        <tr><td class="op-cell">Overflow Risk</td><td class="worst-cell">Yes (fixed capacity)</td><td class="best-cell">No (dynamic)</td></tr>
-                        <tr><td class="op-cell">Underflow Risk</td><td class="worst-cell">Yes (empty pop)</td><td class="worst-cell">Yes (empty pop)</td></tr>
-                        <tr><td class="op-cell">Memory Layout</td><td class="time-cell">Contiguous</td><td class="time-cell">Scattered (pointers)</td></tr>
-                        <tr><td class="op-cell">Cache Performance</td><td class="best-cell">Better</td><td class="worst-cell">Worse (pointer chase)</td></tr>
-                        <tr><td class="op-cell">Resize</td><td class="worst-cell">Not supported</td><td class="best-cell">On demand</td></tr>
+                        <tr>
+                            <td class="op-cell">Auxiliary Space</td>
+                            <td class="avg-cell">O(n)</td>
+                            <td class="avg-cell">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Overflow Risk</td>
+                            <td class="worst-cell">Yes (fixed capacity)</td>
+                            <td class="best-cell">No (dynamic)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Underflow Risk</td>
+                            <td class="worst-cell">Yes (empty pop)</td>
+                            <td class="worst-cell">Yes (empty pop)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Memory Layout</td>
+                            <td class="time-cell">Contiguous</td>
+                            <td class="time-cell">Scattered (pointers)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Cache Performance</td>
+                            <td class="best-cell">Better</td>
+                            <td class="worst-cell">Worse (pointer chase)</td>
+                        </tr>
+                        <tr>
+                            <td class="op-cell">Resize</td>
+                            <td class="worst-cell">Not supported</td>
+                            <td class="best-cell">On demand</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -726,7 +796,7 @@ peek()</textarea>
         }
         function setStackSpeed(ms, type) {
             stackSpeedMs = ms;
-            ['slow','normal','fast'].forEach(t => document.getElementById(`btn-stack-${t}`).classList.remove('active'));
+            ['slow', 'normal', 'fast'].forEach(t => document.getElementById(`btn-stack-${t}`).classList.remove('active'));
             document.getElementById(`btn-stack-${type}`).classList.add('active');
             if (stackIsPlaying) startStackPlayback();
         }
