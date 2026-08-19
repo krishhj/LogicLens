@@ -1,1 +1,62 @@
-[]
+[
+  {
+    "timestamp": "2026-08-06T05:05:25.602Z",
+    "code": "int arr[] = {5,3,8,1};\n\nfor(int i=0;i<n;i++){\n for(int j=0;j<n-i-1;j++){\n  if(arr[j] > arr[j+1]){\n   swap(arr[j],arr[j+1]);\n  }\n }\n}\n",
+    "array": [
+      30,
+      10,
+      45,
+      20,
+      15
+    ],
+    "correct": false
+  },
+  {
+    "timestamp": "2026-08-06T05:09:06.669Z",
+    "code": "int arr[] = {5,3,8,1};\n\nfor(int i=0;i<n;i++){\n for(int j=0;j<n-i-1;j++){\n  if(arr[j] > arr[j+1]){\n   swap(arr[j],arr[j+1]);\n  }\n }\n}\n",
+    "array": [
+      30,
+      10,
+      45,
+      20,
+      15
+    ],
+    "correct": false
+  },
+  {
+    "timestamp": "2026-08-06T05:14:05.437Z",
+    "code": "def quick_sort(ar):\n    if len(arr) <= 1\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)",
+    "array": [
+      30,
+      10,
+      45,
+      20,
+      15
+    ],
+    "correct": true
+  },
+  {
+    "timestamp": "2026-08-06T05:20:06.132Z",
+    "code": "import java.util.Arrays;\n\nclass GfG {\n\n    // partition function\n    static int partition(int[] arr, int low, int high) {\n        \n        // choose the pivot\n        int pivot = arr[high];\n        \n        // index of smaller element and indicates \n        // the right position of pivot found so far\n        int i = low - 1;\n\n        // traverse arr[low..high] and move all smaller\n        // elements to the left side. Elements from low to \n        // i are smaller after every iteration\n        for (int j = low; j <= high - 1; j++) {\n            if (arr[j] < pivot) {\n                i++;\n                swap(arr, i, j);\n            }\n        }\n        \n        // Move pivot after smaller elements and\n        // return its position\n        swap(arr, i + 1, high);  \n        return i + 1;\n    }\n\n    // swap function\n    static void swap(int[] arr, int i, int j) {\n        int temp = arr[i];\n        arr[i] = arr[j];\n        arr[j] = temp;\n    }\n\n    // the QuickSort function implementation\n    static void quickSort(int[] arr, int low, int high) {\n        if (low < high) {\n            \n            // pi is the partition return index of pivot\n            int pi = partition(arr, low, high);\n\n            // recursion calls for smaller elements\n            // and greater or equals elements\n            quickSort(arr, low, pi - 1);\n            quickSort(arr, pi + 1, high);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {10, 7, 8, 9, 1, 5};\n        int n = arr.length;\n      \n        quickSort(arr, 0, n - 1);\n        \n        for (int val : arr) {\n            System.out.print(val + \" \");  \n        }\n    }\n}",
+    "array": [
+      30,
+      10,
+      45,
+      20,
+      15
+    ],
+    "correct": true
+  },
+  {
+    "timestamp": "2026-08-12T04:04:35.832Z",
+    "code": "int arr[] = {30, 10, 45, 20, 15};\nint n = sizeof(arr) / sizeof(arr[0]);\nfor(int i=0; i<n; i++) {\n    arr[i] = arr[i] * 2;\n}",
+    "array": [
+      30,
+      10,
+      45,
+      20,
+      15
+    ],
+    "correct": true
+  }
+]
