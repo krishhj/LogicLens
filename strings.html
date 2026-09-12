@@ -14,20 +14,28 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -47,12 +55,15 @@
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
             </div>
 
             <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base String</button>
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base
+                    String</button>
                 <button class="op-btn enqueue" onclick="doOp('search')">🔍 Search Pattern</button>
                 <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
             </div>
@@ -123,6 +134,36 @@ search(ABCDABD)</textarea>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graph.html'">
+                <h3>Graphs</h3>
+                <p>Adjacency list/matrix</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
@@ -177,7 +218,7 @@ search(ABCDABD)</textarea>
             pauseStringPlayback();
             const baseIn = document.getElementById('stringInputBase');
             const targetIn = document.getElementById('stringInputQuery');
-            
+
             const b = baseIn.value;
             const t = targetIn.value;
 
@@ -317,13 +358,13 @@ search(ABCDABD)</textarea>
                                 }
                             }
                         }
-                        
-                        let iStr = 0; 
-                        let jPtr = 0; 
-                        
+
+                        let iStr = 0;
+                        let jPtr = 0;
+
                         while (iStr < activeString.length) {
                             let comparingIndices = [];
-                            for(let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
+                            for (let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
                                 comparingIndices.push(iStr - jPtr + k);
                             }
 
@@ -349,7 +390,7 @@ search(ABCDABD)</textarea>
                                     stepIndex: stringSteps.length,
                                     line: idx
                                 });
-                                
+
                                 if (jPtr !== 0) {
                                     jPtr = lps[jPtr - 1];
                                     stringSteps.push({
@@ -365,12 +406,12 @@ search(ABCDABD)</textarea>
                                     iStr++;
                                 }
                             }
-                            
+
                             // Check match
                             if (jPtr === qLen) {
                                 foundAny = true;
                                 let matchIndices = [];
-                                for(let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
+                                for (let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
                                 stringSteps.push({
                                     characters: [...activeString],
                                     comparing: [],
@@ -391,7 +432,7 @@ search(ABCDABD)</textarea>
                         let h = 1;
                         let pHash = 0;
                         let tHash = 0;
-                        
+
                         for (let i = 0; i < qLen - 1; i++) h = (h * d) % q;
 
                         // Calculate initial hash
@@ -405,7 +446,7 @@ search(ABCDABD)</textarea>
                             for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
 
                             let matchLogic = (pHash === tHash) ? "Hash Collision detected! Verifying exact char match." : "Hashes differ. Rolling window forward.";
-                            
+
                             stringSteps.push({
                                 characters: [...activeString],
                                 comparing: [...comparingIndices],
@@ -415,7 +456,7 @@ search(ABCDABD)</textarea>
                                 stepIndex: stringSteps.length,
                                 line: idx
                             });
-                            
+
                             if (pHash === tHash) {
                                 let match = true;
                                 for (let j = 0; j < qLen; j++) {
@@ -437,7 +478,7 @@ search(ABCDABD)</textarea>
                                     });
                                 }
                             }
-                            
+
                             // Roll hash
                             if (i < activeString.length - qLen) {
                                 tHash = (d * (tHash - activeString[i].charCodeAt(0) * h) + activeString[i + qLen].charCodeAt(0)) % q;
@@ -604,6 +645,7 @@ search(ABCDABD)</textarea>
             renderStringFrame(stringSteps[stringCurrentStep]);
         }
     </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

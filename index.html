@@ -11,25 +11,220 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
+    <style>
+        /* Reusable Correction Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 16, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 18px;
+            max-width: 680px;
+            width: 90%;
+            padding: 32px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            transform: scale(0.92);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-align: left;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-family: var(--ff);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--amber);
+        }
+
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text2);
+            margin-bottom: 24px;
+        }
+
+        .modal-error-box {
+            background: rgba(255, 181, 71, 0.08);
+            border: 1px solid rgba(255, 181, 71, 0.2);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text);
+            font-size: 13.5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-code-comparison {
+            margin-bottom: 24px;
+        }
+
+        .diff-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .diff-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .diff-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diff-box-title {
+            font-family: var(--ff);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text3);
+            margin-bottom: 6px;
+        }
+
+        .diff-code {
+            font-family: var(--fm);
+            font-size: 11px;
+            background: #060913;
+            color: #d1d5db;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            max-height: 220px;
+            overflow-y: auto;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        body.light .diff-code {
+            background: #f3f4f6;
+            color: #1f2937;
+            border-color: #e5e7eb;
+        }
+
+        .diff-line {
+            min-height: 18px;
+            padding: 0 4px;
+        }
+
+        .diff-line.diff-deleted {
+            background: rgba(255, 79, 106, 0.15);
+            color: #ff8fa2;
+            text-decoration: line-through;
+        }
+
+        body.light .diff-line.diff-deleted {
+            background: rgba(255, 79, 106, 0.12);
+            color: #d9263e;
+        }
+
+        .diff-line.diff-added {
+            background: rgba(0, 224, 150, 0.15);
+            color: #6effd0;
+            font-weight: 600;
+        }
+
+        body.light .diff-line.diff-added {
+            background: rgba(0, 224, 150, 0.12);
+            color: #008f5d;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: var(--ff);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--glow), var(--glow2));
+            color: #000;
+            box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+        }
+
+        .modal-btn.primary:hover {
+            box-shadow: 0 6px 16px rgba(0, 229, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn.secondary {
+            background: transparent;
+            border-color: var(--border2);
+            color: var(--text2);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+    </style>
 </head>
 
 <body>
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero">
@@ -55,8 +250,6 @@
                 <button class="sample-btn" onclick="loadDemo('quick')">Quick Sort</button>
             </div>
             <textarea id="codeInput">
-int arr[] = {5,3,8,1};
-
 for(int i=0;i<n;i++){
  for(int j=0;j<n-i-1;j++){
   if(arr[j] > arr[j+1]){
@@ -172,52 +365,6 @@ for(int i=0;i<n;i++){
         </div>
     </section>
 
-    <section class="scaling-section">
-        <h2 style="margin-bottom: 20px">Technical Scaling</h2>
-        <div class="scaling-box">
-            <div class="scaling-item">
-                <h4>O(1)</h4>
-                <p>Constant time operations independent of input size.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> Regardless of the input size <code>N</code>, the algorithm executes the exact same number of operations. Evaluating an array index like <code>arr[5]</code> fundamentally calculates <code>Base_Address + (5 * Element_Size)</code> executing in exactly 1 hardware clock cycle.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(log n)</h4>
-                <p>Logarithmic algorithms like binary search.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The problem space is aggressively quartered/halved per loop cycle. If <code>N = 100</code>, halving it drops to 50, then 25, then 12... meaning it takes roughly <code>log₂(100) ≈ 7</code> operations instead of 100 loops. This makes sorting scaling practically flat.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n)</h4>
-                <p>Linear complexity processing each element.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The algorithm strictly executes one operation sequentially per element. So for iterating across an Array constraint of <code>length N</code>, the logic engine must loop exactly <code>N</code> times. E.g. finding the Maximum number via naive linear checks.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n log n)</h4>
-                <p>Efficient sorting algorithms like Merge Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> A hybrid structure: the algorithm iterates structurally parsing exactly <code>N</code> items sequentially during compilation blocks, but recursively halves the physical tree mappings exactly <code>log₂(n)</code> times, resulting algorithmically in <code>N * log₂(N)</code> execution jumps natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n²)</h4>
-                <p>Nested loop algorithms like Bubble Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> When evaluating arrays, deploying double-loops inherently forces you to multiply lengths. A loop checking <code>N</code> elements, wrapping another internal nested loop scanning <code>N</code> elements explicitly triggers mathematically <code>N * N = N²</code> operations natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-        </div>
-    </section>
-
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
@@ -284,28 +431,14 @@ for(int i=0;i<n;i++){
                 });
 
                 const data = await response.json();
-                steps = data.steps || [];
 
-                document.getElementById("infoPanel").style.display = "flex";
-                document.getElementById("langText").innerText = data.language || "Unknown";
-                if (data.complexity && data.complexity.time && typeof data.complexity.time === 'object') {
-                    document.getElementById("timeBest").innerText = data.complexity.time.best || "-";
-                    document.getElementById("timeAvg").innerText = data.complexity.time.average || "-";
-                    document.getElementById("timeWorst").innerText = data.complexity.time.worst || "-";
+                // --- Syntax Error Interception ---
+                if (data.has_syntax_errors && data.corrected_code) {
+                    showCorrectionModal(data.error_details, data.corrected_code, () => {
+                        continueVisualization(data);
+                    });
                 } else {
-                    let text = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
-                    document.getElementById("timeBest").innerText = text;
-                    document.getElementById("timeAvg").innerText = text;
-                    document.getElementById("timeWorst").innerText = text;
-                }
-                document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
-
-                if (steps.length > 0) {
-                    document.getElementById("progressSlider").max = steps.length - 1;
-                    currentStep = 0;
-                    togglePlay(); // Auto-start the fetched animation
-                } else {
-                    stepText.innerText = "▶ Analysis failed. No steps generated.";
+                    continueVisualization(data);
                 }
             } catch (err) {
                 stepText.innerText =
@@ -313,6 +446,88 @@ for(int i=0;i<n;i++){
             } finally {
                 btn.innerText = "Visualize Logic";
                 btn.disabled = false;
+            }
+        }
+
+        let correctionCallback = null;
+        let pendingCorrectedCode = "";
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function generateDiffHtml(original, corrected) {
+            const originalLines = original.split('\n');
+            const correctedLines = corrected.split('\n');
+
+            let originalHtml = '';
+            let correctedHtml = '';
+
+            const maxLines = Math.max(originalLines.length, correctedLines.length);
+            for (let i = 0; i < maxLines; i++) {
+                const orig = originalLines[i] !== undefined ? originalLines[i] : '';
+                const corr = correctedLines[i] !== undefined ? correctedLines[i] : '';
+
+                if (orig.trim() === corr.trim()) {
+                    originalHtml += `<div class="diff-line">${escapeHtml(orig)}</div>`;
+                    correctedHtml += `<div class="diff-line">${escapeHtml(corr)}</div>`;
+                } else {
+                    originalHtml += `<div class="diff-line diff-deleted">${escapeHtml(orig) || '&nbsp;'}</div>`;
+                    correctedHtml += `<div class="diff-line diff-added">${escapeHtml(corr) || '&nbsp;'}</div>`;
+                }
+            }
+            return { originalHtml, correctedHtml };
+        }
+
+        function showCorrectionModal(errors, correctedCode, callback) {
+            const originalCode = document.getElementById("codeInput").value;
+            document.getElementById("modalErrorDetails").innerText = errors || "Minor syntax/formatting issues.";
+
+            // Generate side-by-side diff
+            const diff = generateDiffHtml(originalCode, correctedCode);
+            document.getElementById("modalOriginalCode").innerHTML = diff.originalHtml;
+            document.getElementById("modalCorrectedCode").innerHTML = diff.correctedHtml;
+
+            pendingCorrectedCode = correctedCode;
+            correctionCallback = callback;
+            document.getElementById("correctionModal").classList.add("active");
+        }
+
+        function handleCorrectionResponse(apply) {
+            document.getElementById("correctionModal").classList.remove("active");
+            if (apply && pendingCorrectedCode) {
+                document.getElementById("codeInput").value = pendingCorrectedCode;
+            }
+            if (correctionCallback) {
+                correctionCallback();
+            }
+        }
+
+        function continueVisualization(data) {
+            let stepText = document.getElementById("stepText");
+            steps = data.steps || [];
+
+            document.getElementById("infoPanel").style.display = "flex";
+            document.getElementById("langText").innerText = data.language || "Unknown";
+            if (data.complexity && data.complexity.time && typeof data.complexity.time === 'object') {
+                document.getElementById("timeBest").innerText = data.complexity.time.best || "-";
+                document.getElementById("timeAvg").innerText = data.complexity.time.average || "-";
+                document.getElementById("timeWorst").innerText = data.complexity.time.worst || "-";
+            } else {
+                let text = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
+                document.getElementById("timeBest").innerText = text;
+                document.getElementById("timeAvg").innerText = text;
+                document.getElementById("timeWorst").innerText = text;
+            }
+            document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
+
+            if (steps.length > 0) {
+                document.getElementById("progressSlider").max = steps.length - 1;
+                currentStep = 0;
+                togglePlay(); // Auto-start the fetched animation
+            } else {
+                stepText.innerText = "▶ Analysis failed. No steps generated.";
             }
         }
 
@@ -555,6 +770,48 @@ for(int i=0;i<n;i++){
 
 
     </script>
+
+    <!-- Auto-Correction Modal -->
+    <div id="correctionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 24px;">🔧</span>
+                <h3 class="modal-title">Syntax Correction Suggestion</h3>
+            </div>
+            <div class="modal-body">
+                <p>We detected some syntax errors or formatting mistakes in your algorithm code:</p>
+                <div class="modal-error-box" id="modalErrorDetails">
+                    <!-- Error details will be dynamically inserted here -->
+                </div>
+                <div class="modal-code-comparison">
+                    <div class="modal-code-comparison-header">Changes comparison</div>
+                    <div class="diff-container">
+                        <div class="diff-box">
+                            <div class="diff-box-title">Your Code</div>
+                            <div class="diff-code" id="modalOriginalCode">
+                                <!-- Original code with deletions highlighted -->
+                            </div>
+                        </div>
+                        <div class="diff-box">
+                            <div class="diff-box-title">Corrected Code</div>
+                            <div class="diff-code" id="modalCorrectedCode">
+                                <!-- Corrected code with additions highlighted -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 12px;">Would you like to apply these corrections to your editor before running the
+                    visualization?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn secondary" id="modalBtnIgnore"
+                    onclick="handleCorrectionResponse(false)">Keep Original</button>
+                <button type="button" class="modal-btn primary" id="modalBtnApply"
+                    onclick="handleCorrectionResponse(true)">Apply Corrections</button>
+            </div>
+        </div>
+    </div>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

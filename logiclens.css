@@ -2739,6 +2739,7 @@ body.light .queue-tube {
   content: '⇦ FRONT ⇨';
   left: -80px;
 }
+
 .queue-tube.deque-mode::after {
   content: '⇦ REAR ⇨';
   right: -80px;
@@ -2750,7 +2751,8 @@ body.light .queue-tube {
   padding: 18px 24px;
 }
 
-.queue-tube.circular::before, .queue-tube.circular::after {
+.queue-tube.circular::before,
+.queue-tube.circular::after {
   display: none;
 }
 
@@ -2776,15 +2778,18 @@ body.light .queue-tube {
   color: var(--border2);
   font-size: 12px;
 }
+
 .circular-link-arrow.active {
   border-color: var(--glow);
 }
+
 .circular-link-arrow.active::before {
   color: var(--glow);
 }
 
 /* ── NLP SENTENCES & STRINGS VISUALIZER ─────────────────────────────────── */
-.sentence-container, .string-container {
+.sentence-container,
+.string-container {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
@@ -2797,7 +2802,8 @@ body.light .queue-tube {
   min-height: 250px !important;
 }
 
-.sentence-word, .string-char {
+.sentence-word,
+.string-char {
   background: var(--surface2);
   border: 2px solid var(--border);
   display: flex;
@@ -2815,7 +2821,8 @@ body.light .queue-tube {
   min-width: 44px;
 }
 
-.sentence-word.highlight-match, .string-char.highlight-match {
+.sentence-word.highlight-match,
+.string-char.highlight-match {
   background: var(--green);
   color: #000;
   border-color: var(--green);
@@ -2823,7 +2830,8 @@ body.light .queue-tube {
   transform: translateY(-5px);
 }
 
-.sentence-word.highlight-compare, .string-char.highlight-compare {
+.sentence-word.highlight-compare,
+.string-char.highlight-compare {
   background: var(--amber);
   color: #fff;
   border-color: var(--amber);
@@ -2831,20 +2839,111 @@ body.light .queue-tube {
   transform: translateY(-2px);
 }
 
-body.light .sentence-word, body.light .string-char {
+body.light .sentence-word,
+body.light .string-char {
   background: #ffffff;
   border-color: var(--border2);
   color: #1e40af;
 }
 
-body.light .sentence-word.highlight-match, body.light .string-char.highlight-match {
+body.light .sentence-word.highlight-match,
+body.light .string-char.highlight-match {
   background: #22c55e;
   border-color: #22c55e;
   color: #fff;
 }
 
-body.light .sentence-word.highlight-compare, body.light .string-char.highlight-compare {
+body.light .sentence-word.highlight-compare,
+body.light .string-char.highlight-compare {
   background: #eab308;
   border-color: #eab308;
   color: #fff;
 }
+
+/* ── LANGUAGE TRANSLATION SELECTOR ───────────────────────────────────────── */
+.lang-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(12, 17, 32, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  transition: all 0.2s ease;
+}
+
+body.light .lang-select-wrapper {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--border);
+}
+
+.lang-select-wrapper:hover {
+  border-color: var(--glow);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+}
+
+.lang-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.lang-select {
+  background: transparent;
+  color: var(--text);
+  border: none;
+  font-family: var(--fb);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  padding-right: 4px;
+}
+
+body.light .lang-select {
+  color: var(--text);
+}
+
+.lang-select option {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+body.light .lang-select option {
+  background: #ffffff;
+  color: #0d1b3e;
+}
+
+/* Hide default Google Translate top banner, iframe, and popups */
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+#goog-gt-vt,
+.goog-te-spinner-pos {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+body > .skiptranslate:not(#logiclensLangWrapper) {
+  display: none !important;
+}
+
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}

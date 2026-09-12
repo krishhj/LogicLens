@@ -14,20 +14,28 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -41,23 +49,29 @@
 
             <!-- Context Tabs -->
             <div class="mode-tabs" style="margin-bottom: 20px;">
-                <button class="mode-tab active" id="tab-undirected" onclick="switchMode('undirected')">UNDIRECTED</button>
+                <button class="mode-tab active" id="tab-undirected"
+                    onclick="switchMode('undirected')">UNDIRECTED</button>
                 <button class="mode-tab" id="tab-directed" onclick="switchMode('directed')">DIRECTED</button>
                 <button class="mode-tab" id="tab-weighted" onclick="switchMode('weighted')">WEIGHTED</button>
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="graphInputNode" placeholder="Node (e.g. A)" style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="graphInputTarget" placeholder="Target (e.g. B)" style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="number" id="graphInputWeight" placeholder="Weight (e.g. 5)" style="flex:1; margin-bottom:0; display:none;" autocomplete="off" />
+                <input type="text" id="graphInputNode" placeholder="Node (e.g. A)" style="flex:1; margin-bottom:0;"
+                    autocomplete="off" />
+                <input type="text" id="graphInputTarget" placeholder="Target (e.g. B)" style="flex:1; margin-bottom:0;"
+                    autocomplete="off" />
+                <input type="number" id="graphInputWeight" placeholder="Weight (e.g. 5)"
+                    style="flex:1; margin-bottom:0; display:none;" autocomplete="off" />
             </div>
 
             <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('addNode')"><span style="color:var(--green)">➕</span> Add Node</button>
+                <button class="op-btn push" onclick="doOp('addNode')"><span style="color:var(--green)">➕</span> Add
+                    Node</button>
                 <button class="op-btn enqueue" onclick="doOp('addEdge')">🔗 Add Edge</button>
                 <button class="op-btn check" onclick="doOp('runBFS')">👣 Run BFS</button>
                 <button class="op-btn check" onclick="doOp('runDFS')">👣 Run DFS</button>
-                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Graph</button>
+                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear
+                    Graph</button>
             </div>
 
             <div class="adv-section-head" style="margin-top: 6px;">
@@ -107,7 +121,8 @@ bfs(A)</textarea>
                         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
                             <polygon points="0 0, 8 3, 0 6" fill="var(--text3)" />
                         </marker>
-                        <marker id="arrowhead-highlight" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                        <marker id="arrowhead-highlight" markerWidth="8" markerHeight="6" refX="28" refY="3"
+                            orient="auto">
                             <polygon points="0 0, 8 3, 0 6" fill="#eab308" />
                         </marker>
                     </defs>
@@ -142,6 +157,36 @@ bfs(A)</textarea>
             </div>
         </div>
     </div>
+
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
 
     <footer>LogicLens • Visualizing Code Logic</footer>
 
@@ -204,7 +249,7 @@ bfs(A)</textarea>
             const nodeIn = document.getElementById('graphInputNode');
             const targetIn = document.getElementById('graphInputTarget');
             const weightIn = document.getElementById('graphInputWeight');
-            
+
             const n = nodeIn.value.trim();
             const t = targetIn.value.trim();
             const w = parseFloat(weightIn.value) || 1;
@@ -212,7 +257,7 @@ bfs(A)</textarea>
             if (op === 'addNode') {
                 if (!n) { addLog('error', '⚠️', 'Enter a Node Name.'); return; }
                 if (graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" already exists.`); return; }
-                
+
                 graphNodes.push(n);
                 adjacencyList[n] = [];
                 addLog('push', '➕', `Added Node "${n}".`);
@@ -223,7 +268,7 @@ bfs(A)</textarea>
             } else if (op === 'addEdge') {
                 if (!n || !t) { addLog('error', '⚠️', 'Enter both source and target nodes.'); return; }
                 if (!graphNodes.includes(n) || !graphNodes.includes(t)) { addLog('error', '⚠️', 'Both nodes must exist in the graph.'); return; }
-                
+
                 // Add relation depending on mode
                 let exists = adjacencyList[n].some(edge => edge.to === t);
                 if (exists) { addLog('error', '⚠️', `Edge ${n}→${t} already exists.`); return; }
@@ -251,7 +296,7 @@ bfs(A)</textarea>
             } else if (op === 'runBFS' || op === 'runDFS') {
                 if (!n) { addLog('error', '⚠️', `Enter a starting node first.`); return; }
                 if (!graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" does not exist.`); return; }
-                addLog('info', '👣', `Initiated ${op.replace('run','')} from "${n}".`);
+                addLog('info', '👣', `Initiated ${op.replace('run', '')} from "${n}".`);
                 if (op === 'runBFS') appendCode(`bfs(${n})`); else appendCode(`dfs(${n})`);
                 analyzeGraphCode(); // Boot timeline analyzer magically!
 
@@ -312,7 +357,7 @@ bfs(A)</textarea>
                     let u = matchEdge[1].trim();
                     let v = matchEdge[2].trim();
                     let w = matchEdge[3] ? parseFloat(matchEdge[3].trim()) : 1;
-                    
+
                     if (!graphNodes.includes(u)) { graphNodes.push(u); adjacencyList[u] = []; }
                     if (!graphNodes.includes(v)) { graphNodes.push(v); adjacencyList[v] = []; }
 
@@ -700,6 +745,7 @@ bfs(A)</textarea>
             renderGraphFrame(graphSteps[graphCurrentStep]);
         }
     </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

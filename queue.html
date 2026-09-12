@@ -23,7 +23,7 @@
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
+        <div class="nav-right">
             <a href="cover.html"
                 style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
                 onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
@@ -34,11 +34,11 @@
                 style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
                 onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
                 Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -270,6 +270,36 @@ peek()</textarea>
             </div>
         </div>
     </div>
+
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graphs.html'">
+                <h3>Graphs</h3>
+                <p>BFS / DFS exploration</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
 
     <footer>LogicLens • Visualizing Code Logic</footer>
 
@@ -972,6 +1002,7 @@ peek()</textarea>
             renderQueueFrame(queueSteps[queueCurrentStep]);
         }
     </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

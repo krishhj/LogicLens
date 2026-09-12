@@ -14,20 +14,28 @@
 <body>
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -47,12 +55,15 @@
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="sentenceInputBase" placeholder="Base Sentence (tokenized space-delimited)" style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="sentenceInputQuery" placeholder="Target Word" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="sentenceInputBase" placeholder="Base Sentence (tokenized space-delimited)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="sentenceInputQuery" placeholder="Target Word" style="flex:1; margin-bottom:0;"
+                    autocomplete="off" />
             </div>
 
             <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Sentence</button>
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set
+                    Sentence</button>
                 <button class="op-btn enqueue" id="btn-run-algo" onclick="doOp('run')">🔍 Run Algorithm</button>
                 <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
             </div>
@@ -125,6 +136,36 @@ palindrome()</textarea>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graph.html'">
+                <h3>Graphs</h3>
+                <p>Adjacency list/matrix</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
@@ -196,7 +237,7 @@ palindrome()</textarea>
             pauseSentencePlayback();
             const baseIn = document.getElementById('sentenceInputBase');
             const targetIn = document.getElementById('sentenceInputQuery');
-            
+
             const b = baseIn.value.trim();
             const t = targetIn.value.trim();
 
@@ -377,11 +418,11 @@ palindrome()</textarea>
                         line: idx
                     });
                 }
-                
+
                 let matchPalindrome = text.match(/palindrome\(\)/);
                 if (matchPalindrome) {
                     if (activeWords.length === 0) return;
-                    
+
                     sentenceSteps.push({
                         words: [...activeWords],
                         comparing: [],
@@ -407,7 +448,7 @@ palindrome()</textarea>
                             line: idx
                         });
 
-                        if(activeWords[left] !== activeWords[right]) {
+                        if (activeWords[left] !== activeWords[right]) {
                             isPalindrome = false;
                             sentenceSteps.push({
                                 words: [...activeWords],
@@ -435,7 +476,7 @@ palindrome()</textarea>
                         right--;
                     }
 
-                    if(isPalindrome) {
+                    if (isPalindrome) {
                         sentenceSteps.push({
                             words: [...activeWords],
                             comparing: [],
@@ -603,6 +644,7 @@ palindrome()</textarea>
             renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
         }
     </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>
