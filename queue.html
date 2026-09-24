@@ -14,7 +14,7 @@
 
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
             <a href="cover.html"
@@ -23,7 +23,7 @@
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
+        <div class="nav-right">
             <a href="cover.html"
                 style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
                 onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
@@ -34,11 +34,11 @@
                 style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
                 onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
                 Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -49,7 +49,10 @@
     <div class="container" id="queueContainer" style="margin-top: 40px;">
         <!-- ═══ LEFT: EDITOR PANEL ═══ -->
         <div class="editor">
-            <h3>Queue Setup</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Queue Setup</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Queue</button>
+            </div>
 
             <!-- Mode switcher -->
             <div class="mode-tabs" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
@@ -102,7 +105,7 @@
             <div class="adv-section-head" style="margin-top: 6px;">
                 <h3>Recorded Operations</h3>
             </div>
-            <textarea id="queueCodeInput" style="height: 100px;">enqueue(10)
+            <textarea id="queueCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">enqueue(10)
 enqueue(20)
 enqueue(30)
 dequeue()
@@ -169,6 +172,10 @@ peek()</textarea>
                         onclick="setQueueSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-queue-fast" onclick="setQueueSpeed(400, 'fast')">Fast</button>
                 </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
             </div>
         </div>
     </div>
@@ -271,15 +278,62 @@ peek()</textarea>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graphs.html'">
+                <h3>Graphs</h3>
+                <p>BFS / DFS exploration</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
         // ══════════════════════════════════════════════════════════════
         // THEME
         // ══════════════════════════════════════════════════════════════
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
 
         // ══════════════════════════════════════════════════════════════
         // STATE
@@ -972,6 +1026,53 @@ peek()</textarea>
             renderQueueFrame(queueSteps[queueCurrentStep]);
         }
     </script>
+    <!-- About Queue Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About Queue Data Structure</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>A Queue is a linear data structure operating under the <strong>FIFO (First-In, First-Out)</strong> principle. Elements enter at the <strong>Rear</strong> and exit from the <strong>Front</strong>, preserving exact arrival ordering.</p>
+
+                <h4>Queue Variants & Detailed Formulas</h4>
+                <ul>
+                    <li style="margin-bottom: 16px;">
+                        <strong>1. Linear Queue:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Inserts items at <i>Rear</i> (<code>Enqueue</code>) and removes items from <i>Front</i> (<code>Dequeue</code>) in O(1) constant time. In simple linear arrays, dequeuing creates unusable "false overflow" space at the front unless all remaining elements are shifted left in O(N) time.</p>
+                        <span class="about-complexity-badge">Enqueue: O(1)</span><span class="about-complexity-badge">Dequeue: O(1)</span><span class="about-complexity-badge">Index Drift Problem</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>2. Circular Queue:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Solves index drift by wrapping Front and Rear pointers around array bounds using modulo arithmetic: <code>Rear = (Rear + 1) % N</code> and <code>Front = (Front + 1) % N</code>. Eliminates memory waste, allowing maximum capacity usage without shifting elements.</p>
+                        <span class="about-complexity-badge">Space Efficiency: 100%</span><span class="about-complexity-badge">Modulo Pointer Wrapping</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>3. Double-Ended Queue (Deque):</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Supports insertion and deletion at both ends (<code>PushFront</code>, <code>PushRear</code>, <code>PopFront</code>, <code>PopRear</code>) in O(1) constant time. Combines features of both Stacks and Queues, serving as a core component for sliding window maximum algorithms and work-stealing job queues.</p>
+                        <span class="about-complexity-badge">Front/Rear Ops: O(1)</span><span class="about-complexity-badge">Dual-ended flexibility</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>4. Priority Queue:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Elements are dequeued according to assigned priority values rather than insertion order. Implemented using Binary Min/Max Heaps where insertions and root deletions execute in O(log N) logarithmic time.</p>
+                        <span class="about-complexity-badge">Enqueue/Dequeue: O(log N)</span><span class="about-complexity-badge">Heap Backed</span>
+                    </li>
+                </ul>
+
+                <h4>Real-World Applications</h4>
+                <p>Operating System CPU process scheduling (Round Robin), printer spooler document queues, web server HTTP request handler queues, and BFS graph search exploration queues.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

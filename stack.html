@@ -13,23 +13,31 @@
     <link rel="stylesheet" href="logiclens.css">
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -40,7 +48,10 @@
     <div class="container" id="stackContainer" style="margin-top: 40px;">
         <!-- ═══ LEFT: EDITOR PANEL ═══ -->
         <div class="editor">
-            <h3>Stack Setup</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Stack Setup</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Stack</button>
+            </div>
 
             <!-- Mode switcher -->
             <div class="mode-tabs" style="margin-top: 10px;">
@@ -79,7 +90,7 @@
             <div class="adv-section-head" style="margin-top: 6px;">
                 <h3>Recorded Operations</h3>
             </div>
-            <textarea id="stackCodeInput" style="height: 100px;">push(10)
+            <textarea id="stackCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">push(10)
 push(20)
 push(30)
 pop()
@@ -147,6 +158,10 @@ peek()</textarea>
                         onclick="setStackSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-stack-fast" onclick="setStackSpeed(400, 'fast')">Fast</button>
                 </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
             </div>
         </div>
     </div>
@@ -266,15 +281,62 @@ peek()</textarea>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graphs.html'">
+                <h3>Graphs</h3>
+                <p>BFS / DFS exploration</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
         // ══════════════════════════════════════════════════════════════
         // THEME
         // ══════════════════════════════════════════════════════════════
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
 
         // ══════════════════════════════════════════════════════════════
         // STATE
@@ -812,6 +874,57 @@ peek()</textarea>
         // ══════════════════════════════════════════════════════════════
         renderLiveStack();
     </script>
+    <!-- About Stack Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About Stack Data Structure</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>A Stack is a fundamental linear data structure operating strictly under the <strong>LIFO (Last-In, First-Out)</strong> principle. All insertions and deletions take place exclusively at a single designated end called the <strong>Top</strong>.</p>
+
+                <h4>Core Operations & Implementation Mechanics</h4>
+                <ul>
+                    <li style="margin-bottom: 16px;">
+                        <strong>1. Core Operations:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">
+                            • <code>Push(x)</code>: Places item <i>x</i> onto the top of the stack in O(1) constant time.
+                            <br>• <code>Pop()</code>: Removes and returns the top item in O(1) constant time; raises an Underflow error if empty.
+                            <br>• <code>Peek() / Top()</code>: Reads the top item without modifying stack state in O(1) constant time.
+                        </p>
+                        <span class="about-complexity-badge">Push: O(1)</span><span class="about-complexity-badge">Pop: O(1)</span><span class="about-complexity-badge">Peek: O(1)</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>2. Memory Implementations:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">
+                            • <em>Array-based Stack:</em> Provides fast contiguous memory cache efficiency. Dynamic arrays resize when full with amortized O(1) time per operation.
+                            <br>• <em>Linked List-based Stack:</em> Allocates nodes dynamically without fixed capacity limits, inserting and deleting at the head pointer in O(1) time.
+                        </p>
+                        <span class="about-complexity-badge">Array Access: Cache-friendly</span><span class="about-complexity-badge">Linked List: Dynamic capacity</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>3. Algorithm Applications:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">
+                            Essential for maintaining runtime call frames during recursive function calls. Used in Shunting-Yard algorithms to convert infix math expressions to postfix (RPN) notation and evaluate bracket/parentheses balancing in compiler lexers.
+                        </p>
+                        <span class="about-complexity-badge">Call Stack</span><span class="about-complexity-badge">Expression Evaluation</span>
+                    </li>
+                </ul>
+
+                <h4>Real-World Applications</h4>
+                <p>Programming language function execution stacks, IDE code editor Undo/Redo buffers, expression syntax parsing in compilers, and browser back-forward page history navigation.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

@@ -13,23 +13,31 @@
     <link rel="stylesheet" href="logiclens.css">
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -40,7 +48,10 @@
     <div class="container" id="treeContainer" style="margin-top: 40px;">
         <!-- ═══ LEFT: EDITOR PANEL ═══ -->
         <div class="editor">
-            <h3>Tree Setup</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Tree Setup</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Trees</button>
+            </div>
 
             <!-- Tree type mode tabs -->
             <div class="mode-tabs" style="margin-top: 10px;">
@@ -89,7 +100,7 @@
             <div class="adv-section-head" style="margin-top: 14px;">
                 <h3>Recorded Operations</h3>
             </div>
-            <textarea id="treeCodeInput" style="height: 100px;">insert(50)
+            <textarea id="treeCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">insert(50)
 insert(20)
 insert(70)
 insert(10)
@@ -157,6 +168,10 @@ insert(80)</textarea>
                         onclick="setTreeSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-tree-fast" onclick="setTreeSpeed(400, 'fast')">Fast</button>
                 </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
             </div>
         </div>
     </div>
@@ -283,15 +298,62 @@ insert(80)</textarea>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='graphs.html'">
+                <h3>Graphs</h3>
+                <p>BFS / DFS exploration</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>Pattern matching</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
         // ════════════════════════════════════════════════════════════════
         // THEME
         // ════════════════════════════════════════════════════════════════
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
 
         // ════════════════════════════════════════════════════════════════
         // TREE NODE CLASS
@@ -965,6 +1027,53 @@ insert(80)</textarea>
         // ════════════════════════════════════════════════════════════════
         renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'BST mode active. Insert nodes to begin.', rotation: null });
     </script>
+    <!-- About Trees Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About Binary & AVL Trees</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>Trees are hierarchical node-based data structures. A Binary Search Tree (BST) maintains ordered keys for fast logarithmic operations, while an AVL Tree automatically self-balances using rotations to guarantee strict O(log N) performance.</p>
+
+                <h4>Detailed Tree Mechanics & Formulas</h4>
+                <ul>
+                    <li style="margin-bottom: 16px;">
+                        <strong>1. Binary Search Tree (BST):</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Enforces the invariant: for every node <i>N</i>, <code>key(Left) &lt; key(N) &lt; key(Right)</code>. Searching and inserting compare keys at each step, discarding half the tree. While average search time is O(log N), inserting pre-sorted data causes the tree to degenerate into a single long linked list of height <i>H = O(N)</i>, degrading search and insertion times to linear O(N) worst-case.</p>
+                        <span class="about-complexity-badge">Search/Insert Avg: O(log N)</span><span class="about-complexity-badge">Worst: O(N)</span><span class="about-complexity-badge">Space: O(N)</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>2. AVL Tree (Self-Balancing BST):</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Invented by Adelson-Velsky and Landis, an AVL tree enforces that for every node <i>N</i>, the heights of its left and right subtrees differ by at most 1. The Balance Factor formula is <code>BF(N) = Height(Left) - Height(Right) ∈ {-1, 0, +1}</code>. If an operation causes <code>|BF(N)| &gt; 1</code>, the tree immediately rebalances using single (LL, RR) or double (LR, RL) rotations. This guarantees max height <i>H ≤ 1.44 log₂(N + 2)</i>, guaranteeing O(log N) worst-case operations.</p>
+                        <span class="about-complexity-badge">Guaranteed Time: O(log N)</span><span class="about-complexity-badge">Max Height: 1.44 log₂(N)</span><span class="about-complexity-badge">Rotations: O(1) per insert</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>3. Tree Traversals:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">
+                            • <em>Inorder (Left → Root → Right):</em> Visits nodes in strictly ascending sorted key sequence.
+                            <br>• <em>Preorder (Root → Left → Right):</em> Visits root first; ideal for duplicating or serializing tree structures.
+                            <br>• <em>Postorder (Left → Right → Root):</em> Visits children before parent; ideal for bottom-up node deletion and syntax evaluation.
+                            <br>• <em>Level Order (Breadth-First):</em> Processes tree nodes layer-by-layer from top to bottom using a Queue.
+                        </p>
+                        <span class="about-complexity-badge">Traversal Time: O(N)</span><span class="about-complexity-badge">Stack Depth: O(H)</span>
+                    </li>
+                </ul>
+
+                <h4>Real-World Applications</h4>
+                <p>OS file system directory hierarchies (ext4, NTFS), B/B+ tree database indexing engines, compiler abstract syntax trees (AST), and memory allocation free lists.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>
