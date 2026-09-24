@@ -1,0 +1,247 @@
+# LogicLens - AI-Powered Code & DSA Visualization Engine
+=========================================================
+
+LogicLens is a modular, interactive web application designed to help developers and CS students visualize data structures, algorithms, and custom code execution. It uses a hybrid engine that integrates standard DSA visualizations, an AI-powered code execution tracer (using Gemini 2.5), and a localized JavaScript execution sandbox.
+
+---
+
+## 1. Directory Structure Map
+Below is the clean directory structure of the repository (excluding `node_modules` and `.git` folders):
+
+```
+Project - LogicLens/
+├── .gitignore
+├── analyzer.js                   # Root AI helper/analyzer module (redundant/legacy)
+├── cover.html                    # Homepage (Welcome portal with light/dark glassmorphic UI)
+├── custom.html                   # Interface for visualizing user-written custom code via AI
+├── feedback_log.json             # Stores log entries of user correctness feedback
+├── graphs.html                   # Graph visualizer (Directed, Undirected, Weighted BFS/DFS)
+├── index.html                    # Main DSA Learning page & Sorting visualizer (Bubble, Insertion, Selection, Quick)
+├── logiclens.css                 # Master CSS stylesheet (colors, variables, layouts, light/dark themes)
+├── package-lock.json             # Root package lock
+├── package.json                  # Root npm configuration (defines server dependencies)
+├── queue.html                    # Queue visualizer (FIFO flow with front/rear pointers)
+├── sentences.html                # NLP / Sentence visualizer (Linear Search, Word Reverse, Palindrome check)
+├── stack.html                    # Stack visualizer (LIFO vertical stack, Array/Linked-List modes)
+├── strings.html                  # String pattern matching visualizer (Naive, KMP, Rabin-Karp)
+├── trees.html                    # Tree visualizer (BST and AVL balance trees, rotation/traversal)
+├── vercel.json                   # Vercel deployment configuration (routes /api/* to the serverless function)
+│
+├── api/
+│   └── index.js                  # Entry point for Vercel serverless functions, forwards to server/src/index.js
+│
+├── client/                       # Alternative React-based client workspace (incomplete/template layout)
+│   ├── tailwind.config.js
+│   └── src/
+│       ├── index.html            # React + CDN index featuring Framer Motion & Line Chart complexity scaling
+│       ├── logiclens.css         # Alternative stylesheet for the React prototype
+│       └── (empty folders: api, components, features, hooks, store, styles, utils)
+│
+└── server/                       # Node.js backend workspace
+    ├── .env                      # Contains private GEMINI_API_KEY environment variable
+    ├── analyzer.js               # Active AI utility using @google/generative-ai (Gemini 2.5 Flash)
+    ├── package-lock.json
+    ├── package.json              # Backend dependencies (Express, Cors, Dotenv, Google Generative AI)
+    └── src/
+        ├── index.js              # Express app, local step generators, proxy-based sandboxed JS runner
+        ├── engine/
+        │   ├── rules.js          # Empty rule declarations for matching algorithms (future expansion)
+        │   └── generators/
+        │       └── bubbleSort.js # Isolated module to generate Bubble Sort steps
+        ├── controllers/          # Empty (reserved for MVC structure)
+        ├── middleware/           # Empty (reserved for middleware)
+        └── routes/               # Empty (reserved for route separation)
+```
+
+---
+
+## 2. System Architecture & Component Breakdown
+
+### A. Frontend Architecture (Vanilla Static Stack)
+The primary user interface consists of static HTML files in the root folder (`cover.html`, `index.html`, `stack.html`, etc.) styled by `logiclens.css`.
+- **CSS Architecture**: Employs CSS custom properties (variables) representing colors, typography, borders, and margins. It supports a system-wide Dark/Light mode triggered by a `.light` body class.
+- **Media Controls & Timeline**: Every visualizer includes standard media player controls (`⏮`, `◀`, `▶ Play`, `⏸ Pause`, `▶`, `⏭`, speed controls `Slow`/`Normal`/`Fast`, and a progress scrub slider `Timeline`).
+- **Dynamic Canvases**: DOM elements are dynamically redrawn inside `<div id="canvas">` representing arrays as height-scaled bar graphs, stacks as vertical block lists, queues as horizontal chains, trees as SVG/absolute-positioned node webs, and graphs as interactive canvases.
+
+### B. Backend Server (`server/src/index.js`)
+An Express app running on port 5000 that serves two primary purposes:
+1. **Static File Hosting**: Serves the root directory files using `app.use(express.static(...))` so the entire app can be run locally by accessing `http://localhost:5000`.
+2. **API Services**:
+   - `/api/analyze` (POST): Accepts `{ code, array }`. Coordinates with Gemini to dry-run the custom code, and generates animation frames.
+   - `/api/feedback` (POST): Accepts `{ code, array, correct }` and appends entries to `feedback_log.json` to monitor AI accuracy.
+
+### C. Vercel Serverless Function Config
+- `vercel.json` rewrites all requests matching `/api/(.*)` to `api/index.js`.
+- `api/index.js` acts as a wrapper that imports and exports the primary Express app (`server/src/index.js`). This enables serverless hosting on Vercel with zero cold-start refactoring.
+
+---
+
+## 3. The Execution & Visualization Engine
+
+The main engine flow is handled inside `server/src/index.js` on the `/api/analyze` endpoint:
+
+```
+                  ┌──────────────────────────────┐
+                  │ POST /api/analyze request    │
+                  └──────────────┬───────────────┘
+                                 │
+                     [Send code and base array]
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │ server/analyzer.js           │
+                  │ (Calls Gemini 2.5 Flash API) │
+                  └──────────────┬───────────────┘
+                                 │
+          ┌──────────────────────┴──────────────────────┐
+          ▼ (Returns parsed JSON analysis response)     ▼ (If Gemini API key fails/offline)
+┌──────────────────────────────────┐          ┌──────────────────────────────────┐
+│ Determine language, complexity,  │          │ Returns offline fallback values │
+│ interview steps, detected algo.  │          └────────────────┬─────────────────┘
+└────────────────┬─────────────────┘                           │
+                 │                                             ▼
+                 │                             ┌──────────────────────────────────┐
+                 │                             │ steps = [{ explanation: "API offline" }]
+                 │                             └──────────────────────────────────┘
+                 ▼
+    ┌───────────────────────────┐
+    │ Algorithm Routing Engine  │
+    └────────────┬──────────────┘
+                 ├───────────────────────────────────────────┐
+                 ▼ (If Standard Algo)                        ▼ (If Custom Javascript Algo)
+    ┌───────────────────────────┐               ┌──────────────────────────────────┐
+    │ Route to local generator  │               │ Runs in Node 'vm' sandbox        │
+    │ (Bubble, Selection, etc.) │               │ using JS Proxy to intercept array│
+    │ for absolute correctness. │               │ reads/writes and generate steps. │
+    └────────────┬──────────────┘               └────────────────┬─────────────────┘
+                 │                                               │
+                 └──────────────────────┬────────────────────────┘
+                                        ▼
+                  ┌──────────────────────────────┐
+                  │ steps.map() checks action    │
+                  │ (compare/swap) to highlight  │
+                  │ lines in the code editor UI. │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │ Return final payload to UI   │
+                  └──────────────────────────────┘
+```
+
+### A. Gemini 2.5 Flash Integration (`server/analyzer.js`)
+Calls the Gemini API using standard prompts configured for JSON output (`responseMimeType: "application/json"`). It tells Gemini to act as a dry-run engine:
+1. Classifies the input snippet into one of the standard algorithms: `"Bubble Sort"`, `"Quick Sort"`, `"Merge Sort"`, `"Selection Sort"`, `"Insertion Sort"`, `"Linear Search"`, or `"Binary Search"`. If none, outputs `"Custom"`.
+2. Evaluates time complexity (`best`, `average`, `worst` cases) and space complexity.
+3. Formulates structured technical interview breakdown notes.
+4. If no standard algorithm is found, it does a conceptual dry-run trace returned in `steps[]`.
+
+### B. Fallback Local Execution Sandboxing (`vm` and `Proxy`)
+If the user uploads custom JavaScript code that is not classified as a standard algorithm, the backend tries to execute it locally:
+1. Wraps the input array in a Javascript **Proxy object**.
+2. Intercepts property reads (`get`) as index accesses (marked as `compare` operations) and intercepts property writes (`set`) as modifications (marked as `swap` operations).
+3. Executes the user code inside a secure, timed-out context using Node's native `vm.createContext` and `vm.runInContext`.
+4. As the custom code executes, the Proxy automatically pushes exact array state snapshots to the animation `steps` timeline.
+
+---
+
+## 4. Sub-Visualizer Feature Breakdown
+
+Each sub-visualizer in the root directory manages specific operations:
+
+### 1. DSA Learning & Sorting (`index.html`)
+- **Visuals**: Vertical bar charts representing array element values.
+- **Demos**: Bubble Sort, Insertion Sort, Selection Sort, Quick Sort.
+- **Interactions**: Inputs custom comma-separated arrays. Displays details like language, time complexities, and space complexities.
+
+### 2. Custom Code Visualizer (`custom.html`)
+- **Purpose**: Tailored specifically for custom, user-pasted code.
+- **Engine connection**: Sends custom code to `/api/analyze` and walks step-by-step through execution loops, highlighting active indexes and explanation logs dynamically.
+
+### 3. Stack Visualizer (`stack.html`)
+- **Modes**: Array Stack (fixed capacity, index tracking) or Linked-List Stack (node objects linked via pointers).
+- **Operations**: Push, Pop, Peek, isEmpty, Size, Clear.
+- **Specialty**: Allows step-by-step command script execution (e.g. pasting multiple `push(10)` operations) and records them.
+
+### 4. Queue Visualizer (`queue.html`)
+- **Visuals**: A horizontal layout of memory blocks featuring dynamic arrows showing `Front` and `Rear` queue pointers.
+- **Modes**: Simple Queue or Circular Queue.
+- **Operations**: Enqueue, Dequeue, Peek, Size, Clear, Check Full/Empty.
+
+### 5. Tree Visualizer (`trees.html`)
+- **Tree Types**: Binary Search Trees (BST) or self-balancing AVL Trees.
+- **Operations**: Insert Node, Search Node, Delete Node.
+- **Traversals**: In-order, Pre-order, Post-order, Level-order.
+- **Visuals**: Nodes drawn at coordinates with SVG lines joining parent and child nodes. Supports balance-rotation animations for AVL trees.
+
+### 6. Graph Visualizer (`graphs.html`)
+- **Graph Types**: Directed, Undirected, Weighted graphs.
+- **Operations**: Add Node, Remove Node, Add Edge, Remove Edge.
+- **Algorithms**: Run BFS (Breadth-First Search) or DFS (Depth-First Search) from a custom source node.
+- **Visuals**: Draggable nodes on a coordinate canvas showing traversal highlights.
+
+### 7. String Visualizer (`strings.html`)
+- **Algorithms**: Naive Pattern Search, KMP (Knuth-Morris-Pratt), Rabin-Karp Hash-based search.
+- **Visuals**: Displays the sliding window comparison character-by-character against a base string.
+
+### 8. Sentences / NLP Visualizer (`sentences.html`)
+- **Algorithms**: Word Tokenization, Linear Search, In-Place Sentence Reversing, Palindrome Checking.
+- **Visuals**: Represents space-separated words as indexable arrays, showing token swapping and matching.
+
+---
+
+## 5. Development & Running the Project
+
+### Prerequisites
+- Node.js installed locally.
+- A Gemini API Key from Google AI Studio.
+
+### Local Setup
+1. Open the `/server` directory:
+   ```bash
+   cd server
+   ```
+2. Create a `.env` file under `/server` containing:
+   ```env
+   GEMINI_API_KEY=your_actual_api_key_here
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the server:
+   ```bash
+   npm start
+   ```
+5. Open your browser and navigate to:
+   ```
+   http://localhost:5000/cover.html
+   ```
+Update log line 1: streak tracking
+Update log line 2: streak tracking
+Update log line 3: streak tracking
+Update log line 4: streak tracking
+Update log line 5: streak tracking
+Update log line 6: streak tracking
+Update log line 7: streak tracking
+Update log line 8: streak tracking
+Update log line 9: streak tracking
+Update log line 10: streak tracking
+Update log line 11: streak tracking
+Update log line 12: streak tracking
+Update log line 13: streak tracking
+Update log line 14: streak tracking
+Update log line 15: streak tracking
+Update log line 16: streak tracking
+Update log line 17: streak tracking
+Update log line 18: streak tracking
+Update log line 19: streak tracking
+Update log line 20: streak tracking
+Update log line 21: streak tracking
+Update log line 22: streak tracking
+Update log line 23: streak tracking
+Update log line 24: streak tracking
+Update log line 25: streak tracking
+Update log line 26: streak tracking
+Update log line 27: streak tracking
+Update log line 28: streak tracking
+Update log line 29: streak tracking

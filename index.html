@@ -11,25 +11,220 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="logiclens.css">
+    <style>
+        /* Reusable Correction Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 16, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 18px;
+            max-width: 680px;
+            width: 90%;
+            padding: 32px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            transform: scale(0.92);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-align: left;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-family: var(--ff);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--amber);
+        }
+
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text2);
+            margin-bottom: 24px;
+        }
+
+        .modal-error-box {
+            background: rgba(255, 181, 71, 0.08);
+            border: 1px solid rgba(255, 181, 71, 0.2);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text);
+            font-size: 13.5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-code-comparison {
+            margin-bottom: 24px;
+        }
+
+        .diff-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .diff-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .diff-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diff-box-title {
+            font-family: var(--ff);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text3);
+            margin-bottom: 6px;
+        }
+
+        .diff-code {
+            font-family: var(--fm);
+            font-size: 11px;
+            background: #060913;
+            color: #d1d5db;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            max-height: 220px;
+            overflow-y: auto;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        body.light .diff-code {
+            background: #f3f4f6;
+            color: #1f2937;
+            border-color: #e5e7eb;
+        }
+
+        .diff-line {
+            min-height: 18px;
+            padding: 0 4px;
+        }
+
+        .diff-line.diff-deleted {
+            background: rgba(255, 79, 106, 0.15);
+            color: #ff8fa2;
+            text-decoration: line-through;
+        }
+
+        body.light .diff-line.diff-deleted {
+            background: rgba(255, 79, 106, 0.12);
+            color: #d9263e;
+        }
+
+        .diff-line.diff-added {
+            background: rgba(0, 224, 150, 0.15);
+            color: #6effd0;
+            font-weight: 600;
+        }
+
+        body.light .diff-line.diff-added {
+            background: rgba(0, 224, 150, 0.12);
+            color: #008f5d;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: var(--ff);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--glow), var(--glow2));
+            color: #000;
+            box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+        }
+
+        .modal-btn.primary:hover {
+            box-shadow: 0 6px 16px rgba(0, 229, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn.secondary {
+            background: transparent;
+            border-color: var(--border2);
+            color: var(--text2);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+    </style>
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero">
@@ -41,7 +236,10 @@
 
     <div class="container">
         <div class="editor">
-            <h3>Algorithm Setup</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Algorithm Setup</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Sorting</button>
+            </div>
 
             <span class="input-label">Custom Array:</span>
             <input type="text" id="arrayInput" value="30, 10, 45, 20, 15" placeholder="e.g. 10, 50, 20, 40" />
@@ -54,9 +252,7 @@
                 <button class="sample-btn" onclick="loadDemo('selection')">Selection Sort</button>
                 <button class="sample-btn" onclick="loadDemo('quick')">Quick Sort</button>
             </div>
-            <textarea id="codeInput">
-int arr[] = {5,3,8,1};
-
+            <textarea id="codeInput" class="notranslate" translate="no" readonly>
 for(int i=0;i<n;i++){
  for(int j=0;j<n-i-1;j++){
   if(arr[j] > arr[j+1]){
@@ -137,6 +333,10 @@ for(int i=0;i<n;i++){
                     <button class="speed-btn active" id="btn-normal" onclick="setSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-fast" onclick="setSpeed(400, 'fast')">Fast</button>
                 </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
             </div>
         </div>
     </div>
@@ -172,58 +372,29 @@ for(int i=0;i<n;i++){
         </div>
     </section>
 
-    <section class="scaling-section">
-        <h2 style="margin-bottom: 20px">Technical Scaling</h2>
-        <div class="scaling-box">
-            <div class="scaling-item">
-                <h4>O(1)</h4>
-                <p>Constant time operations independent of input size.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> Regardless of the input size <code>N</code>, the algorithm executes the exact same number of operations. Evaluating an array index like <code>arr[5]</code> fundamentally calculates <code>Base_Address + (5 * Element_Size)</code> executing in exactly 1 hardware clock cycle.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(log n)</h4>
-                <p>Logarithmic algorithms like binary search.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The problem space is aggressively quartered/halved per loop cycle. If <code>N = 100</code>, halving it drops to 50, then 25, then 12... meaning it takes roughly <code>log₂(100) ≈ 7</code> operations instead of 100 loops. This makes sorting scaling practically flat.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n)</h4>
-                <p>Linear complexity processing each element.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> The algorithm strictly executes one operation sequentially per element. So for iterating across an Array constraint of <code>length N</code>, the logic engine must loop exactly <code>N</code> times. E.g. finding the Maximum number via naive linear checks.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n log n)</h4>
-                <p>Efficient sorting algorithms like Merge Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> A hybrid structure: the algorithm iterates structurally parsing exactly <code>N</code> items sequentially during compilation blocks, but recursively halves the physical tree mappings exactly <code>log₂(n)</code> times, resulting algorithmically in <code>N * log₂(N)</code> execution jumps natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-            <div class="scaling-item">
-                <h4>O(n²)</h4>
-                <p>Nested loop algorithms like Bubble Sort.</p>
-                <div class="calc-exp" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border2); font-size: 13px; color: var(--text3); line-height: 1.5;">
-                    <strong>Math Calculation:</strong> When evaluating arrays, deploying double-loops inherently forces you to multiply lengths. A loop checking <code>N</code> elements, wrapping another internal nested loop scanning <code>N</code> elements explicitly triggers mathematically <code>N * N = N²</code> operations natively.
-                </div>
-                <button onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.innerText = this.previousElementSibling.style.display === 'none' ? 'How is it calculated?' : 'Hide Calculation'" style="margin-top: 12px; font-size: 11px; padding: 5px 10px; background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; cursor: pointer; transition: all 0.2s;">How is it calculated?</button>
-            </div>
-        </div>
-    </section>
-
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
 
         const demos = {
             bubble: "void bubbleSort(int arr[], int n) {\n  for(int i=0; i<n; i++) {\n    for(int j=0; j<n-i-1; j++) {\n      if(arr[j] > arr[j+1]) {\n        int temp = arr[j];\n        arr[j] = arr[j+1];\n        arr[j+1] = temp;\n      }\n    }\n  }\n}",
@@ -243,76 +414,261 @@ for(int i=0;i<n;i++){
         let playInterval = null;
         let speedMs = 1000;
 
-        // 1. HYBRID FETCH (Calls Node.js/Gemini Backend)
-        const isLocalDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
-        const API_URL = isLocalDev ? "http://localhost:5000/api/analyze" : "/api/analyze";
+        // --- CLIENT-SIDE STEP GENERATORS ---
+        function generateBubbleSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let sortedIndices = [];
+            for (let i = 0; i < arr.length; i++) {
+                let swappedThisPass = false;
+                for (let j = 0; j < arr.length - i - 1; j++) {
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", sorted: [...sortedIndices], explanation: `Checking ${arr[j]} and ${arr[j + 1]}` });
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        swappedThisPass = true;
+                        steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[j+1]} and ${arr[j]}` });
+                    }
+                }
+                sortedIndices.push(arr.length - 1 - i);
+                steps.push({ array: [...arr], highlight: [], action: "none", sorted: [...sortedIndices], explanation: `${arr[arr.length - 1 - i]} is in its final sorted position.` });
+                if (!swappedThisPass) {
+                    for (let k = 0; k < arr.length - i - 1; k++) sortedIndices.push(k);
+                    break;
+                }
+            }
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
 
-        async function analyzeCode() {
-            const code = document.querySelector("textarea").value;
+        function generateSelectionSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let sortedIndices = [];
+            for (let i = 0; i < arr.length - 1; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < arr.length; j++) {
+                    steps.push({ array: [...arr], highlight: [minIdx, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with current min ${arr[minIdx]}` });
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx = j;
+                        steps.push({ array: [...arr], highlight: [minIdx], action: "compare", sorted: [...sortedIndices], explanation: `New minimum found: ${arr[minIdx]}` });
+                    }
+                }
+                if (minIdx !== i) {
+                    [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+                    steps.push({ array: [...arr], highlight: [i, minIdx], action: "swap", sorted: [...sortedIndices], explanation: `Swapping minimum ${arr[i]} into position ${i}` });
+                }
+                sortedIndices.push(i);
+            }
+            sortedIndices.push(arr.length - 1);
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
 
-            // --- NEW: DYNAMIC ARRAY PARSING ---
+        function generateInsertionSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let sortedIndices = [0];
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                steps.push({ array: [...arr], highlight: [i], action: "compare", sorted: [...sortedIndices], explanation: `Selecting ${key} to insert` });
+                while (j >= 0 && arr[j] > key) {
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", sorted: [...sortedIndices], explanation: `Checking ${arr[j]} > ${key}` });
+                    arr[j + 1] = arr[j];
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Moving ${arr[j]} right` });
+                    j = j - 1;
+                }
+                arr[j + 1] = key;
+                sortedIndices.push(i);
+                steps.push({ array: [...arr], highlight: [j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Inserted ${key} at index ${j + 1}` });
+            }
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
+
+        function generateQuickSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let sortedIndices = [];
+
+            const partition = (low, high) => {
+                let pivot = arr[high];
+                steps.push({ array: [...arr], highlight: [high], action: "compare", sorted: [...sortedIndices], explanation: `Pivot chosen as ${pivot}` });
+                let i = (low - 1);
+                for (let j = low; j <= high - 1; j++) {
+                    steps.push({ array: [...arr], highlight: [high, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with pivot ${pivot}` });
+                    if (arr[j] < pivot) {
+                        i++;
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                        steps.push({ array: [...arr], highlight: [i, j], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[i]} and ${arr[j]}` });
+                    }
+                }
+                [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+                steps.push({ array: [...arr], highlight: [i + 1, high], action: "swap", sorted: [...sortedIndices], explanation: `Placing pivot ${pivot} in position ${i + 1}` });
+                sortedIndices.push(i + 1);
+                return (i + 1);
+            };
+
+            const quickSortHelper = (low, high) => {
+                if (low <= high) {
+                    let pi = partition(low, high);
+                    quickSortHelper(low, pi - 1);
+                    quickSortHelper(pi + 1, high);
+                }
+            };
+
+            quickSortHelper(0, arr.length - 1);
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
+
+        function analyzeCode() {
+            const code = document.querySelector("textarea").value || "";
             const rawInput = document.getElementById("arrayInput").value;
-
-            // Turn "30, 10, 45" into an actual JavaScript array of numbers: [30, 10, 45]
             let parsedArray = rawInput.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
 
-            // Fallback: If user types letters or leaves it blank, reset to default
             if (parsedArray.length === 0) {
                 parsedArray = [30, 10, 45, 20, 15];
                 document.getElementById("arrayInput").value = "30, 10, 45, 20, 15";
             }
-            // ----------------------------------
 
             let btn = document.querySelector(".viz-btn");
             let stepText = document.getElementById("stepText");
 
             pausePlayback();
-            // ... (keep the rest of your fetch try/catch block exactly the same below this line!)
             btn.innerText = "Analyzing...";
             btn.disabled = true;
             stepText.innerText = "▶ Analysing and preparing Visualisation";
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        array: parsedArray,
-                        code: code,
-                        algorithm: "custom",
-                    }),
-                });
+            let algoName = "Bubble Sort";
+            let lang = "C++";
+            let generatedSteps = [];
+            let timeComp = { best: "O(n)", average: "O(n²)", worst: "O(n²)" };
+            let spaceComp = "O(1)";
 
-                const data = await response.json();
-                steps = data.steps || [];
+            const lowerCode = code.toLowerCase();
+            if (lowerCode.includes("insertion") || lowerCode.includes("key")) {
+                algoName = "Insertion Sort";
+                lang = "C++";
+                generatedSteps = generateInsertionSortSteps(parsedArray);
+                timeComp = { best: "O(n)", average: "O(n²)", worst: "O(n²)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("selection") || lowerCode.includes("min_idx")) {
+                algoName = "Selection Sort";
+                lang = "Java";
+                generatedSteps = generateSelectionSortSteps(parsedArray);
+                timeComp = { best: "O(n²)", average: "O(n²)", worst: "O(n²)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("quick") || lowerCode.includes("pivot") || lowerCode.includes("partition")) {
+                algoName = "Quick Sort";
+                lang = "Python";
+                generatedSteps = generateQuickSortSteps(parsedArray);
+                timeComp = { best: "O(n log n)", average: "O(n log n)", worst: "O(n²)" };
+                spaceComp = "O(log n)";
+            } else {
+                algoName = "Bubble Sort";
+                lang = "C++";
+                generatedSteps = generateBubbleSortSteps(parsedArray);
+                timeComp = { best: "O(n)", average: "O(n²)", worst: "O(n²)" };
+                spaceComp = "O(1)";
+            }
 
-                document.getElementById("infoPanel").style.display = "flex";
-                document.getElementById("langText").innerText = data.language || "Unknown";
-                if (data.complexity && data.complexity.time && typeof data.complexity.time === 'object') {
-                    document.getElementById("timeBest").innerText = data.complexity.time.best || "-";
-                    document.getElementById("timeAvg").innerText = data.complexity.time.average || "-";
-                    document.getElementById("timeWorst").innerText = data.complexity.time.worst || "-";
-                } else {
-                    let text = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
-                    document.getElementById("timeBest").innerText = text;
-                    document.getElementById("timeAvg").innerText = text;
-                    document.getElementById("timeWorst").innerText = text;
-                }
-                document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
+            const data = {
+                algorithm: algoName,
+                language: lang,
+                complexity: {
+                    time: timeComp,
+                    space: spaceComp
+                },
+                steps: generatedSteps
+            };
 
-                if (steps.length > 0) {
-                    document.getElementById("progressSlider").max = steps.length - 1;
-                    currentStep = 0;
-                    togglePlay(); // Auto-start the fetched animation
-                } else {
-                    stepText.innerText = "▶ Analysis failed. No steps generated.";
-                }
-            } catch (err) {
-                stepText.innerText =
-                    "▶ Connection Error: Is your Node server running on port 5000?";
-            } finally {
+            setTimeout(() => {
+                continueVisualization(data);
                 btn.innerText = "Visualize Logic";
                 btn.disabled = false;
+            }, 100);
+        }
+
+        let correctionCallback = null;
+        let pendingCorrectedCode = "";
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function generateDiffHtml(original, corrected) {
+            const originalLines = original.split('\n');
+            const correctedLines = corrected.split('\n');
+
+            let originalHtml = '';
+            let correctedHtml = '';
+
+            const maxLines = Math.max(originalLines.length, correctedLines.length);
+            for (let i = 0; i < maxLines; i++) {
+                const orig = originalLines[i] !== undefined ? originalLines[i] : '';
+                const corr = correctedLines[i] !== undefined ? correctedLines[i] : '';
+
+                if (orig.trim() === corr.trim()) {
+                    originalHtml += `<div class="diff-line">${escapeHtml(orig)}</div>`;
+                    correctedHtml += `<div class="diff-line">${escapeHtml(corr)}</div>`;
+                } else {
+                    originalHtml += `<div class="diff-line diff-deleted">${escapeHtml(orig) || '&nbsp;'}</div>`;
+                    correctedHtml += `<div class="diff-line diff-added">${escapeHtml(corr) || '&nbsp;'}</div>`;
+                }
+            }
+            return { originalHtml, correctedHtml };
+        }
+
+        function showCorrectionModal(errors, correctedCode, callback) {
+            const originalCode = document.getElementById("codeInput").value;
+            document.getElementById("modalErrorDetails").innerText = errors || "Minor syntax/formatting issues.";
+
+            // Generate side-by-side diff
+            const diff = generateDiffHtml(originalCode, correctedCode);
+            document.getElementById("modalOriginalCode").innerHTML = diff.originalHtml;
+            document.getElementById("modalCorrectedCode").innerHTML = diff.correctedHtml;
+
+            pendingCorrectedCode = correctedCode;
+            correctionCallback = callback;
+            document.getElementById("correctionModal").classList.add("active");
+        }
+
+        function handleCorrectionResponse(apply) {
+            document.getElementById("correctionModal").classList.remove("active");
+            if (apply && pendingCorrectedCode) {
+                document.getElementById("codeInput").value = pendingCorrectedCode;
+            }
+            if (correctionCallback) {
+                correctionCallback();
+            }
+        }
+
+        function continueVisualization(data) {
+            let stepText = document.getElementById("stepText");
+            steps = data.steps || [];
+
+            document.getElementById("infoPanel").style.display = "flex";
+            document.getElementById("langText").innerText = data.language || "Unknown";
+            if (data.complexity && data.complexity.time && typeof data.complexity.time === 'object') {
+                document.getElementById("timeBest").innerText = data.complexity.time.best || "-";
+                document.getElementById("timeAvg").innerText = data.complexity.time.average || "-";
+                document.getElementById("timeWorst").innerText = data.complexity.time.worst || "-";
+            } else {
+                let text = (data.complexity && data.complexity.time) ? data.complexity.time : "-";
+                document.getElementById("timeBest").innerText = text;
+                document.getElementById("timeAvg").innerText = text;
+                document.getElementById("timeWorst").innerText = text;
+            }
+            document.getElementById("spaceText").innerText = (data.complexity && data.complexity.space) ? data.complexity.space : "-";
+
+            if (steps.length > 0) {
+                document.getElementById("progressSlider").max = steps.length - 1;
+                currentStep = 0;
+                togglePlay(); // Auto-start the fetched animation
+            } else {
+                stepText.innerText = "▶ Analysis failed. No steps generated.";
             }
         }
 
@@ -555,6 +911,94 @@ for(int i=0;i<n;i++){
 
 
     </script>
+
+    <!-- Auto-Correction Modal -->
+    <div id="correctionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 24px;">🔧</span>
+                <h3 class="modal-title">Syntax Correction Suggestion</h3>
+            </div>
+            <div class="modal-body">
+                <p>We detected some syntax errors or formatting mistakes in your algorithm code:</p>
+                <div class="modal-error-box" id="modalErrorDetails">
+                    <!-- Error details will be dynamically inserted here -->
+                </div>
+                <div class="modal-code-comparison">
+                    <div class="modal-code-comparison-header">Changes comparison</div>
+                    <div class="diff-container">
+                        <div class="diff-box">
+                            <div class="diff-box-title">Your Code</div>
+                            <div class="diff-code" id="modalOriginalCode">
+                                <!-- Original code with deletions highlighted -->
+                            </div>
+                        </div>
+                        <div class="diff-box">
+                            <div class="diff-box-title">Corrected Code</div>
+                            <div class="diff-code" id="modalCorrectedCode">
+                                <!-- Corrected code with additions highlighted -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 12px;">Would you like to apply these corrections to your editor before running the
+                    visualization?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn secondary" id="modalBtnIgnore"
+                    onclick="handleCorrectionResponse(false)">Keep Original</button>
+                <button type="button" class="modal-btn primary" id="modalBtnApply"
+                    onclick="handleCorrectionResponse(true)">Apply Corrections</button>
+            </div>
+        </div>
+    </div>
+    <!-- About Sorting Algorithms Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About Sorting Algorithms</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>Sorting algorithms rearrange array elements into non-decreasing order. They form the foundational backbone of efficient searching (binary search), duplicate removal, database indexing, and order statistics.</p>
+
+                <h4>Algorithm Breakdown & Detailed Logic</h4>
+                <ul>
+                    <li style="margin-bottom: 16px;">
+                        <strong>1. Bubble Sort:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Compares adjacent pairs <code>[arr[j], arr[j+1]]</code> and swaps them if out of order. In pass 1, the largest element "bubbles up" to index <i>N - 1</i>; in pass <i>k</i>, the <i>k</i>-th largest item reaches its final sorted index. An optimized flag (<code>swappedThisPass</code>) detects if no swaps occurred during a full pass, allowing early termination in O(N) linear time when the array is already sorted. Total comparisons in worst-case = N(N - 1) / 2 = O(N²). It is a stable, in-place sorting algorithm.</p>
+                        <span class="about-complexity-badge">Best: O(N)</span><span class="about-complexity-badge">Avg/Worst: O(N²)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">Stable: Yes</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>2. Selection Sort:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Divides the array into a sorted prefix and an unsorted suffix. In each pass, it scans the entire unsorted suffix to locate the absolute minimum element and swaps it with the first unsorted index. Because it always performs N(N - 1) / 2 comparisons regardless of initial order, its best, average, and worst-case time complexities are strictly O(N²). However, it performs at most N - 1 element swaps, making it ideal when memory write operations are costly (e.g., writing to EEPROM/Flash memory). It is an unstable, in-place algorithm.</p>
+                        <span class="about-complexity-badge">Best/Avg/Worst: O(N²)</span><span class="about-complexity-badge">Swaps: ≤ N-1</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">Stable: No</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>3. Insertion Sort:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Works similarly to sorting a hand of playing cards. Maintains a sorted sub-array on the left and picks the next key item, shifting larger preceding items one position right to make space for insertion. Highly efficient for small datasets (N ≤ 20) and nearly-sorted arrays, taking linear O(N) time when elements are shifted by at most a constant <i>k</i> positions. Serves as the base sorting engine inside hybrid sorting algorithms like Timsort (used in Python and Java <code>Arrays.sort</code>). It is a stable, in-place algorithm.</p>
+                        <span class="about-complexity-badge">Best: O(N)</span><span class="about-complexity-badge">Avg/Worst: O(N²)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">Stable: Yes</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>4. Quick Sort:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">A Divide-and-Conquer algorithm that chooses a pivot element and partitions the array into two sub-arrays: elements smaller than the pivot on the left, and elements greater on the right. Once partitioned, the pivot is in its exact final sorted position, and the algorithm recursively sorts the left and right sub-arrays independently. Achieves an optimal average time complexity of O(N log N) with low cache-friendly constant factors, though worst-case is O(N²) if the pivot is poorly chosen. It is an unstable algorithm requiring O(log N) stack space.</p>
+                        <span class="about-complexity-badge">Best/Avg: O(N log N)</span><span class="about-complexity-badge">Worst: O(N²)</span><span class="about-complexity-badge">Space: O(log N)</span><span class="about-complexity-badge">Stable: No</span>
+                    </li>
+                </ul>
+
+                <h4>Real-World Applications</h4>
+                <p>Order statistics, binary search prerequisites, B-Tree database indexing, e-commerce product price filtering, and operating system priority process ordering.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

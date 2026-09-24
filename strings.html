@@ -11,23 +11,31 @@
     <link rel="stylesheet" href="logiclens.css">
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
-            <a href="index.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
@@ -37,7 +45,10 @@
 
     <div class="container" id="stringContainer" style="margin-top: 40px;">
         <div class="editor">
-            <h3>String Setup</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">String Setup</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Strings</button>
+            </div>
 
             <!-- Context Tabs -->
             <div class="mode-tabs" style="margin-bottom: 20px;">
@@ -47,12 +58,15 @@
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
             </div>
 
             <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base String</button>
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base
+                    String</button>
                 <button class="op-btn enqueue" onclick="doOp('search')">🔍 Search Pattern</button>
                 <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
             </div>
@@ -60,7 +74,7 @@
             <div class="adv-section-head" style="margin-top: 6px;">
                 <h3>Recorded Operations</h3>
             </div>
-            <textarea id="stringCodeInput" style="height: 100px;">string(ABC ABCDAB ABCDABCDABDE)
+            <textarea id="stringCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">string(ABC ABCDAB ABCDABCDABDE)
 search(ABCDABD)</textarea>
 
             <button class="viz-btn" id="stringVizBtn" onclick="analyzeStringCode()">
@@ -119,16 +133,67 @@ search(ABCDABD)</textarea>
                         onclick="setStringSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-string-fast" onclick="setStringSpeed(400, 'fast')">Fast</button>
                 </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
             </div>
         </div>
     </div>
 
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bubble, Insertion, Selection, Quick</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack</h3>
+                <p>Push / Pop animation</p>
+            </div>
+            <div class="card" onclick="window.location.href='queue.html'">
+                <h3>Queue</h3>
+                <p>Enqueue / Dequeue flow</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>Binary tree traversal</p>
+            </div>
+            <div class="card" onclick="window.location.href='graph.html'">
+                <h3>Graphs</h3>
+                <p>Adjacency list/matrix</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Text structure visualization</p>
+            </div>
+        </div>
+    </section>
+
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
 
         let stringMode = 'naive';
         let logCount = 0;
@@ -177,7 +242,7 @@ search(ABCDABD)</textarea>
             pauseStringPlayback();
             const baseIn = document.getElementById('stringInputBase');
             const targetIn = document.getElementById('stringInputQuery');
-            
+
             const b = baseIn.value;
             const t = targetIn.value;
 
@@ -317,13 +382,13 @@ search(ABCDABD)</textarea>
                                 }
                             }
                         }
-                        
-                        let iStr = 0; 
-                        let jPtr = 0; 
-                        
+
+                        let iStr = 0;
+                        let jPtr = 0;
+
                         while (iStr < activeString.length) {
                             let comparingIndices = [];
-                            for(let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
+                            for (let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
                                 comparingIndices.push(iStr - jPtr + k);
                             }
 
@@ -349,7 +414,7 @@ search(ABCDABD)</textarea>
                                     stepIndex: stringSteps.length,
                                     line: idx
                                 });
-                                
+
                                 if (jPtr !== 0) {
                                     jPtr = lps[jPtr - 1];
                                     stringSteps.push({
@@ -365,12 +430,12 @@ search(ABCDABD)</textarea>
                                     iStr++;
                                 }
                             }
-                            
+
                             // Check match
                             if (jPtr === qLen) {
                                 foundAny = true;
                                 let matchIndices = [];
-                                for(let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
+                                for (let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
                                 stringSteps.push({
                                     characters: [...activeString],
                                     comparing: [],
@@ -391,7 +456,7 @@ search(ABCDABD)</textarea>
                         let h = 1;
                         let pHash = 0;
                         let tHash = 0;
-                        
+
                         for (let i = 0; i < qLen - 1; i++) h = (h * d) % q;
 
                         // Calculate initial hash
@@ -405,7 +470,7 @@ search(ABCDABD)</textarea>
                             for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
 
                             let matchLogic = (pHash === tHash) ? "Hash Collision detected! Verifying exact char match." : "Hashes differ. Rolling window forward.";
-                            
+
                             stringSteps.push({
                                 characters: [...activeString],
                                 comparing: [...comparingIndices],
@@ -415,7 +480,7 @@ search(ABCDABD)</textarea>
                                 stepIndex: stringSteps.length,
                                 line: idx
                             });
-                            
+
                             if (pHash === tHash) {
                                 let match = true;
                                 for (let j = 0; j < qLen; j++) {
@@ -437,7 +502,7 @@ search(ABCDABD)</textarea>
                                     });
                                 }
                             }
-                            
+
                             // Roll hash
                             if (i < activeString.length - qLen) {
                                 tHash = (d * (tHash - activeString[i].charCodeAt(0) * h) + activeString[i + qLen].charCodeAt(0)) % q;
@@ -604,6 +669,48 @@ search(ABCDABD)</textarea>
             renderStringFrame(stringSteps[stringCurrentStep]);
         }
     </script>
+    <!-- About String Matching Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About String Matching Algorithms</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>String pattern matching locates all valid occurrence indices of a pattern string <i>P</i> of length <i>M</i> within a primary text body <i>T</i> of length <i>N</i>.</p>
+
+                <h4>Algorithms & Mathematical Formulations</h4>
+                <ul>
+                    <li style="margin-bottom: 16px;">
+                        <strong>1. Naive String Matching:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Slides pattern <code>P[0..M-1]</code> across text <code>T[0..N-1]</code> at every possible alignment index <i>i ∈ [0, N-M]</i>. For each alignment, compares characters sequentially from left to right. When a mismatch occurs, shifts pattern right by 1 position and restarts comparison from <code>P[0]</code>. Inefficient on repetitive text (e.g. searching <code>AAAAAB</code> in <code>AAAAAAAAAAAAAB</code>).</p>
+                        <span class="about-complexity-badge">Worst Time: O((N-M+1)·M)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">No Preprocessing</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>2. Knuth-Morris-Pratt (KMP) Algorithm:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Eliminates redundant comparisons by utilizing knowledge gained from previous character matches. Precomputes an <strong>LPS (Longest Prefix Suffix)</strong> array where <code>LPS[i]</code> stores the length of the longest proper prefix of <code>P[0..i]</code> that is also a suffix of <code>P[0..i]</code>. Upon a mismatch after matching <i>j</i> characters, KMP sets <code>j = LPS[j-1]</code> without rewinding text index <i>i</i>, guaranteeing strict O(N) linear time.</p>
+                        <span class="about-complexity-badge">Preprocessing: O(M)</span><span class="about-complexity-badge">Search Time: O(N)</span><span class="about-complexity-badge">Space: O(M)</span><span class="about-complexity-badge">LPS Table</span>
+                    </li>
+                    <li style="margin-bottom: 16px;">
+                        <strong>3. Rabin-Karp Algorithm:</strong>
+                        <p style="margin: 4px 0 6px; color: var(--text2);">Uses a <strong>Rolling Hash</strong> function to convert pattern and text substring windows into integer hash values. Computes <code>H(P)</code> and updates <code>H(T[i..i+M-1])</code> in O(1) time as the window slides using modular arithmetic: <code>H(next) = (d · (H(curr) - T[i] · d^(M-1)) + T[i+M]) % q</code>. Only performs character-by-character validation when window hash equals pattern hash.</p>
+                        <span class="about-complexity-badge">Average Time: O(N + M)</span><span class="about-complexity-badge">Worst Time: O(N·M)</span><span class="about-complexity-badge">Rolling Hash</span>
+                    </li>
+                </ul>
+
+                <h4>Real-World Applications</h4>
+                <p>Genomic DNA sequence alignment in bioinformatics, IDE global code search (`Ctrl+F`), plagiarism checking software, and network intrusion detection signature filtering (NIDS).</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>

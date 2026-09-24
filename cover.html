@@ -250,26 +250,497 @@
             box-shadow: 0 6px 22px rgba(255, 181, 71, 0.4);
             transform: scale(1.02);
         }
+
+        /* Complexity Guide Section */
+        .complexity-guide-section {
+            margin-top: 80px;
+            margin-bottom: 60px;
+        }
+
+        .guide-title {
+            font-family: var(--ff);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, var(--text), var(--glow2), var(--glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            letter-spacing: -1px;
+        }
+
+        .guide-subtitle {
+            font-size: 16px;
+            color: var(--text2);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .guide-intro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 850px) {
+            .guide-intro-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .intro-card {
+            background: rgba(12, 17, 32, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        body.light .intro-card {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .intro-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-2px);
+        }
+
+        .intro-card h3 {
+            font-family: var(--ff);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro-card.time h3 {
+            color: var(--glow);
+        }
+
+        .intro-card.space h3 {
+            color: var(--amber);
+        }
+
+        .intro-card p {
+            color: var(--text2);
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        /* Complexity cards grid */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 480px) {
+            .comp-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comp-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .comp-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border2);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Border top glow color coding */
+        .comp-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .comp-card.c-o1::before {
+            background: var(--green);
+        }
+
+        .comp-card.c-ologn::before {
+            background: var(--blue);
+        }
+
+        .comp-card.c-on::before {
+            background: var(--amber);
+        }
+
+        .comp-card.c-onlogn::before {
+            background: var(--glow2);
+        }
+
+        .comp-card.c-on2::before {
+            background: var(--red);
+        }
+
+        .comp-card.c-o2n::before {
+            background: #d946ef;
+        }
+
+        /* exponential magenta */
+
+        .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .comp-notation {
+            font-family: var(--ff);
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .c-o1 .comp-notation {
+            color: var(--green);
+        }
+
+        .c-ologn .comp-notation {
+            color: var(--blue);
+        }
+
+        .c-on .comp-notation {
+            color: var(--amber);
+        }
+
+        .c-onlogn .comp-notation {
+            color: var(--glow2);
+        }
+
+        .c-on2 .comp-notation {
+            color: var(--red);
+        }
+
+        .c-o2n .comp-notation {
+            color: #d946ef;
+        }
+
+        .comp-name {
+            font-family: var(--ff);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text2);
+        }
+
+        .comp-formula {
+            font-family: var(--fm);
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-formula code {
+            color: var(--glow);
+            font-weight: 600;
+        }
+
+        .comp-desc {
+            font-size: 13.5px;
+            color: var(--text2);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .comp-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: var(--ff);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .comp-btn:hover {
+            background: var(--border);
+            color: var(--glow);
+        }
+
+        .comp-drawer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            margin-top: 0;
+        }
+
+        .comp-drawer.open {
+            max-height: 600px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .comp-code {
+            font-family: var(--fm);
+            font-size: 11px;
+            background: #060913;
+            color: #d1d5db;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            text-align: left;
+            white-space: pre;
+        }
+
+        body.light .comp-code {
+            background: #f3f4f6;
+            color: #1f2937;
+            border-color: #e5e7eb;
+        }
+
+        .comp-calc-steps {
+            font-size: 12.5px;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+
+        .comp-calc-steps strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Practice / Detailed Example section */
+        .tutorial-panel {
+            background: rgba(12, 17, 32, 0.65);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 40px;
+            margin-bottom: 50px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light .tutorial-panel {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: var(--border);
+            box-shadow: 0 12px 40px rgba(0, 100, 200, 0.05);
+        }
+
+        .tutorial-title {
+            font-family: var(--ff);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, var(--text), var(--glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+        }
+
+        .tutorial-subtitle {
+            font-size: 14.5px;
+            color: var(--text2);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 28px;
+            line-height: 1.5;
+        }
+
+        .tutorial-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: var(--ff);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--glow), var(--glow2));
+            color: #000;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.25);
+        }
+
+        .tab-content {
+            display: none;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @media (max-width: 850px) {
+            .tab-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+
+        .tab-content.active {
+            display: grid;
+        }
+
+        .code-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-title {
+            font-family: var(--ff);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text3);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .explain-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .explain-title {
+            font-family: var(--ff);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explain-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .explain-step-item {
+            display: flex;
+            gap: 12px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text2);
+        }
+
+        .explain-step-item strong {
+            color: var(--text);
+        }
+
+        .step-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--glow);
+            font-weight: 700;
+            font-family: var(--ff);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 
-<body>
+<body class="light">
     <nav>
         <div class="logo">
-            <a href="cover.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <div class="logo-mark">L</div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="cover.html" style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">Home</a>
-            <a href="index.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">DSA Learning</a>
-            <a href="custom.html" style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom Code</a>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">Home</a>
+            <a href="index.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
         </div>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-        </label>
     </nav>
 
     <div class="cover-wrapper">
@@ -282,9 +753,15 @@
 
         <!-- Project Overview Section -->
         <div class="overview-panel">
-            <div class="overview-title">Project Overview</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="overview-title" style="margin: 0;">Project Overview</div>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About LogicLens</button>
+            </div>
             <p class="overview-text">
-                <strong>LogicLens</strong> is an interactive developer learning platform and dry-run emulator. It translates complex program logic into dynamic, step-by-step graphical frames. By combining localized execution tracking with visual animations, LogicLens helps developers and computer science learners debug algorithms, inspect array transformations, and grasp memory flows intuitively.
+                <strong>LogicLens</strong> is an interactive developer learning platform and dry-run emulator. It
+                translates complex program logic into dynamic, step-by-step graphical frames. By combining localized
+                execution tracking with visual animations, LogicLens helps developers and computer science learners
+                debug algorithms, inspect array transformations, and grasp memory flows intuitively.
             </p>
         </div>
 
@@ -296,24 +773,31 @@
                     <span class="card-badge">Engine Mode</span>
                     <h2 class="card-title">Custom Code Visualizer</h2>
                     <p class="card-desc">
-                        Write or paste your custom code snippets to dry-run logic. Trace how arrays change, highlight execution lines, and view complexity metrics.
+                        Write or paste your custom code snippets to dry-run logic. Trace how arrays change, highlight
+                        execution lines, and view complexity metrics.
                     </p>
                     <ul class="feature-list">
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>Support for C++, Java, Python, and JavaScript</span>
                         </li>
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>Line-by-line custom dry-run emulation</span>
                         </li>
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>AI complexity & dry-run generation</span>
                         </li>
@@ -330,24 +814,31 @@
                     <span class="card-badge">Sandbox Mode</span>
                     <h2 class="card-title">DSA Learning Hub</h2>
                     <p class="card-desc">
-                        Explore standard visual sandboxes for structural algorithms. Play around with interactive animations for Stacks, Queues, Trees, Graphs, and more.
+                        Explore standard visual sandboxes for structural algorithms. Play around with interactive
+                        animations for Stacks, Queues, Trees, Graphs, and more.
                     </p>
                     <ul class="feature-list">
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>Interactive Stack & Queue visualizers</span>
                         </li>
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>BST traversals & Graph BFS/DFS search paths</span>
                         </li>
                         <li class="feature-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span>Complexity Big-O calculations and comparisons</span>
                         </li>
@@ -358,15 +849,453 @@
                 </div>
             </a>
         </div>
+
+        <!-- Complexity & Big-O Guide Section -->
+        <section class="complexity-guide-section">
+            <h2 class="guide-title">Understanding Algorithmic Complexity</h2>
+            <p class="guide-subtitle">
+                Algorithmic efficiency is measured in two dimensions: <strong>Time Complexity</strong> (execution speed)
+                and <strong>Space Complexity</strong> (memory footprint). Big-O notation describes how these resource
+                requirements scale as the input size <code>N</code> grows towards infinity.
+            </p>
+
+            <div class="guide-intro-grid">
+                <div class="intro-card time">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Time Complexity
+                    </h3>
+                    <p>
+                        Measures the number of elementary operations executed by an algorithm relative to the input size
+                        <code>N</code>. Instead of timing in seconds (which varies by CPU hardware), it focuses on
+                        execution growth rate, ensuring algorithmic comparison remains standardized.
+                    </p>
+                </div>
+                <div class="intro-card space">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        Space Complexity
+                    </h3>
+                    <p>
+                        Measures the total auxiliary memory required by the algorithm during execution, excluding the
+                        input dataset size itself. It counts dynamic variable allocations, auxiliary arrays, and memory
+                        frames allocated on the call stack due to recursion depth.
+                    </p>
+                </div>
+            </div>
+
+            <div class="comp-grid">
+                <!-- O(1) -->
+                <div class="comp-card c-o1">
+                    <div class="comp-header">
+                        <span class="comp-notation">O(1)</span>
+                        <span class="comp-name">Constant</span>
+                    </div>
+                    <div class="comp-formula">
+                        <span>Formula:</span> <code>T(N) = c</code> (Constant Operations)
+                    </div>
+                    <p class="comp-desc">
+                        The operation runs in a fixed number of steps, completely unaffected by the size of the input.
+                    </p>
+                    <button class="comp-btn" onclick="toggleDrawer('drawer-o1')">
+                        View Code & Math <span>▼</span>
+                    </button>
+                    <div class="comp-drawer" id="drawer-o1">
+                        <div class="comp-code">function getFirst(arr) {
+                            return arr[0]; // Exactly 1 lookup operation
+                            }</div>
+                        <div class="comp-calc-steps">
+                            <strong>How to find:</strong>
+                            No loops or recursive calls are present. The index lookup uses direct address math:
+                            <code>Base_Address + (Index * Element_Size)</code>, which executes instantly in 1 CPU step
+                            regardless of the array's length.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O(log N) -->
+                <div class="comp-card c-ologn">
+                    <div class="comp-header">
+                        <span class="comp-notation">O(log N)</span>
+                        <span class="comp-name">Logarithmic</span>
+                    </div>
+                    <div class="comp-formula">
+                        <span>Formula:</span> <code>T(N) = log₂(N)</code> (Halving search space)
+                    </div>
+                    <p class="comp-desc">
+                        The execution time increases linearly while the input size grows exponentially. The search space
+                        is halved at each step.
+                    </p>
+                    <button class="comp-btn" onclick="toggleDrawer('drawer-ologn')">
+                        View Code & Math <span>▼</span>
+                    </button>
+                    <div class="comp-drawer" id="drawer-ologn">
+                        <div class="comp-code">function binarySearch(arr, target) {
+                            let low = 0, high = arr.length - 1;
+                            while (low <= high) { let mid=Math.floor((low + high) / 2); if (arr[mid]===target) return
+                                mid; if (arr[mid] < target) low=mid + 1; else high=mid - 1; } return -1; }</div>
+                                <div class="comp-calc-steps">
+                                    <strong>How to find:</strong>
+                                    Notice the loop counter variables. At each cycle, the distance between
+                                    <code>low</code> and <code>high</code> is divided by 2. Finding the maximum loops:
+                                    <code>N / 2^k = 1</code>. Solving for steps <code>k</code> yields
+                                    <code>k = log₂(N)</code>.
+                                </div>
+                        </div>
+                    </div>
+
+                    <!-- O(N) -->
+                    <div class="comp-card c-on">
+                        <div class="comp-header">
+                            <span class="comp-notation">O(N)</span>
+                            <span class="comp-name">Linear</span>
+                        </div>
+                        <div class="comp-formula">
+                            <span>Formula:</span> <code>T(N) = a·N + b</code> (Direct scale)
+                        </div>
+                        <p class="comp-desc">
+                            The workload grows in direct proportion to the size of the input. Double the input size,
+                            double the steps.
+                        </p>
+                        <button class="comp-btn" onclick="toggleDrawer('drawer-on')">
+                            View Code & Math <span>▼</span>
+                        </button>
+                        <div class="comp-drawer" id="drawer-on">
+                            <div class="comp-code">function findMax(arr) {
+                                let max = arr[0];
+                                for (let i = 1; i < arr.length; i++) { if (arr[i]> max) max = arr[i];
+                                    }
+                                    return max;
+                                    }</div>
+                            <div class="comp-calc-steps">
+                                <strong>How to find:</strong>
+                                Identify the loop bounds. The loop starts at <code>i = 1</code> and increments by 1
+                                until it hits <code>arr.length</code> (which is N). The loop block executes exactly
+                                <code>N - 1</code> times, which simplifies to <code>O(N)</code>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- O(N log N) -->
+                    <div class="comp-card c-onlogn">
+                        <div class="comp-header">
+                            <span class="comp-notation">O(N log N)</span>
+                            <span class="comp-name">Linearithmic</span>
+                        </div>
+                        <div class="comp-formula">
+                            <span>Formula:</span> <code>T(N) = N · log₂(N)</code> (Split & Scan)
+                        </div>
+                        <p class="comp-desc">
+                            Common in efficient sorting algorithms. A linear step (<i>N</i>) is run at each level of a
+                            divide-and-conquer tree (<i>log N</i>).
+                        </p>
+                        <button class="comp-btn" onclick="toggleDrawer('drawer-onlogn')">
+                            View Code & Math <span>▼</span>
+                        </button>
+                        <div class="comp-drawer" id="drawer-onlogn">
+                            <div class="comp-code">function mergeSort(arr) {
+                                if (arr.length <= 1) return arr; const mid=Math.floor(arr.length / 2); const
+                                    left=mergeSort(arr.slice(0, mid)); const right=mergeSort(arr.slice(mid)); return
+                                    merge(left, right); // merge takes O(N) time }</div>
+                                    <div class="comp-calc-steps">
+                                        <strong>How to find:</strong>
+                                        The array of size <code>N</code> is recursively halved until size 1, forming a
+                                        binary tree of height <code>log₂(N)</code>. At each level of the recursion, the
+                                        linear merge function performs <code>O(N)</code> comparisons. Sum:
+                                        <code>N * log₂(N)</code>.
+                                    </div>
+                            </div>
+                        </div>
+
+                        <!-- O(N²) -->
+                        <div class="comp-card c-on2">
+                            <div class="comp-header">
+                                <span class="comp-notation">O(N²)</span>
+                                <span class="comp-name">Quadratic</span>
+                            </div>
+                            <div class="comp-formula">
+                                <span>Formula:</span> <code>T(N) = a·N² + b·N + c</code> (Nested)
+                            </div>
+                            <p class="comp-desc">
+                                Work grows proportionally to the square of the input. Double the input size, operations
+                                quadruple.
+                            </p>
+                            <button class="comp-btn" onclick="toggleDrawer('drawer-on2')">
+                                View Code & Math <span>▼</span>
+                            </button>
+                            <div class="comp-drawer" id="drawer-on2">
+                                <div class="comp-code">function checkDuplicates(arr) {
+                                    for (let i = 0; i < arr.length; i++) { for (let j=i + 1; j < arr.length; j++) { if
+                                        (arr[i]===arr[j]) return true; } } return false; }</div>
+                                        <div class="comp-calc-steps">
+                                            <strong>How to find:</strong>
+                                            Analyze nested loops. The outer loop runs <code>N</code> times. For each
+                                            iteration, the inner loop runs <code>N - i</code> times. Total steps:
+                                            <code>(N-1) + (N-2) + ... + 1 = N(N-1)/2 = 0.5N² - 0.5N</code>. Drop lower
+                                            terms: <code>O(N²)</code>.
+                                        </div>
+                                </div>
+                            </div>
+
+                            <!-- O(2^N) -->
+                            <div class="comp-card c-o2n">
+                                <div class="comp-header">
+                                    <span class="comp-notation">O(2^N)</span>
+                                    <span class="comp-name">Exponential</span>
+                                </div>
+                                <div class="comp-formula">
+                                    <span>Formula:</span> <code>T(N) = c · 2^N</code> (Binary branching)
+                                </div>
+                                <p class="comp-desc">
+                                    Work doubles with each additional element in the input. Impractical for inputs
+                                    larger than <i>N</i> ≈ 40.
+                                </p>
+                                <button class="comp-btn" onclick="toggleDrawer('drawer-o2n')">
+                                    View Code & Math <span>▼</span>
+                                </button>
+                                <div class="comp-drawer" id="drawer-o2n">
+                                    <div class="comp-code">function fibonacci(n) {
+                                        if (n <= 1) return n; return fibonacci(n - 1) + fibonacci(n - 2); }</div>
+                                            <div class="comp-calc-steps">
+                                                <strong>How to find:</strong>
+                                                Analyze the recursion tree. Each function call branches into 2
+                                                subsequent recursive calls. For input size <code>N</code>, the tree
+                                                grows to depth <code>N</code>. Total number of calls is approximately
+                                                <code>2^0 + 2^1 + ... + 2^N = 2^(N+1) - 1</code>, which is
+                                                <code>O(2^N)</code>.
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tutorial Panel: How we find Time and Space Complexity -->
+                            <div class="tutorial-panel">
+                                <div class="tutorial-title">How to Find Complexity Step-by-Step</div>
+                                <p class="tutorial-subtitle">
+                                    Follow this mathematical recipe to extract precise time and space behaviors from any
+                                    block of code.
+                                </p>
+
+                                <div class="tutorial-tabs">
+                                    <button class="tab-btn active" onclick="switchTab('time-tab')">Time Complexity
+                                        Analysis</button>
+                                    <button class="tab-btn" onclick="switchTab('space-tab')">Space Complexity
+                                        Analysis</button>
+                                </div>
+
+                                <!-- Time Tab -->
+                                <div class="tab-content active" id="time-tab">
+                                    <div class="code-container">
+                                        <div class="code-title">Source Code Example</div>
+                                        <div class="comp-code" style="margin-bottom: 0; height: 100%;">function
+                                            searchMatrix(matrix, target) {
+                                            let n = matrix.length;
+
+                                            // 1. Scan diagonal items (Single Loop)
+                                            for (let i = 0; i < n; i++) { if (matrix[i][i]===target) return true; } //
+                                                2. Scan entire grid (Nested Loops) for (let r=0; r < n; r++) { for (let
+                                                c=0; c < n; c++) { if (matrix[r][c]===target) return true; } } return
+                                                false; }</div>
+                                        </div>
+                                        <div class="explain-container">
+                                            <div class="explain-title">
+                                                <span style="color: var(--glow)">Time Complexity: O(N²)</span>
+                                            </div>
+                                            <ul class="explain-steps">
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">1</span>
+                                                    <div>
+                                                        <strong>Identify the input size metric:</strong> Here,
+                                                        <code>N</code> represents the dimensions of the square matrix
+                                                        (height and width).
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">2</span>
+                                                    <div>
+                                                        <strong>Count operations in block 1:</strong> The
+                                                        diagonal-scanning loop runs exactly <code>N</code> times. So it
+                                                        executes <code>O(N)</code> operations.
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">3</span>
+                                                    <div>
+                                                        <strong>Count operations in block 2:</strong> The nested loops
+                                                        iterate <code>r</code> from <code>0</code> to <code>N</code> and
+                                                        <code>c</code> from <code>0</code> to <code>N</code>. The inner
+                                                        body runs exactly <code>N * N = N²</code> times. So it executes
+                                                        <code>O(N²)</code> operations.
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">4</span>
+                                                    <div>
+                                                        <strong>Combine & isolate dominant term:</strong> Summing both
+                                                        blocks gives <code>T(N) = N + N²</code> operations. As
+                                                        <code>N</code> grows to infinity, the linear term <code>N</code>
+                                                        becomes negligible compared to <code>N²</code>. We drop
+                                                        constants and lower-order terms to yield <strong>O(N²)</strong>.
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Space Tab -->
+                                    <div class="tab-content" id="space-tab">
+                                        <div class="code-container">
+                                            <div class="code-title">Source Code Example</div>
+                                            <div class="comp-code" style="margin-bottom: 0; height: 100%;">function
+                                                generateMultiples(n) {
+                                                let result = [];
+
+                                                // 1. Recursive call stack helper
+                                                function helper(current) {
+                                                if (current > n) return;
+                                                result.push(current * 2);
+                                                helper(current + 1);
+                                                }
+
+                                                helper(1);
+                                                return result;
+                                                }</div>
+                                        </div>
+                                        <div class="explain-container">
+                                            <div class="explain-title">
+                                                <span style="color: var(--amber)">Space Complexity: O(N)</span>
+                                            </div>
+                                            <ul class="explain-steps">
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">1</span>
+                                                    <div>
+                                                        <strong>Separate Input from Auxiliary Space:</strong> Big-O
+                                                        space complexity focuses on <em>extra</em> memory (variables,
+                                                        lists, call stacks) allocated to solve the task, excluding the
+                                                        input size itself.
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">2</span>
+                                                    <div>
+                                                        <strong>Measure Heap allocation:</strong> The algorithm
+                                                        constructs a dynamic array <code>result</code> which receives
+                                                        <code>N</code> elements, requiring <code>O(N)</code> heap
+                                                        memory.
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">3</span>
+                                                    <div>
+                                                        <strong>Measure Call Stack allocation:</strong> The function
+                                                        <code>helper</code> calls itself recursively. For parameter
+                                                        <code>N</code>, the recursion depth is <code>N</code> stack
+                                                        frames deep. Each stack frame stores function pointers,
+                                                        parameters, and local states.
+                                                    </div>
+                                                </li>
+                                                <li class="explain-step-item">
+                                                    <span class="step-num">4</span>
+                                                    <div>
+                                                        <strong>Sum and simplify:</strong> Total Auxiliary Space =
+                                                        <code>O(N)</code> (for the list) + <code>O(N)</code> (recursion
+                                                        call stack) = <code>O(N)</code> space.
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+        </section>
     </div>
 
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
-        document.getElementById("themeToggle").addEventListener("change", () => {
-            document.body.classList.toggle("light");
-        });
+        // Theme toggler
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
+
+        // Toggle card details drawer
+        function toggleDrawer(id) {
+            const drawer = document.getElementById(id);
+            const btn = drawer.previousElementSibling;
+            const isOpen = drawer.classList.toggle('open');
+
+            if (isOpen) {
+                btn.innerHTML = 'Hide Code & Math <span style="transform: rotate(180deg); display: inline-block;">▼</span>';
+            } else {
+                btn.innerHTML = 'View Code & Math <span>▼</span>';
+            }
+        }
+
+        // Toggle tutorial tabs
+        function switchTab(tabId) {
+            // Remove active classes
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active classes to selected
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
     </script>
+    <!-- About LogicLens Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About LogicLens Platform</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>LogicLens is a state-of-the-art interactive code visualization and data structure execution platform designed to make computer science concepts clear, accessible, and intuitive.</p>
+
+                <h4>Core Features</h4>
+                <ul>
+                    <li><strong>DSA Learning Suite:</strong> Zero-latency client-side visualizers for Sorting (Bubble, Selection, Insertion, Quick Sort), Trees (BST & AVL), Graphs (BFS, DFS, Dijkstra), Stacks, Queues, Strings (KMP, Rabin-Karp), and Sentences.</li>
+                    <li><strong>Custom Code Sandbox:</strong> Powered by Node.js VM execution and Gemini AI to step-trace custom algorithms in C++, Java, Python, and JS with automatic syntax error detection.</li>
+                    <li><strong>Multilingual Support:</strong> Real-time translation supporting English, Hindi, and Marathi.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const modal = document.getElementById("aboutModal");
+            if (modal) modal.classList.toggle("active", show);
+        }
+    </script>
+    <script src="i18n.js"></script>
 </body>
 
 </html>
