@@ -41,7 +41,7 @@ It translates complex algorithm execution into dynamic step-by-step graphical fr
 
 ### 8. System Design & UI/UX Features
 - **Persistent Theme Engine**: Dark/Light mode glassmorphism toggling backed by localStorage persistence.
-- **Internationalization (i18n.js)**: Dynamic multi-language translation switching (English, Hindi, Marathi).
+- **Internationalization (i18n.js)**: Dynamic multi-language translation switching (English, Hindi, Marathi, Gujarati).
 - **Feedback & Telemetry**: /api/feedback & /api/save-visualization endpoints logging visualizer accuracy.
 - **Backend Infrastructure**: Express.js REST API server running on port 5000 with Vercel serverless functions.
 

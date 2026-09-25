@@ -1,13 +1,14 @@
 /**
  * LogicLens i18n & Translation Manager
- * Supports English (en), Hindi (hi), and Marathi (mr)
+ * Supports English (en), Hindi (hi), Marathi (mr), and Gujarati (gu)
  */
 
 (function () {
     const SUPPORTED_LANGS = [
         { code: 'en', name: 'English', flag: '🇬🇧' },
         { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-        { code: 'mr', name: 'मराठी', flag: '🇮🇳' }
+        { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
+        { code: 'gu', name: 'ગુજરાતી', flag: '🇮🇳' }
     ];
 
     function getSavedLang() {
@@ -35,7 +36,7 @@
         if (window.google && window.google.translate) {
             new window.google.translate.TranslateElement({
                 pageLanguage: 'en',
-                includedLanguages: 'en,hi,mr',
+                includedLanguages: 'en,hi,mr,gu',
                 layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
                 autoDisplay: false
             }, 'google_translate_element');
