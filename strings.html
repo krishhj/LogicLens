@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LogicLens - Strings</title>
+    <title>LogicLens - String Algorithms</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
@@ -16,7 +16,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -39,77 +39,97 @@
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
-        <h1>String Pattern Matching</h1>
-        <p>Visualize sliding window searching mapping dynamically across Character Arrays.</p>
+        <h1>String Algorithms</h1>
+        <p>Explore pattern matching, Z-boxes, Boyer-Moore shifts, Manacher palindromes, Aho-Corasick, Suffix Arrays, and DP Edit Distance.</p>
     </section>
 
-    <div class="container" id="stringContainer" style="margin-top: 40px;">
+    <div class="container" id="stringContainer" style="margin-top: 20px;">
         <div class="editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="margin: 0;">String Setup</h3>
+                <h3 style="margin: 0;">Algorithm Selection</h3>
                 <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Strings</button>
             </div>
 
-            <!-- Context Tabs -->
-            <div class="mode-tabs" style="margin-bottom: 20px;">
-                <button class="mode-tab active" id="tab-naive" onclick="switchMode('naive')">NAIVE</button>
-                <button class="mode-tab" id="tab-kmp" onclick="switchMode('kmp')">KMP</button>
-                <button class="mode-tab" id="tab-rabin" onclick="switchMode('rabin')">RABIN-KARP</button>
+            <!-- Algorithm Mode Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px;">
+                <button class="mode-tab active" id="alg-tab-naive" onclick="selectAlgorithm('naive')">Naive</button>
+                <button class="mode-tab" id="alg-tab-kmp" onclick="selectAlgorithm('kmp')">KMP</button>
+                <button class="mode-tab" id="alg-tab-rabin" onclick="selectAlgorithm('rabin')">Rabin-Karp</button>
+                <button class="mode-tab" id="alg-tab-zalg" onclick="selectAlgorithm('zalg')">Z-Algorithm</button>
+                <button class="mode-tab" id="alg-tab-bm" onclick="selectAlgorithm('bm')">Boyer-Moore</button>
+                <button class="mode-tab" id="alg-tab-manacher" onclick="selectAlgorithm('manacher')">Manacher</button>
+                <button class="mode-tab" id="alg-tab-ahocorasick" onclick="selectAlgorithm('ahocorasick')">Aho-Corasick</button>
+                <button class="mode-tab" id="alg-tab-suffix" onclick="selectAlgorithm('suffix')">Suffix Array</button>
+                <button class="mode-tab" id="alg-tab-dp" onclick="selectAlgorithm('dp')">Edit Distance / LCS</button>
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="stringInputBase" placeholder="Base String (e.g. AABACAABABACAA)"
+                <input type="text" id="stringInputBase" placeholder="Base Text (e.g. ABC ABCDAB ABCDABCDABDE)"
                     style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="stringInputQuery" placeholder="Search Pattern (e.g. ABACA)"
+                <input type="text" id="stringInputQuery" placeholder="Pattern (e.g. ABCDABD or he,she,his)"
                     style="flex:1; margin-bottom:0;" autocomplete="off" />
             </div>
 
-            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base
-                    String</button>
-                <button class="op-btn enqueue" onclick="doOp('search')">🔍 Search Pattern</button>
-                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
+            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Base Text</button>
+                <button class="op-btn enqueue" onclick="doOp('search')">🔍 Set Pattern</button>
+                <button class="op-btn check" style="grid-column: span 2;" onclick="runSelectedAlgorithm()">🚀 Run Algorithm</button>
+            </div>
+
+            <!-- Presets / Quick Load -->
+            <div class="samples-row" style="margin-bottom: 12px;">
+                <span class="sample-lbl">Presets:</span>
+                <button class="sample-btn" onclick="loadPreset('default')">KMP Pattern</button>
+                <button class="sample-btn" onclick="loadPreset('zbox')">Z-Box String</button>
+                <button class="sample-btn" onclick="loadPreset('bm')">Boyer-Moore DNA</button>
+                <button class="sample-btn" onclick="loadPreset('manacher')">Palindrome</button>
+                <button class="sample-btn" onclick="loadPreset('ahocorasick')">Multi-Pattern</button>
+                <button class="sample-btn" onclick="loadPreset('suffix')">Suffix Array</button>
+                <button class="sample-btn" onclick="loadPreset('dp')">Edit Distance</button>
             </div>
 
             <div class="adv-section-head" style="margin-top: 6px;">
-                <h3>Recorded Operations</h3>
+                <h3>Recorded Commands</h3>
             </div>
-            <textarea id="stringCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">string(ABC ABCDAB ABCDABCDABDE)
+            <textarea id="stringCodeInput" class="notranslate" translate="no" style="height: 100px;">string(ABC ABCDAB ABCDABCDABDE)
 search(ABCDABD)</textarea>
 
-            <button class="viz-btn" id="stringVizBtn" onclick="analyzeStringCode()">
-                Visualize Pattern
+            <button class="viz-btn" id="stringVizBtn" onclick="runSelectedAlgorithm();">
+                Visualize Logic
             </button>
 
             <!-- Op Log -->
-            <div class="op-log-panel" style="margin-top: 20px;">
+            <div class="op-log-panel" style="margin-top: 15px;">
                 <div class="op-log-header">
                     <span class="op-log-title">📋 Operation Log</span>
-                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear</button>
                 </div>
                 <div class="op-log-entries" id="opLog">
                     <div class="op-log-entry log-info">
                         <span class="op-log-num">#0</span>
                         <span class="op-log-icon">🚀</span>
-                        <span class="op-log-msg">String Engine initialized. Naive mode active.</span>
+                        <span class="op-log-msg">String Visualizer ready. Select an algorithm to begin.</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="visualizer">
-            <h3>String Analysis Output</h3>
+            <h3 id="visualizerTitle">String Analysis Output</h3>
 
-            <div class="legend">
-                <span><span class="box"
-                        style="background: var(--bg2); border:1px solid var(--border)"></span>Inactive</span>
-                <span><span class="box" style="background: #eab308"></span>Scanning</span>
-                <span><span class="box" style="background: #22c55e"></span>Match Found</span>
+            <div class="legend" id="stringLegend">
+                <span><span class="box" style="background: #38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background: #eab308"></span>Yellow (Comparing)</span>
+                <span><span class="box" style="background: #ef4444"></span>Red (Swapping/Mismatch)</span>
+                <span><span class="box" style="background: #22c55e"></span>Green (Sorted/Matched)</span>
             </div>
 
-            <div class="canvas string-container" id="stringCanvas"></div>
+            <div class="canvas string-container" id="stringCanvas" style="min-height: 240px; flex-direction: column; justify-content: center;"></div>
 
-            <div class="step-box" id="stringStepText">▶ System Ready.</div>
+            <!-- Subpanel container for DP tables, Z-boxes, Bad Char tables, Suffix tables -->
+            <div id="stringSubpanelContainer"></div>
+
+            <div class="step-box" id="stringStepText">▶ System Ready. Select an algorithm and click Visualize.</div>
 
             <div class="media-controls">
                 <div class="btn-group">
@@ -122,15 +142,13 @@ search(ABCDABD)</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="stringProgressSlider" min="0" max="0" value="0"
-                        oninput="scrubStringTimeline()" />
+                    <input type="range" id="stringProgressSlider" min="0" max="0" value="0" oninput="scrubStringTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-string-slow" onclick="setStringSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-string-normal"
-                        onclick="setStringSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-string-normal" onclick="setStringSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-string-fast" onclick="setStringSpeed(400, 'fast')">Fast</button>
                 </div>
 
@@ -146,27 +164,23 @@ search(ABCDABD)</textarea>
         <div class="cards">
             <div class="card" onclick="window.location.href='index.html'">
                 <h3>Sort</h3>
-                <p>Bubble, Insertion, Selection, Quick</p>
+                <p>Bar & Array Visualizations</p>
             </div>
             <div class="card" onclick="window.location.href='stack.html'">
-                <h3>Stack</h3>
-                <p>Push / Pop animation</p>
-            </div>
-            <div class="card" onclick="window.location.href='queue.html'">
-                <h3>Queue</h3>
-                <p>Enqueue / Dequeue flow</p>
+                <h3>Stack & Queue</h3>
+                <p>Monotonic, Deque, Parentheses</p>
             </div>
             <div class="card" onclick="window.location.href='trees.html'">
                 <h3>Trees</h3>
-                <p>Binary tree traversal</p>
+                <p>BST, AVL, Segment, Trie</p>
             </div>
-            <div class="card" onclick="window.location.href='graph.html'">
+            <div class="card" onclick="window.location.href='graphs.html'">
                 <h3>Graphs</h3>
-                <p>Adjacency list/matrix</p>
+                <p>BFS/DFS, Dijkstra, A*, Tarjan</p>
             </div>
-            <div class="card" onclick="window.location.href='sentences.html'">
-                <h3>Sentences</h3>
-                <p>Text structure visualization</p>
+            <div class="card" onclick="window.location.href='dp.html'">
+                <h3>DP & Backtracking</h3>
+                <p>Coin Change, Knapsack, N-Queens</p>
             </div>
         </div>
     </section>
@@ -174,6 +188,7 @@ search(ABCDABD)</textarea>
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
+        // Theme Setup
         const themeToggle = document.getElementById("themeToggle");
         const savedTheme = localStorage.getItem("logiclens_theme") || "light";
         if (savedTheme === "dark") {
@@ -195,19 +210,49 @@ search(ABCDABD)</textarea>
             });
         }
 
-        let stringMode = 'naive';
+        // Global State Variables
+        let currentAlg = 'naive';
+        let stringSteps = [];
+        let stringCurrentStep = 0;
+        let stringIsPlaying = false;
+        let stringPlayInterval = null;
+        let stringSpeedMs = 1000;
         let logCount = 0;
 
-        function switchMode(mode) {
-            pauseStringPlayback();
-            stringMode = mode;
-            ['naive', 'kmp', 'rabin'].forEach(m => {
-                document.getElementById(`tab-${m}`).classList.remove('active');
-            });
-            document.getElementById(`tab-${mode}`).classList.add('active');
+        let activeText = "ABC ABCDAB ABCDABCDABDE";
+        let activePattern = "ABCDABD";
 
-            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Search Mode. Sequence cleared.`);
-            doOp('clear');
+        function selectAlgorithm(algKey) {
+            pauseStringPlayback();
+            currentAlg = algKey;
+
+            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.getElementById(`alg-tab-${algKey}`);
+            if (tabBtn) tabBtn.classList.add('active');
+
+            const titleMap = {
+                naive: "Naive String Matching",
+                kmp: "Knuth-Morris-Pratt (KMP) Search",
+                rabin: "Rabin-Karp Rolling Hash Search",
+                zalg: "Z-Algorithm & Z-Box Range",
+                bm: "Boyer-Moore Bad-Character Rule",
+                manacher: "Manacher's Palindrome Expansion",
+                ahocorasick: "Aho-Corasick Automaton Search",
+                suffix: "Suffix Array & LCP Array",
+                dp: "Edit Distance & LCS (Dynamic Programming)"
+            };
+            document.getElementById('visualizerTitle').innerText = titleMap[algKey] || "String Analysis";
+
+            if (algKey === 'zalg') loadPreset('zbox');
+            else if (algKey === 'bm') loadPreset('bm');
+            else if (algKey === 'manacher') loadPreset('manacher');
+            else if (algKey === 'ahocorasick') loadPreset('ahocorasick');
+            else if (algKey === 'suffix') loadPreset('suffix');
+            else if (algKey === 'dp') loadPreset('dp');
+            else loadPreset('default');
+
+            addLog('info', '⚙️', `Switched mode to ${titleMap[algKey]}.`);
+            runSelectedAlgorithm();
         }
 
         const appendCode = (codeStr) => {
@@ -242,346 +287,553 @@ search(ABCDABD)</textarea>
             pauseStringPlayback();
             const baseIn = document.getElementById('stringInputBase');
             const targetIn = document.getElementById('stringInputQuery');
-
-            const b = baseIn.value;
-            const t = targetIn.value;
+            const b = baseIn.value.trim();
+            const t = targetIn.value.trim();
 
             if (op === 'setBase') {
-                if (!b) { addLog('error', '⚠️', 'Enter a Base String.'); return; }
-                addLog('push', '➕', `Established Base String: "${b}".`);
+                if (!b) return alert("Enter Base Text.");
+                activeText = b;
                 appendCode(`string(${b})`);
                 baseIn.value = '';
-                analyzeStringCode();
             } else if (op === 'search') {
-                if (!t) { addLog('error', '⚠️', 'Enter a Search Pattern.'); return; }
-                addLog('push', '🔍', `Searching Pattern: "${t}".`);
+                if (!t) return alert("Enter Pattern.");
+                activePattern = t;
                 appendCode(`search(${t})`);
                 targetIn.value = '';
-                analyzeStringCode();
-            } else if (op === 'clear') {
-                stringSteps = [];
-                stringCurrentStep = 0;
-                addLog('info', '🗑️', `Cleared parsing sequence.`);
-                document.getElementById('stringCodeInput').value = '';
-                document.getElementById('stringCanvas').innerHTML = '';
-                let slider = document.getElementById("stringProgressSlider");
-                if (slider) slider.max = 0;
-                updateStringPlayBtnUI();
-                renderStringFrame({ characters: [], comparing: [], matching: [], explanation: "Engine Reset.", stepIndex: 0 });
             }
+            runSelectedAlgorithm();
         }
 
-        let stringSteps = [];
-        let stringCurrentStep = 0;
-        let stringIsPlaying = false;
-        let stringPlayInterval = null;
-        let stringSpeedMs = 1000;
-
-        function analyzeStringCode() {
+        function loadPreset(key) {
             pauseStringPlayback();
+            if (key === 'default') {
+                activeText = "ABC ABCDAB ABCDABCDABDE";
+                activePattern = "ABCDABD";
+            } else if (key === 'zbox') {
+                activeText = "aabaab";
+                activePattern = "aab";
+            } else if (key === 'bm') {
+                activeText = "GCTTCTGAGCCA";
+                activePattern = "CCT";
+            } else if (key === 'manacher') {
+                activeText = "abacabaaba";
+                activePattern = "";
+            } else if (key === 'ahocorasick') {
+                activeText = "ushers";
+                activePattern = "he,she,his,hers";
+            } else if (key === 'suffix') {
+                activeText = "banana$";
+                activePattern = "";
+            } else if (key === 'dp') {
+                activeText = "kitten";
+                activePattern = "sitting";
+            }
+            document.getElementById('stringCodeInput').value = `string(${activeText})\nsearch(${activePattern})`;
+            runSelectedAlgorithm();
+        }
+
+        function parseInputCode() {
             const code = document.getElementById("stringCodeInput").value;
             const lines = code.split('\n');
-
-            stringSteps = [];
-            let activeString = [];
-
-            lines.forEach((line, idx) => {
-                let text = line.trim();
-                if (!text) return;
-
-                let matchString = text.match(/string\(([^)]+)\)/);
-                if (matchString) {
-                    let str = matchString[1];
-                    activeString = str.split('');
-                    stringSteps.push({
-                        characters: [...activeString],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Base string established: "${str}"`,
-                        stepIndex: stringSteps.length,
-                        line: idx
-                    });
-                }
-
-                let matchSearch = text.match(/search\(([^)]+)\)/);
-                if (matchSearch) {
-                    let query = matchSearch[1];
-                    let qLen = query.length;
-
-                    if (activeString.length === 0) return;
-                    if (qLen > activeString.length) {
-                        stringSteps.push({ characters: [...activeString], comparing: [], matching: [], action: "none", explanation: `Query length exceeds Base String length. Ignored.`, stepIndex: stringSteps.length, line: idx });
-                        return;
-                    }
-
-                    stringSteps.push({
-                        characters: [...activeString],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Started ${stringMode.toUpperCase()} Pattern Search for: "${query}"`,
-                        stepIndex: stringSteps.length,
-                        line: idx
-                    });
-
-                    let foundAny = false;
-
-                    if (stringMode === 'naive') {
-                        for (let i = 0; i <= activeString.length - qLen; i++) {
-                            let comparingIndices = [];
-                            for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
-
-                            stringSteps.push({
-                                characters: [...activeString],
-                                comparing: [...comparingIndices],
-                                matching: [],
-                                action: "compare",
-                                explanation: `Naive: Scanning substring layer starting at index ${i}...`,
-                                stepIndex: stringSteps.length,
-                                line: idx
-                            });
-
-                            let match = true;
-                            for (let j = 0; j < qLen; j++) {
-                                if (activeString[i + j] !== query[j]) {
-                                    match = false;
-                                    break;
-                                }
-                            }
-
-                            if (match) {
-                                foundAny = true;
-                                stringSteps.push({
-                                    characters: [...activeString],
-                                    comparing: [],
-                                    matching: [...comparingIndices],
-                                    action: "match",
-                                    explanation: `Match successfully located at index ${i}!`,
-                                    stepIndex: stringSteps.length,
-                                    line: idx
-                                });
-                            }
-                        }
-                    } else if (stringMode === 'kmp') {
-                        // KMP Logic
-                        let lps = new Array(qLen).fill(0);
-                        let length = 0;
-                        let i = 1;
-                        while (i < qLen) {
-                            if (query[i] === query[length]) {
-                                length++;
-                                lps[i] = length;
-                                i++;
-                            } else {
-                                if (length !== 0) {
-                                    length = lps[length - 1];
-                                } else {
-                                    lps[i] = 0;
-                                    i++;
-                                }
-                            }
-                        }
-
-                        let iStr = 0;
-                        let jPtr = 0;
-
-                        while (iStr < activeString.length) {
-                            let comparingIndices = [];
-                            for (let k = 0; k < qLen && iStr - jPtr + k < activeString.length; k++) {
-                                comparingIndices.push(iStr - jPtr + k);
-                            }
-
-                            if (query[jPtr] === activeString[iStr]) {
-                                stringSteps.push({
-                                    characters: [...activeString],
-                                    comparing: [...comparingIndices],
-                                    matching: [iStr],
-                                    action: "compare",
-                                    explanation: `KMP: Character '${query[jPtr]}' matches at index ${iStr}. Advancing...`,
-                                    stepIndex: stringSteps.length,
-                                    line: idx
-                                });
-                                jPtr++;
-                                iStr++;
-                            } else {
-                                stringSteps.push({
-                                    characters: [...activeString],
-                                    comparing: [...comparingIndices],
-                                    matching: [],
-                                    action: "compare",
-                                    explanation: `KMP Mismatch at index ${iStr} (char '${activeString[iStr]}'). Pattern index ${jPtr}.`,
-                                    stepIndex: stringSteps.length,
-                                    line: idx
-                                });
-
-                                if (jPtr !== 0) {
-                                    jPtr = lps[jPtr - 1];
-                                    stringSteps.push({
-                                        characters: [...activeString],
-                                        comparing: [],
-                                        matching: [],
-                                        action: "none",
-                                        explanation: `KMP: Skipping backwards optimally using LPS array to pattern index ${jPtr}.`,
-                                        stepIndex: stringSteps.length,
-                                        line: idx
-                                    });
-                                } else {
-                                    iStr++;
-                                }
-                            }
-
-                            // Check match
-                            if (jPtr === qLen) {
-                                foundAny = true;
-                                let matchIndices = [];
-                                for (let k = 0; k < qLen; k++) matchIndices.push(iStr - qLen + k);
-                                stringSteps.push({
-                                    characters: [...activeString],
-                                    comparing: [],
-                                    matching: [...matchIndices],
-                                    action: "match",
-                                    explanation: `KMP: Match completely resolved at index ${iStr - qLen}!`,
-                                    stepIndex: stringSteps.length,
-                                    line: idx
-                                });
-                                jPtr = lps[jPtr - 1];
-                            }
-                        }
-
-                    } else if (stringMode === 'rabin') {
-                        // Rabin-Karp Math
-                        let d = 256;
-                        let q = 101; // prime
-                        let h = 1;
-                        let pHash = 0;
-                        let tHash = 0;
-
-                        for (let i = 0; i < qLen - 1; i++) h = (h * d) % q;
-
-                        // Calculate initial hash
-                        for (let i = 0; i < qLen; i++) {
-                            pHash = (d * pHash + query.charCodeAt(i)) % q;
-                            tHash = (d * tHash + activeString[i].charCodeAt(0)) % q;
-                        }
-
-                        for (let i = 0; i <= activeString.length - qLen; i++) {
-                            let comparingIndices = [];
-                            for (let j = 0; j < qLen; j++) comparingIndices.push(i + j);
-
-                            let matchLogic = (pHash === tHash) ? "Hash Collision detected! Verifying exact char match." : "Hashes differ. Rolling window forward.";
-
-                            stringSteps.push({
-                                characters: [...activeString],
-                                comparing: [...comparingIndices],
-                                matching: [],
-                                action: "compare",
-                                explanation: `Rabin-Karp Hashes → Target: ${pHash} | Window: ${tHash}. ${matchLogic}`,
-                                stepIndex: stringSteps.length,
-                                line: idx
-                            });
-
-                            if (pHash === tHash) {
-                                let match = true;
-                                for (let j = 0; j < qLen; j++) {
-                                    if (activeString[i + j] !== query[j]) {
-                                        match = false;
-                                        break;
-                                    }
-                                }
-                                if (match) {
-                                    foundAny = true;
-                                    stringSteps.push({
-                                        characters: [...activeString],
-                                        comparing: [],
-                                        matching: [...comparingIndices],
-                                        action: "match",
-                                        explanation: `Rabin-Karp: Verified char sequence equality at index ${i}!`,
-                                        stepIndex: stringSteps.length,
-                                        line: idx
-                                    });
-                                }
-                            }
-
-                            // Roll hash
-                            if (i < activeString.length - qLen) {
-                                tHash = (d * (tHash - activeString[i].charCodeAt(0) * h) + activeString[i + qLen].charCodeAt(0)) % q;
-                                if (tHash < 0) tHash = (tHash + q);
-                            }
-                        }
-                    }
-
-                    if (!foundAny) {
-                        stringSteps.push({
-                            characters: [...activeString],
-                            comparing: [],
-                            matching: [],
-                            action: "none",
-                            explanation: `Search exhausted. Query "${query}" was not found.`,
-                            stepIndex: stringSteps.length,
-                            line: idx
-                        });
-                    }
-                }
+            lines.forEach(line => {
+                let m1 = line.match(/string\(([^)]+)\)/i);
+                if (m1) activeText = m1[1].trim();
+                let m2 = line.match(/search\(([^)]*)\)/i);
+                if (m2) activePattern = m2[1].trim();
             });
+        }
 
-            if (stringSteps.length === 0) {
-                stringSteps.push({ characters: [], comparing: [], matching: [], explanation: "No valid commands found.", stepIndex: 0 });
+        // ─────────────────────────────────────────────────────────────────────
+        // ALGORITHM GENERATOR ROUTER
+        // ─────────────────────────────────────────────────────────────────────
+        function runSelectedAlgorithm() {
+            pauseStringPlayback();
+            parseInputCode();
+            stringSteps = [];
+
+            switch (currentAlg) {
+                case 'naive': generateNaive(); break;
+                case 'kmp': generateKMP(); break;
+                case 'rabin': generateRabinKarp(); break;
+                case 'zalg': generateZAlgorithm(); break;
+                case 'bm': generateBoyerMoore(); break;
+                case 'manacher': generateManacher(); break;
+                case 'ahocorasick': generateAhoCorasick(); break;
+                case 'suffix': generateSuffixArray(); break;
+                case 'dp': generateEditDistance(); break;
             }
 
             if (stringSteps.length > 0) {
                 document.getElementById("stringProgressSlider").max = stringSteps.length - 1;
                 stringCurrentStep = 0;
-                toggleStringPlay();
+                startStringPlayback();
             }
         }
 
+        // 1. Naive Matcher
+        function generateNaive() {
+            let T = activeText;
+            let P = activePattern;
+            let n = T.length, m = P.length;
+
+            stringSteps.push({ text: T, comparing: [], matching: [], explanation: `Naive Search initialized for pattern "${P}".` });
+
+            for (let i = 0; i <= n - m; i++) {
+                let comp = [];
+                for (let j = 0; j < m; j++) comp.push(i + j);
+                
+                let match = true;
+                for (let j = 0; j < m; j++) {
+                    if (T[i + j] !== P[j]) { match = false; break; }
+                }
+
+                stringSteps.push({
+                    text: T,
+                    comparing: comp,
+                    matching: match ? comp : [],
+                    explanation: match ? `Match found at index ${i}!` : `Scanning window at index ${i}... Mismatch.`
+                });
+            }
+        }
+
+        // 2. KMP Matcher
+        function generateKMP() {
+            let T = activeText;
+            let P = activePattern;
+            let n = T.length, m = P.length;
+
+            let lps = new Array(m).fill(0);
+            let len = 0, i = 1;
+            while (i < m) {
+                if (P[i] === P[len]) { len++; lps[i] = len; i++; }
+                else {
+                    if (len !== 0) len = lps[len - 1];
+                    else { lps[i] = 0; i++; }
+                }
+            }
+
+            stringSteps.push({
+                text: T,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Precomputed KMP LPS Array:</strong> [ ${lps.join(', ')} ]</div>`,
+                explanation: `KMP Preprocessed LPS array: [ ${lps.join(', ')} ]`
+            });
+
+            let iT = 0, jP = 0;
+            while (iT < n) {
+                let comp = [iT];
+                if (P[jP] === T[iT]) {
+                    stringSteps.push({
+                        text: T,
+                        comparing: comp,
+                        subpanelHTML: `<div class="graph-subpanel"><strong>KMP Match:</strong> '${P[jP]}' === '${T[iT]}' at text index ${iT}</div>`,
+                        explanation: `Character '${P[jP]}' matched at text index ${iT}.`
+                    });
+                    iT++; jP++;
+                } else {
+                    stringSteps.push({
+                        text: T,
+                        comparing: comp,
+                        subpanelHTML: `<div class="graph-subpanel"><strong>KMP Mismatch:</strong> '${P[jP]}' !== '${T[iT]}'. Shift j to LPS[${jP-1}] = ${jP > 0 ? lps[jP-1] : 0}</div>`,
+                        explanation: `Mismatch at text index ${iT}. Skipping using LPS table.`
+                    });
+                    if (jP !== 0) jP = lps[jP - 1];
+                    else iT++;
+                }
+
+                if (jP === m) {
+                    let match = [];
+                    for (let k = 0; k < m; k++) match.push(iT - m + k);
+                    stringSteps.push({
+                        text: T,
+                        matching: match,
+                        explanation: `KMP Match resolved at index ${iT - m}!`
+                    });
+                    jP = lps[jP - 1];
+                }
+            }
+        }
+
+        // 3. Rabin-Karp
+        function generateRabinKarp() {
+            let T = activeText, P = activePattern;
+            let n = T.length, m = P.length;
+            let d = 256, q = 101;
+            let h = 1, pHash = 0, tHash = 0;
+
+            for (let i = 0; i < m - 1; i++) h = (h * d) % q;
+            for (let i = 0; i < m; i++) {
+                pHash = (d * pHash + P.charCodeAt(i)) % q;
+                tHash = (d * tHash + T.charCodeAt(i)) % q;
+            }
+
+            for (let i = 0; i <= n - m; i++) {
+                let comp = [];
+                for (let j = 0; j < m; j++) comp.push(i + j);
+
+                let isCol = (pHash === tHash);
+                stringSteps.push({
+                    text: T,
+                    comparing: comp,
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Rabin-Karp Hashes:</strong> Target=${pHash} | Window=${tHash} | ${isCol ? 'Match/Collision!' : 'Hashes differ.'}</div>`,
+                    explanation: `Window index ${i}: Pattern Hash = ${pHash}, Window Hash = ${tHash}.`
+                });
+
+                if (i < n - m) {
+                    tHash = (d * (tHash - T.charCodeAt(i) * h) + T.charCodeAt(i + m)) % q;
+                    if (tHash < 0) tHash = (tHash + q);
+                }
+            }
+        }
+
+        // 4. Z-Algorithm
+        function generateZAlgorithm() {
+            let S = activePattern ? (activePattern + "$" + activeText) : activeText;
+            let n = S.length;
+            let Z = new Array(n).fill(0);
+            let L = 0, R = 0;
+
+            stringSteps.push({
+                text: S,
+                zValues: [...Z],
+                zBox: [L, R],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Z-Array Initialization:</strong> String S = "${S}"</div>`,
+                explanation: `Z-Algorithm initialized for string "${S}".`
+            });
+
+            for (let i = 1; i < n; i++) {
+                if (i > R) {
+                    L = R = i;
+                    while (R < n && S[R - L] === S[R]) R++;
+                    Z[i] = R - L;
+                    R--;
+                } else {
+                    let k = i - L;
+                    if (Z[k] < R - i + 1) {
+                        Z[i] = Z[k];
+                    } else {
+                        L = i;
+                        while (R < n && S[R - L] === S[R]) R++;
+                        Z[i] = R - L;
+                        R--;
+                    }
+                }
+
+                stringSteps.push({
+                    text: S,
+                    zValues: [...Z],
+                    currentIdx: i,
+                    zBox: [L, R],
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Index i=${i}:</strong> Z[${i}] = ${Z[i]} | <strong>Active Z-Box:</strong> [L=${L}, R=${R}]</div>`,
+                    explanation: `Computed Z[${i}] = ${Z[i]}. Active Z-box is [${L}, ${R}].`
+                });
+            }
+        }
+
+        // 5. Boyer-Moore
+        function generateBoyerMoore() {
+            let T = activeText, P = activePattern;
+            let n = T.length, m = P.length;
+            let badChar = {};
+            for (let i = 0; i < m; i++) badChar[P[i]] = i;
+
+            let bcHTML = `<div class="graph-subpanel"><strong>Boyer-Moore Bad Character Table:</strong><br>`;
+            for (let ch in badChar) bcHTML += `<code>'${ch}' ➔ ${badChar[ch]}</code> &nbsp; `;
+            bcHTML += `</div>`;
+
+            stringSteps.push({ text: T, subpanelHTML: bcHTML, explanation: "Boyer-Moore Bad-Character Table constructed." });
+
+            let s = 0;
+            while (s <= (n - m)) {
+                let j = m - 1;
+                let comp = [];
+                while (j >= 0 && P[j] === T[s + j]) {
+                    comp.push(s + j);
+                    j--;
+                }
+
+                if (j < 0) {
+                    let match = [];
+                    for (let k = 0; k < m; k++) match.push(s + k);
+                    stringSteps.push({
+                        text: T,
+                        matching: match,
+                        subpanelHTML: bcHTML,
+                        explanation: `Pattern match found at index ${s}!`
+                    });
+                    s += (s + m < n) ? m - (badChar[T[s + m]] !== undefined ? badChar[T[s + m]] : -1) : 1;
+                } else {
+                    comp.push(s + j);
+                    let mismatchChar = T[s + j];
+                    let lastOcc = badChar[mismatchChar] !== undefined ? badChar[mismatchChar] : -1;
+                    let shift = Math.max(1, j - lastOcc);
+
+                    stringSteps.push({
+                        text: T,
+                        comparing: comp,
+                        subpanelHTML: bcHTML + `<div style="margin-top:6px; color:var(--amber)"><strong>Mismatch '${mismatchChar}' at P[${j}]:</strong> Shift pattern by max(1, ${j} - ${lastOcc}) = <strong>${shift}</strong> units.</div>`,
+                        explanation: `Mismatch '${mismatchChar}' at position ${j}. Shifting pattern right by ${shift} steps.`
+                    });
+                    s += shift;
+                }
+            }
+        }
+
+        // 6. Manacher's Algorithm
+        function generateManacher() {
+            let T = activeText;
+            let tArr = ['^'];
+            for (let c of T) { tArr.push('#'); tArr.push(c); }
+            tArr.push('#'); tArr.push('$');
+            let S = tArr.join('');
+            let n = S.length;
+
+            let P = new Array(n).fill(0);
+            let C = 0, R = 0;
+
+            stringSteps.push({
+                text: S,
+                palRadius: [...P],
+                center: C,
+                boundary: R,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Transformed String:</strong> "${S}"</div>`,
+                explanation: `Manacher initialized on preprocessed string with '#' separators.`
+            });
+
+            for (let i = 1; i < n - 1; i++) {
+                let iMirror = 2 * C - i;
+                if (R > i) P[i] = Math.min(R - i, P[iMirror]);
+                
+                while (S[i + 1 + P[i]] === S[i - 1 - P[i]]) P[i]++;
+
+                if (i + P[i] > R) {
+                    C = i;
+                    R = i + P[i];
+                }
+
+                stringSteps.push({
+                    text: S,
+                    palRadius: [...P],
+                    center: C,
+                    boundary: R,
+                    currentIdx: i,
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Center C=${C} (char '${S[C]}'):</strong> Palindrome Radius P[${i}] = ${P[i]} | Boundary R=${R}</div>`,
+                    explanation: `Center '${S[i]}' (idx ${i}): Palindrome radius expanded to ${P[i]}.`
+                });
+            }
+        }
+
+        // 7. Aho-Corasick
+        function generateAhoCorasick() {
+            let patterns = activePattern ? activePattern.split(',').map(s => s.trim()) : ['he', 'she', 'his', 'hers'];
+            let text = activeText;
+
+            let trieHTML = `<div class="graph-subpanel"><strong>Aho-Corasick Trie Patterns:</strong> [ ${patterns.join(', ')} ]<br>`;
+            trieHTML += `<span style="color:var(--glow)">Trie Root ➔ Nodes: { ${patterns.map(p => `"${p}"`).join(' | ')} }</span><br>`;
+            trieHTML += `<span style="color:var(--amber)">Failure Links: BFS computed back-pointers across prefix overlaps.</span></div>`;
+
+            stringSteps.push({ text: text, subpanelHTML: trieHTML, explanation: "Aho-Corasick Trie built with Failure Links ready." });
+
+            for (let i = 0; i < text.length; i++) {
+                let matches = [];
+                patterns.forEach(p => {
+                    if (i + p.length <= text.length && text.substr(i, p.length) === p) {
+                        matches.push(p);
+                    }
+                });
+
+                let comp = [i];
+                if (matches.length > 0) {
+                    stringSteps.push({
+                        text: text,
+                        comparing: comp,
+                        subpanelHTML: trieHTML + `<div style="margin-top:6px; color:#22c55e"><strong>Pattern Match Found!</strong> { ${matches.join(', ')} } at index ${i}</div>`,
+                        explanation: `Aho-Corasick matched pattern(s) { ${matches.join(', ')} } at text index ${i}!`
+                    });
+                } else {
+                    stringSteps.push({
+                        text: text,
+                        comparing: comp,
+                        subpanelHTML: trieHTML,
+                        explanation: `Scanning text char '${text[i]}' at index ${i}...`
+                    });
+                }
+            }
+        }
+
+        // 8. Suffix Array & LCP Array
+        function generateSuffixArray() {
+            let S = activeText;
+            let n = S.length;
+            let suffixes = [];
+            for (let i = 0; i < n; i++) {
+                suffixes.push({ index: i, str: S.substring(i) });
+            }
+
+            suffixes.sort((a, b) => a.str.localeCompare(b.str));
+
+            let sa = suffixes.map(s => s.index);
+            let lcp = new Array(n).fill(0);
+
+            for (let i = 1; i < n; i++) {
+                let s1 = suffixes[i - 1].str;
+                let s2 = suffixes[i].str;
+                let l = 0;
+                while (l < s1.length && l < s2.length && s1[l] === s2[l]) l++;
+                lcp[i] = l;
+            }
+
+            let tableHTML = `<div class="graph-subpanel"><strong>Suffix Array & LCP Table:</strong><table class="str-table"><tr><th>Rank</th><th>SA Index</th><th>LCP</th><th>Suffix String</th></tr>`;
+            for (let i = 0; i < n; i++) {
+                tableHTML += `<tr><td>${i}</td><td>${sa[i]}</td><td>${lcp[i]}</td><td><code>${suffixes[i].str}</code></td></tr>`;
+            }
+            tableHTML += `</table></div>`;
+
+            stringSteps.push({
+                text: S,
+                subpanelHTML: tableHTML,
+                explanation: `Suffix Array and LCP computed for string "${S}".`
+            });
+        }
+
+        // 9. Edit Distance & LCS (DP)
+        function generateEditDistance() {
+            let s1 = activeText;
+            let s2 = activePattern || "sitting";
+            let m = s1.length, n = s2.length;
+
+            let dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+            function renderDPTableHTML(dpMat, activeI, activeJ, depList, tracebackPath) {
+                let html = `<div class="graph-subpanel"><strong>Edit Distance DP Table ("${s1}" ➔ "${s2}"):</strong><table class="dp-grid-table"><tr><th></th><th>Ø</th>`;
+                for (let j = 0; j < n; j++) html += `<th>${s2[j]}</th>`;
+                html += `</tr>`;
+
+                for (let i = 0; i <= m; i++) {
+                    html += `<tr><th>${i === 0 ? 'Ø' : s1[i - 1]}</th>`;
+                    for (let j = 0; j <= n; j++) {
+                        let cls = "";
+                        if (tracebackPath && tracebackPath.some(p => p[0]===i && p[1]===j)) cls = "dp-traceback";
+                        else if (i === activeI && j === activeJ) cls = "dp-active";
+                        else if (depList && depList.some(d => d[0]===i && d[1]===j)) cls = "dp-dep";
+                        html += `<td class="${cls}">${dpMat[i][j]}</td>`;
+                    }
+                    html += `</tr>`;
+                }
+                html += `</table></div>`;
+                return html;
+            }
+
+            stringSteps.push({
+                subpanelHTML: renderDPTableHTML(dp, 0, 0),
+                explanation: "Edit Distance DP table initialized with base cases."
+            });
+
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    let cost = (s1[i - 1] === s2[j - 1]) ? 0 : 1;
+                    dp[i][j] = Math.min(
+                        dp[i - 1][j] + 1,      // Deletion
+                        dp[i][j - 1] + 1,      // Insertion
+                        dp[i - 1][j - 1] + cost // Substitution
+                    );
+
+                    let deps = [[i-1, j], [i, j-1], [i-1, j-1]];
+                    let matchTxt = (cost === 0) ? `Match ('${s1[i-1]}')` : `Cost 1 ('${s1[i-1]}'➔'${s2[j-1]}')`;
+
+                    stringSteps.push({
+                        subpanelHTML: renderDPTableHTML(dp, i, j, deps),
+                        explanation: `DP[${i}][${j}] = min(Insert:${dp[i][j-1]+1}, Delete:${dp[i-1][j]+1}, Replace:${dp[i-1][j-1]+cost}) ➔ ${dp[i][j]} (${matchTxt})`
+                    });
+                }
+            }
+
+            // Traceback optimal path
+            let traceback = [];
+            let i = m, j = n;
+            while (i > 0 || j > 0) {
+                traceback.push([i, j]);
+                if (i > 0 && j > 0 && s1[i - 1] === s2[j - 1]) {
+                    i--; j--;
+                } else if (i > 0 && j > 0 && dp[i][j] === dp[i - 1][j - 1] + 1) {
+                    i--; j--;
+                } else if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) {
+                    i--;
+                } else {
+                    j--;
+                }
+            }
+            traceback.push([0, 0]);
+
+            stringSteps.push({
+                subpanelHTML: renderDPTableHTML(dp, null, null, null, traceback),
+                explanation: `Edit Distance computation complete! Total Edit Distance = ${dp[m][n]}. Traceback path highlighted in green.`
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // FRAME RENDERER
+        // ─────────────────────────────────────────────────────────────────────
         function renderStringFrame(frame) {
             if (!frame) return;
 
             const canvas = document.getElementById("stringCanvas");
             canvas.innerHTML = "";
 
-            frame.characters.forEach((char, idx) => {
-                let div = document.createElement("div");
-                div.classList.add("string-char");
-                div.innerText = char;
+            if (frame.text) {
+                let charRow = document.createElement("div");
+                charRow.className = "string-char-container";
 
-                if (frame.matching && frame.matching.includes(idx)) {
-                    div.classList.add("highlight-match");
-                } else if (frame.comparing && frame.comparing.includes(idx)) {
-                    div.classList.add("highlight-compare");
+                let textStr = frame.text;
+                for (let idx = 0; idx < textStr.length; idx++) {
+                    let box = document.createElement("div");
+                    box.className = "string-char-box";
+
+                    let char = textStr[idx];
+                    box.innerHTML = `<span>${char}</span><span class="char-idx">${idx}</span>`;
+
+                    if (frame.zValues && frame.zValues[idx] !== undefined) {
+                        let sub = document.createElement("div");
+                        sub.className = "char-subval";
+                        sub.innerText = frame.zValues[idx];
+                        box.appendChild(sub);
+                    }
+
+                    if (frame.zBox && idx >= frame.zBox[0] && idx <= frame.zBox[1] && frame.zBox[0] !== 0) {
+                        box.classList.add("z-box-active");
+                    }
+
+                    if (frame.center === idx) box.classList.add("pal-center");
+                    if (frame.boundary === idx) box.classList.add("pal-boundary");
+
+                    if (frame.matching && frame.matching.includes(idx)) {
+                        box.style.background = "#22c55e";
+                        box.style.color = "#000000";
+                    } else if (frame.comparing && frame.comparing.includes(idx)) {
+                        box.style.background = "#eab308";
+                        box.style.color = "#000000";
+                    }
+
+                    charRow.appendChild(box);
                 }
+                canvas.appendChild(charRow);
+            }
 
-                canvas.appendChild(div);
-            });
-
+            document.getElementById("stringSubpanelContainer").innerHTML = frame.subpanelHTML || "";
             document.getElementById("stringStepText").innerText = "▶ " + frame.explanation;
 
             let slider = document.getElementById("stringProgressSlider");
             if (slider && frame.stepIndex !== undefined) {
                 slider.value = frame.stepIndex;
             }
-
-            if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById("stringCodeInput");
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) {
-                        startPos += lines[i].length + 1;
-                    }
-                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
-                }
-            }
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // MEDIA CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
         function toggleStringPlay() {
-            if (stringSteps.length === 0) return alert("Click 'Visualize Pattern' to render logic first!");
+            if (stringSteps.length === 0) return alert("Select an algorithm and click Visualize first!");
             if (stringIsPlaying) pauseStringPlayback();
             else {
                 if (stringCurrentStep >= stringSteps.length - 1) stringCurrentStep = 0;
@@ -668,49 +920,39 @@ search(ABCDABD)</textarea>
             stringCurrentStep = parseInt(document.getElementById("stringProgressSlider").value);
             renderStringFrame(stringSteps[stringCurrentStep]);
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            selectAlgorithm('naive');
+        });
     </script>
-    <!-- About String Matching Modal -->
+
+    <!-- About Strings Modal -->
     <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
         <div class="about-modal-card">
             <div class="about-modal-header">
-                <div class="about-modal-title">💡 About String Matching Algorithms</div>
+                <div class="about-modal-title">💡 About String Algorithms</div>
                 <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
             </div>
             <div class="about-modal-body">
                 <h4>Overview</h4>
-                <p>String pattern matching locates all valid occurrence indices of a pattern string <i>P</i> of length <i>M</i> within a primary text body <i>T</i> of length <i>N</i>.</p>
-
-                <h4>Algorithms & Mathematical Formulations</h4>
+                <p>String processing algorithms enable linear pattern matching, palindrome detection, multi-pattern trie searches, suffix sorting, and dynamic programming distance computations.</p>
                 <ul>
-                    <li style="margin-bottom: 16px;">
-                        <strong>1. Naive String Matching:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Slides pattern <code>P[0..M-1]</code> across text <code>T[0..N-1]</code> at every possible alignment index <i>i ∈ [0, N-M]</i>. For each alignment, compares characters sequentially from left to right. When a mismatch occurs, shifts pattern right by 1 position and restarts comparison from <code>P[0]</code>. Inefficient on repetitive text (e.g. searching <code>AAAAAB</code> in <code>AAAAAAAAAAAAAB</code>).</p>
-                        <span class="about-complexity-badge">Worst Time: O((N-M+1)·M)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">No Preprocessing</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>2. Knuth-Morris-Pratt (KMP) Algorithm:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Eliminates redundant comparisons by utilizing knowledge gained from previous character matches. Precomputes an <strong>LPS (Longest Prefix Suffix)</strong> array where <code>LPS[i]</code> stores the length of the longest proper prefix of <code>P[0..i]</code> that is also a suffix of <code>P[0..i]</code>. Upon a mismatch after matching <i>j</i> characters, KMP sets <code>j = LPS[j-1]</code> without rewinding text index <i>i</i>, guaranteeing strict O(N) linear time.</p>
-                        <span class="about-complexity-badge">Preprocessing: O(M)</span><span class="about-complexity-badge">Search Time: O(N)</span><span class="about-complexity-badge">Space: O(M)</span><span class="about-complexity-badge">LPS Table</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>3. Rabin-Karp Algorithm:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Uses a <strong>Rolling Hash</strong> function to convert pattern and text substring windows into integer hash values. Computes <code>H(P)</code> and updates <code>H(T[i..i+M-1])</code> in O(1) time as the window slides using modular arithmetic: <code>H(next) = (d · (H(curr) - T[i] · d^(M-1)) + T[i+M]) % q</code>. Only performs character-by-character validation when window hash equals pattern hash.</p>
-                        <span class="about-complexity-badge">Average Time: O(N + M)</span><span class="about-complexity-badge">Worst Time: O(N·M)</span><span class="about-complexity-badge">Rolling Hash</span>
-                    </li>
+                    <li><strong>Z-Algorithm:</strong> Computes prefix match lengths using an expanding $[L, R]$ Z-box range.</li>
+                    <li><strong>Boyer-Moore:</strong> Scans right-to-left and uses bad-character skip heuristics for optimal shifts.</li>
+                    <li><strong>Manacher:</strong> Finds all maximal palindromes in linear $O(N)$ time by storing palindrome radii.</li>
+                    <li><strong>Aho-Corasick:</strong> Builds a Trie with failure links to match dictionary patterns simultaneously.</li>
+                    <li><strong>Suffix Array & LCP:</strong> Lexicographically sorts string suffixes and computes adjacent common prefix lengths.</li>
+                    <li><strong>Edit Distance & LCS:</strong> Dynamic programming table cell-by-cell evaluation with optimal traceback paths.</li>
                 </ul>
-
-                <h4>Real-World Applications</h4>
-                <p>Genomic DNA sequence alignment in bioinformatics, IDE global code search (`Ctrl+F`), plagiarism checking software, and network intrusion detection signature filtering (NIDS).</p>
             </div>
         </div>
     </div>
     <script>
         function toggleAboutModal(show) {
-            const modal = document.getElementById("aboutModal");
-            if (modal) modal.classList.toggle("active", show);
+            const m = document.getElementById('aboutModal');
+            if (m) m.style.display = show ? 'flex' : 'none';
         }
     </script>
-    <script src="i18n.js"></script>
 </body>
 
 </html>

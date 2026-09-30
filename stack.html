@@ -18,7 +18,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -54,9 +54,14 @@
             </div>
 
             <!-- Mode switcher -->
-            <div class="mode-tabs" style="margin-top: 10px;">
+            <div class="mode-tabs" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
                 <button class="mode-tab active" id="tab-array" onclick="switchMode('array')">📦 Array Stack</button>
-                <button class="mode-tab" id="tab-linked" onclick="switchMode('linked')">🔗 Linked-List Stack</button>
+                <button class="mode-tab" id="tab-linked" onclick="switchMode('linked')">🔗 Linked-List</button>
+                <button class="mode-tab" id="tab-parentheses" onclick="switchMode('parentheses')">⚖️ Parentheses</button>
+                <button class="mode-tab" id="tab-shunting" onclick="switchMode('shunting')">🔀 Shunting Yard</button>
+                <button class="mode-tab" id="tab-postfix" onclick="switchMode('postfix')">🧮 Postfix Eval</button>
+                <button class="mode-tab" id="tab-nge" onclick="switchMode('nge')">📈 Next Greater</button>
+                <button class="mode-tab" id="tab-minstack" onclick="switchMode('minstack')">📉 Min Stack</button>
             </div>
 
             <!-- Capacity (array mode only) -->
@@ -121,11 +126,10 @@ peek()</textarea>
             <h3>Stack Visualization</h3>
 
             <div class="legend">
-                <span><span class="box" style="background:#00e5ff"></span>Top</span>
-                <span><span class="box" style="background:#38bdf8"></span>Normal</span>
-                <span><span class="box" style="background:#22c55e"></span>Pushed</span>
-                <span><span class="box" style="background:#ffb547"></span>Peek</span>
-                <span><span class="box" style="background:#ef4444"></span>Error / Pop</span>
+                <span><span class="box" style="background:#38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background:#eab308"></span>Yellow (Top / Peek)</span>
+                <span><span class="box" style="background:#ef4444"></span>Red (Error / Pop)</span>
+                <span><span class="box" style="background:#22c55e"></span>Green (Pushed)</span>
             </div>
 
             <div class="canvas" id="stackCanvas"
@@ -370,10 +374,21 @@ peek()</textarea>
             peekActive = false;
             document.getElementById('tab-array').classList.toggle('active', mode === 'array');
             document.getElementById('tab-linked').classList.toggle('active', mode === 'linked');
+            document.getElementById('tab-parentheses').classList.toggle('active', mode === 'parentheses');
+            document.getElementById('tab-shunting').classList.toggle('active', mode === 'shunting');
+            document.getElementById('tab-postfix').classList.toggle('active', mode === 'postfix');
+            document.getElementById('tab-nge').classList.toggle('active', mode === 'nge');
+            document.getElementById('tab-minstack').classList.toggle('active', mode === 'minstack');
+
             document.getElementById('capacityRow').style.display = mode === 'array' ? 'flex' : 'none';
-            addLog('info', '🔄', `Switched to ${mode === 'array' ? 'Array-based' : 'Linked-List'} Stack mode. Stack cleared.`);
-            renderLiveStack();
-            setStepText(`▶ ${mode === 'array' ? 'Array Stack' : 'Linked-List Stack'} mode active.`);
+
+            if (['parentheses', 'shunting', 'postfix', 'nge', 'minstack'].includes(mode)) {
+                loadStackPresetAlgorithm(mode);
+            } else {
+                addLog('info', '🔄', `Switched to ${mode === 'array' ? 'Array-based' : 'Linked-List'} Stack mode.`);
+                renderLiveStack();
+                setStepText(`▶ ${mode === 'array' ? 'Array Stack' : 'Linked-List Stack'} mode active.`);
+            }
         }
 
         function updateCapacity() {
@@ -763,36 +778,298 @@ peek()</textarea>
             stackCurrentStep = 0;
 
             if (stackSteps.length > 0) {
-                toggleStackPlay();
+                startStackPlayback();
             } else {
                 setStepText('▶ No valid operations found.');
             }
         }
 
-        function renderFrame(frame) {
-            if (!frame) return;
-            // Sync simulated stack with live view
-            stackData = frame.simStack || [];
-            let action = frame.action === 'pop' ? 'pop' : frame.action === 'push' ? 'push' : frame.action === 'peek' ? 'peek' : null;
-            renderLiveStack(action, frame.highlight >= 0 ? frame.highlight : undefined);
-            setStepText('▶ ' + (frame.explanation || 'Processing...'));
+        function loadStackPresetAlgorithm(mode) {
+            pauseStackPlayback();
+            let codeText = "";
+            if (mode === 'parentheses') {
+                codeText = "// Balanced Parentheses Check\n// String: { [ ( a + b ) * c ] }\ncheckParentheses('{ [ ( a + b ) * c ] }');";
+                stackSteps = generateParenthesesSteps("{ [ ( a + b ) * c ] }");
+            } else if (mode === 'shunting') {
+                codeText = "// Infix to Postfix (Shunting Yard)\n// Expression: A + B * ( C - D ) / E\nshuntingYard('A + B * ( C - D ) / E');";
+                stackSteps = generateShuntingYardSteps("A + B * ( C - D ) / E");
+            } else if (mode === 'postfix') {
+                codeText = "// Postfix Expression Evaluation\n// Expression: 3 4 + 2 * 7 /\nevaluatePostfix('3 4 + 2 * 7 /');";
+                stackSteps = generatePostfixEvalSteps("3 4 + 2 * 7 /");
+            } else if (mode === 'nge') {
+                codeText = "// Next Greater Element (Monotonic Stack)\n// Array: [4, 5, 2, 25, 7, 18]\nnextGreaterElement([4, 5, 2, 25, 7, 18]);";
+                stackSteps = generateNGESteps([4, 5, 2, 25, 7, 18]);
+            } else if (mode === 'minstack') {
+                codeText = "// Min Stack Tracking\npush(5);\npush(2);\npush(10);\npush(1);\ngetMin();\npop();\ngetMin();";
+                stackSteps = generateMinStackSteps();
+            }
 
-            const slider = document.getElementById("stackProgressSlider");
-            if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
+            document.getElementById("stackCodeInput").value = codeText;
+            document.getElementById("stackProgressSlider").max = Math.max(0, stackSteps.length - 1);
+            stackCurrentStep = 0;
+            if (stackSteps.length > 0) {
+                startStackPlayback();
+            }
+        }
 
-            if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById("stackCodeInput");
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) startPos += lines[i].length + 1;
-                    const endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
+        function generateParenthesesSteps(expr = "{ [ ( a + b ) * c ] }") {
+            let steps = [];
+            let tokens = expr.split('');
+            let simStack = [];
+            let matchingPair = { ')': '(', ']': '[', '}': '{' };
+            let openBrackets = new Set(['(', '[', '{']);
+            let closeBrackets = new Set([')', ']', '}']);
+
+            steps.push({ algo: 'parentheses', tokens, tokenIdx: -1, stack: [], status: 'normal', explanation: `Checking balanced parentheses for: "${expr}"` });
+
+            let mismatch = false;
+            for (let i = 0; i < tokens.length; i++) {
+                let ch = tokens[i];
+                if (ch === ' ') continue;
+
+                if (openBrackets.has(ch)) {
+                    simStack.push(ch);
+                    steps.push({ algo: 'parentheses', tokens, tokenIdx: i, stack: [...simStack], status: 'push', explanation: `Token '${ch}' is OPEN bracket -> Push to stack.` });
+                } else if (closeBrackets.has(ch)) {
+                    let expectedOpen = matchingPair[ch];
+                    if (simStack.length === 0) {
+                        mismatch = true;
+                        steps.push({ algo: 'parentheses', tokens, tokenIdx: i, stack: [], status: 'mismatch', explanation: `❌ MISMATCH: Token '${ch}' close bracket on EMPTY stack!` });
+                        break;
+                    }
+                    let top = simStack[simStack.length - 1];
+                    if (top === expectedOpen) {
+                        simStack.pop();
+                        steps.push({ algo: 'parentheses', tokens, tokenIdx: i, stack: [...simStack], status: 'match', explanation: `✅ MATCH: '${ch}' matches '${top}'. Popped '${top}'.` });
+                    } else {
+                        mismatch = true;
+                        steps.push({ algo: 'parentheses', tokens, tokenIdx: i, stack: [...simStack], status: 'mismatch', explanation: `❌ MISMATCH: Expected '${expectedOpen}' for '${ch}', but found '${top}'!` });
+                        break;
+                    }
                 }
             }
+            if (!mismatch) {
+                steps.push({ algo: 'parentheses', tokens, tokenIdx: tokens.length, stack: [...simStack], status: simStack.length === 0 ? 'match' : 'mismatch', explanation: simStack.length === 0 ? '🎉 All brackets matched! Parentheses are BALANCED.' : `❌ MISMATCH: ${simStack.length} open bracket(s) unclosed!` });
+            }
+            return steps;
+        }
+
+        function generateShuntingYardSteps(expr = "A + B * ( C - D ) / E") {
+            let steps = [];
+            let tokens = expr.split(' ').filter(t => t);
+            let opStack = [];
+            let output = [];
+            let prec = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+            steps.push({ algo: 'shunting', tokens, tokenIdx: -1, opStack: [], output: [], explanation: 'Shunting Yard starting (Infix -> Postfix).' });
+
+            for (let i = 0; i < tokens.length; i++) {
+                let t = tokens[i];
+                if (/^[a-zA-Z0-9]+$/.test(t)) {
+                    output.push(t);
+                    steps.push({ algo: 'shunting', tokens, tokenIdx: i, opStack: [...opStack], output: [...output], explanation: `Operand '${t}' -> Append to Output.` });
+                } else if (t === '(') {
+                    opStack.push(t);
+                    steps.push({ algo: 'shunting', tokens, tokenIdx: i, opStack: [...opStack], output: [...output], explanation: `Paren '(' -> Push to Operator Stack.` });
+                } else if (t === ')') {
+                    while (opStack.length > 0 && opStack[opStack.length - 1] !== '(') output.push(opStack.pop());
+                    opStack.pop();
+                    steps.push({ algo: 'shunting', tokens, tokenIdx: i, opStack: [...opStack], output: [...output], explanation: `Paren ')' -> Pop operators until '(' to Output.` });
+                } else {
+                    while (opStack.length > 0 && prec[opStack[opStack.length - 1]] >= prec[t]) output.push(opStack.pop());
+                    opStack.push(t);
+                    steps.push({ algo: 'shunting', tokens, tokenIdx: i, opStack: [...opStack], output: [...output], explanation: `Operator '${t}' -> Pushed to Operator Stack.` });
+                }
+            }
+            while (opStack.length > 0) {
+                output.push(opStack.pop());
+                steps.push({ algo: 'shunting', tokens, tokenIdx: tokens.length, opStack: [...opStack], output: [...output], explanation: 'Popped remaining operators to Output.' });
+            }
+            return steps;
+        }
+
+        function generatePostfixEvalSteps(expr = "3 4 + 2 * 7 /") {
+            let steps = [];
+            let tokens = expr.split(' ').filter(t => t);
+            let stack = [];
+            steps.push({ algo: 'postfix', tokens, tokenIdx: -1, operandStack: [], explanation: 'Postfix Evaluation starting.' });
+            for (let i = 0; i < tokens.length; i++) {
+                let t = tokens[i];
+                if (!isNaN(t)) {
+                    stack.push(Number(t));
+                    steps.push({ algo: 'postfix', tokens, tokenIdx: i, operandStack: [...stack], explanation: `Operand '${t}' -> Push to Stack.` });
+                } else {
+                    let b = stack.pop(); let a = stack.pop(); let res = 0;
+                    if (t === '+') res = a + b; else if (t === '-') res = a - b;
+                    else if (t === '*') res = a * b; else if (t === '/') res = Math.floor(a / b);
+                    stack.push(res);
+                    steps.push({ algo: 'postfix', tokens, tokenIdx: i, operandStack: [...stack], explanation: `Operator '${t}': ${a} ${t} ${b} = ${res}. Pushed ${res}.` });
+                }
+            }
+            return steps;
+        }
+
+        function generateNGESteps(arr = [4, 5, 2, 25, 7, 18]) {
+            let steps = []; let n = arr.length; let res = Array(n).fill(-1); let monoStack = [];
+            steps.push({ algo: 'nge', arr, currIdx: -1, monoStack: [], result: [...res], explanation: 'Next Greater Element starting.' });
+            for (let i = 0; i < n; i++) {
+                let val = arr[i];
+                while (monoStack.length > 0 && arr[monoStack[monoStack.length - 1]] < val) {
+                    let poppedIdx = monoStack.pop(); res[poppedIdx] = val;
+                    steps.push({ algo: 'nge', arr, currIdx: i, monoStack: [...monoStack], result: [...res], explanation: `arr[${i}] (${val}) > arr[${poppedIdx}] (${arr[poppedIdx]}). NGE for ${arr[poppedIdx]} is ${val}.` });
+                }
+                monoStack.push(i);
+                steps.push({ algo: 'nge', arr, currIdx: i, monoStack: [...monoStack], result: [...res], explanation: `Pushed index ${i} (${val}) to Monotonic Stack.` });
+            }
+            return steps;
+        }
+
+        function generateMinStackSteps() {
+            let steps = []; let mainStack = []; let minStack = [];
+            const ops = [ {op:'push',val:5}, {op:'push',val:2}, {op:'push',val:10}, {op:'push',val:1}, {op:'getMin'}, {op:'pop'}, {op:'getMin'} ];
+            ops.forEach(item => {
+                if (item.op === 'push') {
+                    let v = item.val; mainStack.push(v);
+                    let minV = minStack.length === 0 ? v : Math.min(v, minStack[minStack.length - 1]);
+                    minStack.push(minV);
+                    steps.push({ algo: 'minstack', mainStack: [...mainStack], minStack: [...minStack], action: 'push', explanation: `Push(${v}): Main Stack=[${mainStack.join(', ')}], Current Min=${minV}` });
+                } else if (item.op === 'pop') {
+                    let popped = mainStack.pop(); minStack.pop();
+                    steps.push({ algo: 'minstack', mainStack: [...mainStack], minStack: [...minStack], action: 'pop', explanation: `Pop(): Popped ${popped} from Main Stack and Min Stack.` });
+                } else if (item.op === 'getMin') {
+                    let minV = minStack[minStack.length - 1];
+                    steps.push({ algo: 'minstack', mainStack: [...mainStack], minStack: [...minStack], action: 'peek', explanation: `getMin(): Minimum element in stack is ${minV}` });
+                }
+            });
+            return steps;
+        }
+
+        function renderFrame(frame) {
+            if (!frame) return;
+            const canvas = document.getElementById('stackCanvas');
+
+            if (frame.algo) {
+                canvas.innerHTML = '';
+                if (frame.algo === 'parentheses') {
+                    let wrap = document.createElement('div');
+                    wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%;';
+                    
+                    let tokensRow = document.createElement('div');
+                    tokensRow.classList.add('paren-tokens-row');
+                    frame.tokens.forEach((t, idx) => {
+                        let chip = document.createElement('div');
+                        chip.classList.add('token-chip');
+                        chip.innerText = t;
+                        if (idx === frame.tokenIdx) {
+                            chip.classList.add('active');
+                            if (frame.status === 'match') chip.classList.add('match');
+                            if (frame.status === 'mismatch') chip.classList.add('mismatch');
+                        }
+                        tokensRow.appendChild(chip);
+                    });
+                    wrap.appendChild(tokensRow);
+
+                    let stackBox = document.createElement('div');
+                    stackBox.className = 'stack-container-v2';
+                    stackBox.style.width = '140px';
+                    let walls = document.createElement('div');
+                    walls.className = 'stack-walls';
+                    walls.style.minHeight = '180px';
+                    frame.stack.forEach(val => {
+                        let item = document.createElement('div');
+                        item.className = 'stack-item-v2';
+                        item.innerText = val;
+                        walls.appendChild(item);
+                    });
+                    if (frame.stack.length === 0) {
+                        walls.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;color:var(--text3);">Stack Empty</div>';
+                    }
+                    stackBox.appendChild(walls);
+                    wrap.appendChild(stackBox);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'shunting') {
+                    let wrap = document.createElement('div');
+                    wrap.classList.add('shunting-yard-wrap');
+
+                    let c1 = document.createElement('div'); c1.classList.add('shunting-col');
+                    c1.innerHTML = `<div class="col-header">Input Tokens</div><div style="font-family:var(--fm);font-size:14px;font-weight:700;">${frame.tokens.map((t, idx) => idx === frame.tokenIdx ? `<span style="color:var(--glow);border-bottom:2px solid;">${t}</span>` : t).join(' ')}</div>`;
+
+                    let c2 = document.createElement('div'); c2.classList.add('shunting-col');
+                    c2.innerHTML = `<div class="col-header">Operator Stack</div><div style="display:flex;flex-direction:column-reverse;gap:4px;">${frame.opStack.map(op => `<div class="token-chip" style="background:var(--glow);color:#000;">${op}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    let c3 = document.createElement('div'); c3.classList.add('shunting-col');
+                    c3.innerHTML = `<div class="col-header">Postfix Output</div><div style="font-family:var(--fm);font-size:16px;font-weight:800;color:#22c55e;">${frame.output.join(' ') || '-'}</div>`;
+
+                    wrap.appendChild(c1); wrap.appendChild(c2); wrap.appendChild(c3);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'postfix') {
+                    let wrap = document.createElement('div');
+                    wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%;';
+                    
+                    let tokensRow = document.createElement('div');
+                    tokensRow.classList.add('paren-tokens-row');
+                    frame.tokens.forEach((t, idx) => {
+                        let chip = document.createElement('div');
+                        chip.classList.add('token-chip');
+                        chip.innerText = t;
+                        if (idx === frame.tokenIdx) chip.classList.add('active');
+                        tokensRow.appendChild(chip);
+                    });
+                    wrap.appendChild(tokensRow);
+
+                    let stackBox = document.createElement('div');
+                    stackBox.className = 'stack-container-v2';
+                    stackBox.style.width = '140px';
+                    let walls = document.createElement('div');
+                    walls.className = 'stack-walls';
+                    walls.style.minHeight = '180px';
+                    frame.operandStack.forEach(val => {
+                        let item = document.createElement('div');
+                        item.className = 'stack-item-v2';
+                        item.innerText = val;
+                        walls.appendChild(item);
+                    });
+                    stackBox.appendChild(walls);
+                    wrap.appendChild(stackBox);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'nge') {
+                    let wrap = document.createElement('div');
+                    wrap.classList.add('nge-wrap');
+
+                    let b1 = document.createElement('div'); b1.classList.add('nge-box');
+                    b1.innerHTML = `<div class="col-header">Input Array</div><div style="display:flex;gap:4px;">${frame.arr.map((v, i) => `<div class="token-chip ${i === frame.currIdx ? 'active' : ''}">${v}</div>`).join('')}</div>`;
+
+                    let b2 = document.createElement('div'); b2.classList.add('nge-box');
+                    b2.innerHTML = `<div class="col-header">Monotonic Stack (Indices)</div><div style="display:flex;flex-direction:column-reverse;gap:4px;">${frame.monoStack.map(idx => `<div class="token-chip" style="background:var(--glow);color:#000;">idx:${idx} (${frame.arr[idx]})</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    let b3 = document.createElement('div'); b3.classList.add('nge-box');
+                    b3.innerHTML = `<div class="col-header">Result Array (NGE)</div><div style="display:flex;gap:4px;">${frame.result.map(v => `<div class="token-chip" style="color:${v !== -1 ? '#22c55e' : 'var(--text3)'}">${v}</div>`).join('')}</div>`;
+
+                    wrap.appendChild(b1); wrap.appendChild(b2); wrap.appendChild(b3);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'minstack') {
+                    let wrap = document.createElement('div');
+                    wrap.classList.add('min-stack-wrap');
+
+                    let c1 = document.createElement('div'); c1.classList.add('stack-col');
+                    c1.innerHTML = `<div class="col-header">Main Stack</div><div style="display:flex;flex-direction:column-reverse;gap:4px;width:100px;">${frame.mainStack.map(v => `<div class="token-chip">${v}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    let c2 = document.createElement('div'); c2.classList.add('stack-col');
+                    c2.innerHTML = `<div class="col-header">Min Stack (Current Minimum)</div><div style="display:flex;flex-direction:column-reverse;gap:4px;width:100px;">${frame.minStack.map(v => `<div class="token-chip" style="background:#22c55e;color:#000;">Min: ${v}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    wrap.appendChild(c1); wrap.appendChild(c2);
+                    canvas.appendChild(wrap);
+                }
+            } else {
+                // Sync simulated stack with live view
+                stackData = frame.simStack || [];
+                let action = frame.action === 'pop' ? 'pop' : frame.action === 'push' ? 'push' : frame.action === 'peek' ? 'peek' : null;
+                renderLiveStack(action, frame.highlight >= 0 ? frame.highlight : undefined);
+            }
+
+            setStepText('▶ ' + (frame.explanation || 'Processing...'));
+            const slider = document.getElementById("stackProgressSlider");
+            if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
         }
 
         // ══════════════════════════════════════════════════════════════

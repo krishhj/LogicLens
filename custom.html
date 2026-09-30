@@ -55,12 +55,22 @@
             <input type="text" id="arrayInput" value="30, 10, 45, 20, 15" placeholder="e.g. 10, 50, 20, 40" />
 
             <span class="input-label">Paste Code:</span>
-            <div class="samples-row">
-                <span class="sample-lbl">Demos:</span>
+            <div class="samples-row" style="flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                <span class="sample-lbl" style="width: 100%; font-weight: 700;">Select Algorithm Demo:</span>
                 <button class="sample-btn" onclick="loadDemo('bubble')">Bubble Sort</button>
                 <button class="sample-btn" onclick="loadDemo('insertion')">Insertion Sort</button>
                 <button class="sample-btn" onclick="loadDemo('selection')">Selection Sort</button>
                 <button class="sample-btn" onclick="loadDemo('quick')">Quick Sort</button>
+                <button class="sample-btn" onclick="loadDemo('merge')">Merge Sort</button>
+                <button class="sample-btn" onclick="loadDemo('heap')">Heap Sort</button>
+                <button class="sample-btn" onclick="loadDemo('binary')">Binary Search</button>
+                <button class="sample-btn" onclick="loadDemo('lower_bound')">Lower Bound</button>
+                <button class="sample-btn" onclick="loadDemo('upper_bound')">Upper Bound</button>
+                <button class="sample-btn" onclick="loadDemo('counting')">Counting Sort</button>
+                <button class="sample-btn" onclick="loadDemo('radix')">Radix Sort</button>
+                <button class="sample-btn" onclick="loadDemo('quick_select')">Quick Select</button>
+                <button class="sample-btn" onclick="loadDemo('two_pointers')">Two Pointers</button>
+                <button class="sample-btn" onclick="loadDemo('sliding_window')">Sliding Window</button>
             </div>
             <textarea id="codeInput" class="notranslate" translate="no">
 for(int i=0;i<n;i++){
@@ -725,7 +735,7 @@ for(int i=0;i<n;i++){
             if (steps.length > 0) {
                 document.getElementById("progressSlider").max = steps.length - 1;
                 currentStep = 0;
-                togglePlay(); // Auto-start the fetched animation
+                startPlayback(); // Auto-start the fetched animation
             } else {
                 stepText.innerText = "▶ Analysis failed. No steps generated.";
             }

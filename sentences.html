@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LogicLens - Sentences</title>
+    <title>LogicLens - Sentence & Text Algorithms</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
@@ -16,7 +16,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -39,77 +39,95 @@
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
-        <h1>Sentence NLP Parsing</h1>
-        <p>Visualize word tokenization and structural array manipulation dynamically.</p>
+        <h1>Sentence & Word Algorithms</h1>
+        <p>Explore sliding window substrings, anagram frequencies, word counters, prefix comparisons, word reversal, and ciphers.</p>
     </section>
 
-    <div class="container" id="sentenceContainer" style="margin-top: 40px;">
+    <div class="container" id="sentenceContainer" style="margin-top: 20px;">
         <div class="editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="margin: 0;">Sentence Setup</h3>
+                <h3 style="margin: 0;">Algorithm Selection</h3>
                 <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Sentences</button>
             </div>
 
-            <!-- Context Tabs -->
-            <div class="mode-tabs" style="margin-bottom: 20px;">
-                <button class="mode-tab active" id="tab-search" onclick="switchMode('search')">LINEAR SEARCH</button>
-                <button class="mode-tab" id="tab-reverse" onclick="switchMode('reverse')">REVERSE</button>
-                <button class="mode-tab" id="tab-palindrome" onclick="switchMode('palindrome')">PALINDROME</button>
+            <!-- Algorithm Mode Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px;">
+                <button class="mode-tab active" id="alg-tab-substring" onclick="selectAlgorithm('substring')">Longest Substring</button>
+                <button class="mode-tab" id="alg-tab-anagram" onclick="selectAlgorithm('anagram')">Anagrams</button>
+                <button class="mode-tab" id="alg-tab-wordfreq" onclick="selectAlgorithm('wordfreq')">Word Frequency</button>
+                <button class="mode-tab" id="alg-tab-lcp" onclick="selectAlgorithm('lcp')">Longest Common Prefix</button>
+                <button class="mode-tab" id="alg-tab-reversewords" onclick="selectAlgorithm('reversewords')">Reverse Words</button>
+                <button class="mode-tab" id="alg-tab-longestpal" onclick="selectAlgorithm('longestpal')">Longest Palindrome</button>
+                <button class="mode-tab" id="alg-tab-cipher" onclick="selectAlgorithm('cipher')">Caesar / RLE</button>
             </div>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="sentenceInputBase" placeholder="Base Sentence (tokenized space-delimited)"
+                <input type="text" id="sentenceInputBase" placeholder="Base Text / Words (e.g. abcabcbb or eat,tea,tan)"
                     style="flex:1; margin-bottom:0;" autocomplete="off" />
-                <input type="text" id="sentenceInputQuery" placeholder="Target Word" style="flex:1; margin-bottom:0;"
-                    autocomplete="off" />
+                <input type="text" id="sentenceInputQuery" placeholder="Target / Key (e.g. 3 or second word)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
             </div>
 
-            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set
-                    Sentence</button>
-                <button class="op-btn enqueue" id="btn-run-algo" onclick="doOp('run')">🔍 Run Algorithm</button>
-                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear Data</button>
+            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                <button class="op-btn push" onclick="doOp('setBase')"><span style="color:var(--green)">➕</span> Set Input Text</button>
+                <button class="op-btn enqueue" onclick="doOp('setParam')">⚙️ Set Parameter</button>
+                <button class="op-btn check" style="grid-column: span 2;" onclick="runSelectedAlgorithm()">🚀 Run Algorithm</button>
+            </div>
+
+            <!-- Presets / Quick Load -->
+            <div class="samples-row" style="margin-bottom: 12px;">
+                <span class="sample-lbl">Presets:</span>
+                <button class="sample-btn" onclick="loadPreset('substring')">Longest Substring</button>
+                <button class="sample-btn" onclick="loadPreset('anagram')">Group Anagrams</button>
+                <button class="sample-btn" onclick="loadPreset('wordfreq')">Word Frequency</button>
+                <button class="sample-btn" onclick="loadPreset('lcp')">Common Prefix</button>
+                <button class="sample-btn" onclick="loadPreset('reversewords')">Reverse Words</button>
+                <button class="sample-btn" onclick="loadPreset('longestpal')">Palindrome Substring</button>
+                <button class="sample-btn" onclick="loadPreset('cipher')">Caesar & RLE</button>
             </div>
 
             <div class="adv-section-head" style="margin-top: 6px;">
-                <h3>Recorded Scripts</h3>
+                <h3>Recorded Commands</h3>
             </div>
-            <textarea id="sentenceCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">sentence(logic lens lens logic)
-palindrome()</textarea>
+            <textarea id="sentenceCodeInput" class="notranslate" translate="no" style="height: 100px;">sentence(abcabcbb)
+param()</textarea>
 
-            <button class="viz-btn" id="sentenceVizBtn" onclick="analyzeSentenceCode()">
-                Visualize Procedure
+            <button class="viz-btn" id="sentenceVizBtn" onclick="runSelectedAlgorithm();">
+                Visualize Logic
             </button>
 
             <!-- Op Log -->
-            <div class="op-log-panel" style="margin-top: 20px;">
+            <div class="op-log-panel" style="margin-top: 15px;">
                 <div class="op-log-header">
                     <span class="op-log-title">📋 Operation Log</span>
-                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear</button>
                 </div>
                 <div class="op-log-entries" id="opLog">
                     <div class="op-log-entry log-info">
                         <span class="op-log-num">#0</span>
                         <span class="op-log-icon">🚀</span>
-                        <span class="op-log-msg">Sentences NLP initialized. Linear Search active.</span>
+                        <span class="op-log-msg">Sentence Engine ready. Select an algorithm to begin.</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="visualizer">
-            <h3>Lexical Word Output</h3>
+            <h3 id="visualizerTitle">Sentence Processing Output</h3>
 
-            <div class="legend">
-                <span><span class="box"
-                        style="background: var(--bg2); border:1px solid var(--border)"></span>Unfocused</span>
-                <span><span class="box" style="background: #eab308"></span>Scanning</span>
-                <span><span class="box" style="background: #22c55e"></span>Match/Action</span>
+            <div class="legend" id="sentenceLegend">
+                <span><span class="box" style="background: #38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background: #eab308"></span>Yellow (Comparing)</span>
+                <span><span class="box" style="background: #ef4444"></span>Red (Swapping/Mismatch)</span>
+                <span><span class="box" style="background: #22c55e"></span>Green (Sorted/Matched)</span>
             </div>
 
-            <div class="canvas sentence-container" id="sentenceCanvas"></div>
+            <div class="canvas sentence-container" id="sentenceCanvas" style="min-height: 240px; flex-direction: column; justify-content: center;"></div>
 
-            <div class="step-box" id="sentenceStepText">▶ System Ready.</div>
+            <!-- Subpanel container for Hashmaps, Frequency tables, Alignment grids -->
+            <div id="sentenceSubpanelContainer"></div>
+
+            <div class="step-box" id="sentenceStepText">▶ System Ready. Select an algorithm and click Visualize.</div>
 
             <div class="media-controls">
                 <div class="btn-group">
@@ -122,18 +140,14 @@ palindrome()</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="sentenceProgressSlider" min="0" max="0" value="0"
-                        oninput="scrubSentenceTimeline()" />
+                    <input type="range" id="sentenceProgressSlider" min="0" max="0" value="0" oninput="scrubSentenceTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
-                    <button class="speed-btn" id="btn-sentence-slow"
-                        onclick="setSentenceSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-sentence-normal"
-                        onclick="setSentenceSpeed(1000, 'normal')">Normal</button>
-                    <button class="speed-btn" id="btn-sentence-fast"
-                        onclick="setSentenceSpeed(400, 'fast')">Fast</button>
+                    <button class="speed-btn" id="btn-sentence-slow" onclick="setSentenceSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-sentence-normal" onclick="setSentenceSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-sentence-fast" onclick="setSentenceSpeed(400, 'fast')">Fast</button>
                 </div>
 
                 <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
@@ -148,27 +162,23 @@ palindrome()</textarea>
         <div class="cards">
             <div class="card" onclick="window.location.href='index.html'">
                 <h3>Sort</h3>
-                <p>Bubble, Insertion, Selection, Quick</p>
+                <p>Bar & Array Visualizations</p>
             </div>
             <div class="card" onclick="window.location.href='stack.html'">
-                <h3>Stack</h3>
-                <p>Push / Pop animation</p>
-            </div>
-            <div class="card" onclick="window.location.href='queue.html'">
-                <h3>Queue</h3>
-                <p>Enqueue / Dequeue flow</p>
+                <h3>Stack & Queue</h3>
+                <p>Monotonic, Deque, Parentheses</p>
             </div>
             <div class="card" onclick="window.location.href='trees.html'">
                 <h3>Trees</h3>
-                <p>Binary tree traversal</p>
+                <p>BST, AVL, Segment, Trie</p>
             </div>
-            <div class="card" onclick="window.location.href='graph.html'">
+            <div class="card" onclick="window.location.href='graphs.html'">
                 <h3>Graphs</h3>
-                <p>Adjacency list/matrix</p>
+                <p>BFS/DFS, Dijkstra, A*, Tarjan</p>
             </div>
-            <div class="card" onclick="window.location.href='strings.html'">
-                <h3>Strings</h3>
-                <p>Pattern matching</p>
+            <div class="card" onclick="window.location.href='dp.html'">
+                <h3>DP & Backtracking</h3>
+                <p>Coin Change, Knapsack, N-Queens</p>
             </div>
         </div>
     </section>
@@ -176,6 +186,7 @@ palindrome()</textarea>
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
+        // Theme Setup
         const themeToggle = document.getElementById("themeToggle");
         const savedTheme = localStorage.getItem("logiclens_theme") || "light";
         if (savedTheme === "dark") {
@@ -197,36 +208,47 @@ palindrome()</textarea>
             });
         }
 
-        let sentenceMode = 'search';
+        // Global State Variables
+        let currentAlg = 'substring';
+        let sentenceSteps = [];
+        let sentenceCurrentStep = 0;
+        let sentenceIsPlaying = false;
+        let sentencePlayInterval = null;
+        let sentenceSpeedMs = 1000;
         let logCount = 0;
 
-        function switchMode(mode) {
+        let activeBase = "abcabcbb";
+        let activeParam = "";
+
+        function selectAlgorithm(algKey) {
             pauseSentencePlayback();
-            sentenceMode = mode;
-            ['search', 'reverse', 'palindrome'].forEach(m => {
-                document.getElementById(`tab-${m}`).classList.remove('active');
-            });
-            document.getElementById(`tab-${mode}`).classList.add('active');
+            currentAlg = algKey;
 
-            let qInput = document.getElementById('sentenceInputQuery');
-            let runBtn = document.getElementById('btn-run-algo');
+            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.getElementById(`alg-tab-${algKey}`);
+            if (tabBtn) tabBtn.classList.add('active');
 
-            if (mode === 'search') {
-                qInput.style.opacity = '1';
-                qInput.disabled = false;
-                runBtn.innerHTML = '🔍 Search Word';
-            } else if (mode === 'reverse') {
-                qInput.style.opacity = '0.3';
-                qInput.disabled = true;
-                runBtn.innerHTML = '🔄 Reverse Array';
-            } else if (mode === 'palindrome') {
-                qInput.style.opacity = '0.3';
-                qInput.disabled = true;
-                runBtn.innerHTML = '⚖️ Check Symmetrical Palindrome';
-            }
+            const titleMap = {
+                substring: "Longest Substring Without Repeating Characters",
+                anagram: "Anagram Check & Group Anagrams",
+                wordfreq: "Word Frequency Counter (Hash Map)",
+                lcp: "Longest Common Prefix Comparison",
+                reversewords: "Reverse Words in a Sentence (Two-Step)",
+                longestpal: "Longest Palindromic Substring (Expand Around Center)",
+                cipher: "Caesar Cipher & Run-Length Encoding (RLE)"
+            };
+            document.getElementById('visualizerTitle').innerText = titleMap[algKey] || "Sentence Processing";
 
-            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Processing Mode. Sequence cleared.`);
-            doOp('clear');
+            if (algKey === 'anagram') loadPreset('anagram');
+            else if (algKey === 'wordfreq') loadPreset('wordfreq');
+            else if (algKey === 'lcp') loadPreset('lcp');
+            else if (algKey === 'reversewords') loadPreset('reversewords');
+            else if (algKey === 'longestpal') loadPreset('longestpal');
+            else if (algKey === 'cipher') loadPreset('cipher');
+            else loadPreset('substring');
+
+            addLog('info', '⚙️', `Switched mode to ${titleMap[algKey]}.`);
+            runSelectedAlgorithm();
         }
 
         const appendCode = (codeStr) => {
@@ -260,327 +282,472 @@ palindrome()</textarea>
         function doOp(op) {
             pauseSentencePlayback();
             const baseIn = document.getElementById('sentenceInputBase');
-            const targetIn = document.getElementById('sentenceInputQuery');
-
+            const paramIn = document.getElementById('sentenceInputQuery');
             const b = baseIn.value.trim();
-            const t = targetIn.value.trim();
+            const p = paramIn.value.trim();
 
             if (op === 'setBase') {
-                if (!b) { addLog('error', '⚠️', 'Enter a Base Sentence.'); return; }
-                addLog('push', '➕', `Established Tokenization Base: "${b}".`);
+                if (!b) return alert("Enter Base Text.");
+                activeBase = b;
                 appendCode(`sentence(${b})`);
                 baseIn.value = '';
-                analyzeSentenceCode();
-            } else if (op === 'run') {
-                if (sentenceMode === 'search') {
-                    if (!t) { addLog('error', '⚠️', 'Enter a Target Token for Search.'); return; }
-                    addLog('push', '🔍', `Searching Array for Token: "${t}".`);
-                    appendCode(`search(${t})`);
-                    targetIn.value = '';
-                } else if (sentenceMode === 'reverse') {
-                    addLog('push', '🔄', `Executing Reversal Logic...`);
-                    appendCode(`reverse()`);
-                } else if (sentenceMode === 'palindrome') {
-                    addLog('push', '⚖️', `Checking Palindrome symmetry...`);
-                    appendCode(`palindrome()`);
-                }
-                analyzeSentenceCode();
-            } else if (op === 'clear') {
-                sentenceSteps = [];
-                sentenceCurrentStep = 0;
-                addLog('info', '🗑️', `Cleared manipulation sequence.`);
-                document.getElementById('sentenceCodeInput').value = '';
-                document.getElementById('sentenceCanvas').innerHTML = '';
-                let slider = document.getElementById("sentenceProgressSlider");
-                if (slider) slider.max = 0;
-                updateSentencePlayBtnUI();
-                renderSentenceFrame({ words: [], comparing: [], matching: [], explanation: "Engine Reset.", stepIndex: 0 });
+            } else if (op === 'setParam') {
+                activeParam = p;
+                appendCode(`param(${p})`);
+                paramIn.value = '';
             }
+            runSelectedAlgorithm();
         }
 
-        let sentenceSteps = [];
-        let sentenceCurrentStep = 0;
-        let sentenceIsPlaying = false;
-        let sentencePlayInterval = null;
-        let sentenceSpeedMs = 1000;
-
-        function analyzeSentenceCode() {
+        function loadPreset(key) {
             pauseSentencePlayback();
+            if (key === 'substring') {
+                activeBase = "abcabcbb";
+                activeParam = "";
+            } else if (key === 'anagram') {
+                activeBase = "eat, tea, tan, ate, nat, bat";
+                activeParam = "";
+            } else if (key === 'wordfreq') {
+                activeBase = "the quick brown fox jumps over the lazy dog fox";
+                activeParam = "";
+            } else if (key === 'lcp') {
+                activeBase = "flower, flow, flight";
+                activeParam = "";
+            } else if (key === 'reversewords') {
+                activeBase = "the sky is blue";
+                activeParam = "";
+            } else if (key === 'longestpal') {
+                activeBase = "babad";
+                activeParam = "";
+            } else if (key === 'cipher') {
+                activeBase = "aabcccccaaa";
+                activeParam = "3";
+            }
+            document.getElementById('sentenceCodeInput').value = `sentence(${activeBase})\nparam(${activeParam})`;
+            runSelectedAlgorithm();
+        }
+
+        function parseInputCode() {
             const code = document.getElementById("sentenceCodeInput").value;
             const lines = code.split('\n');
-
-            sentenceSteps = [];
-            let activeWords = [];
-
-            lines.forEach((line, idx) => {
-                let text = line.trim();
-                if (!text) return;
-
-                let matchSentence = text.match(/sentence\(([^)]+)\)/);
-                if (matchSentence) {
-                    let str = matchSentence[1];
-                    activeWords = str.split(' ').map(w => w.trim()).filter(w => w !== "");
-                    sentenceSteps.push({
-                        words: [...activeWords],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Tokenized raw sentence into Lexical Array. Length: ${activeWords.length}`,
-                        stepIndex: sentenceSteps.length,
-                        line: idx
-                    });
-                }
-
-                let matchSearch = text.match(/search\(([^)]+)\)/);
-                if (matchSearch) {
-                    let query = matchSearch[1].trim();
-                    if (activeWords.length === 0) return;
-
-                    sentenceSteps.push({
-                        words: [...activeWords],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Initiating linear search for token: "${query}"`,
-                        stepIndex: sentenceSteps.length,
-                        line: idx
-                    });
-
-                    let foundAny = false;
-                    for (let i = 0; i < activeWords.length; i++) {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [i],
-                            matching: [],
-                            action: "compare",
-                            explanation: `Linear Search: Comparing "${activeWords[i]}" to "${query}"...`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-
-                        if (activeWords[i] === query) {
-                            foundAny = true;
-                            sentenceSteps.push({
-                                words: [...activeWords],
-                                comparing: [],
-                                matching: [i],
-                                action: "match",
-                                explanation: `Match successfully resolved at index ${i}!`,
-                                stepIndex: sentenceSteps.length,
-                                line: idx
-                            });
-                        }
-                    }
-
-                    if (!foundAny) {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [],
-                            matching: [],
-                            action: "none",
-                            explanation: `Search exhausted. Token "${query}" is not present in logical array.`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-                    }
-                }
-
-                let matchReverse = text.match(/reverse\(\)/);
-                if (matchReverse) {
-                    if (activeWords.length === 0) return;
-
-                    sentenceSteps.push({
-                        words: [...activeWords],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Initiating Reverse Array manipulation...`,
-                        stepIndex: sentenceSteps.length,
-                        line: idx
-                    });
-
-                    let left = 0;
-                    let right = activeWords.length - 1;
-
-                    while (left < right) {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [left, right],
-                            matching: [],
-                            action: "compare",
-                            explanation: `Reversal logic targeting outer boundary points [${left}, ${right}]...`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-
-                        // Swap
-                        let temp = activeWords[left];
-                        activeWords[left] = activeWords[right];
-                        activeWords[right] = temp;
-
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [],
-                            matching: [left, right],
-                            action: "match",
-                            explanation: `Swap executed ("${activeWords[left]}" ↔ "${activeWords[right]}"). Boundaries converging...`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-
-                        left++;
-                        right--;
-                    }
-
-                    sentenceSteps.push({
-                        words: [...activeWords],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Reversal algorithm fully executed structure!`,
-                        stepIndex: sentenceSteps.length,
-                        line: idx
-                    });
-                }
-
-                let matchPalindrome = text.match(/palindrome\(\)/);
-                if (matchPalindrome) {
-                    if (activeWords.length === 0) return;
-
-                    sentenceSteps.push({
-                        words: [...activeWords],
-                        comparing: [],
-                        matching: [],
-                        action: "none",
-                        explanation: `Initiating Lexical Palindrome Symmetry Logic Check...`,
-                        stepIndex: sentenceSteps.length,
-                        line: idx
-                    });
-
-                    let left = 0;
-                    let right = activeWords.length - 1;
-                    let isPalindrome = true;
-
-                    while (left < right) {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [left, right],
-                            matching: [],
-                            action: "compare",
-                            explanation: `Palindrome: Verifying tokens "${activeWords[left]}" and "${activeWords[right]}"...`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-
-                        if (activeWords[left] !== activeWords[right]) {
-                            isPalindrome = false;
-                            sentenceSteps.push({
-                                words: [...activeWords],
-                                comparing: [left, right],
-                                matching: [],
-                                action: "none",
-                                explanation: `Structural Mismatch Identified ("${activeWords[left]}" !== "${activeWords[right]}"). Aborting...`,
-                                stepIndex: sentenceSteps.length,
-                                line: idx
-                            });
-                            break;
-                        }
-
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [],
-                            matching: [left, right],
-                            action: "match",
-                            explanation: `Symmetry block confirmed. Advancing endpoints inwards...`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-
-                        left++;
-                        right--;
-                    }
-
-                    if (isPalindrome) {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [],
-                            matching: [...Array(activeWords.length).keys()],
-                            action: "match",
-                            explanation: `True! The lexical array operates functionally as a Symmetric Word Palindrome!`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-                    } else {
-                        sentenceSteps.push({
-                            words: [...activeWords],
-                            comparing: [],
-                            matching: [],
-                            action: "none",
-                            explanation: `False! Lexical array lacks symmetrical congruence.`,
-                            stepIndex: sentenceSteps.length,
-                            line: idx
-                        });
-                    }
-                }
+            lines.forEach(line => {
+                let m1 = line.match(/sentence\(([^)]+)\)/i);
+                if (m1) activeBase = m1[1].trim();
+                let m2 = line.match(/param\(([^)]*)\)/i);
+                if (m2) activeParam = m2[1].trim();
             });
+        }
 
-            if (sentenceSteps.length === 0) {
-                sentenceSteps.push({ words: [], comparing: [], matching: [], explanation: "No valid manipulation commands parsed.", stepIndex: 0 });
+        // ─────────────────────────────────────────────────────────────────────
+        // ALGORITHM GENERATORS
+        // ─────────────────────────────────────────────────────────────────────
+        function runSelectedAlgorithm() {
+            pauseSentencePlayback();
+            parseInputCode();
+            sentenceSteps = [];
+
+            switch (currentAlg) {
+                case 'substring': generateLongestSubstring(); break;
+                case 'anagram': generateAnagrams(); break;
+                case 'wordfreq': generateWordFrequency(); break;
+                case 'lcp': generateLCP(); break;
+                case 'reversewords': generateReverseWords(); break;
+                case 'longestpal': generateLongestPalindromicSubstring(); break;
+                case 'cipher': generateCipherAndRLE(); break;
             }
 
             if (sentenceSteps.length > 0) {
                 document.getElementById("sentenceProgressSlider").max = sentenceSteps.length - 1;
                 sentenceCurrentStep = 0;
-                toggleSentencePlay();
+                startSentencePlayback();
             }
         }
 
+        // 1. Longest Substring Without Repeating Characters
+        function generateLongestSubstring() {
+            let str = activeBase;
+            let n = str.length;
+            let map = {};
+            let left = 0;
+            let maxLen = 0;
+            let maxSub = "";
+
+            stringStepsHTML = (mapState, L, R) => {
+                let html = `<div class="graph-subpanel"><strong>Character-Index Map:</strong> ${JSON.stringify(mapState)} | <strong>Sliding Window:</strong> [L=${L}, R=${R}]</div>`;
+                return html;
+            };
+
+            sentenceSteps.push({
+                chars: str.split(''),
+                window: [0, 0],
+                subpanelHTML: stringStepsHTML({}, 0, 0),
+                explanation: `Longest Substring Search initialized for string "${str}".`
+            });
+
+            for (let right = 0; right < n; right++) {
+                let ch = str[right];
+                if (map[ch] !== undefined && map[ch] >= left) {
+                    left = map[ch] + 1;
+                }
+                map[ch] = right;
+
+                let curLen = right - left + 1;
+                if (curLen > maxLen) {
+                    maxLen = curLen;
+                    maxSub = str.substring(left, right + 1);
+                }
+
+                sentenceSteps.push({
+                    chars: str.split(''),
+                    window: [left, right],
+                    subpanelHTML: stringStepsHTML({ ...map }, left, right) + `<div style="margin-top:4px; color:var(--green)">Current Window Length: ${curLen} (Max So Far: ${maxLen} "${maxSub}")</div>`,
+                    explanation: `Evaluated char '${ch}' at R=${right}. Window [${left}..${right}]: "${str.substring(left, right + 1)}"`
+                });
+            }
+
+            sentenceSteps.push({
+                chars: str.split(''),
+                window: [str.indexOf(maxSub), str.indexOf(maxSub) + maxLen - 1],
+                matchedRange: [str.indexOf(maxSub), str.indexOf(maxSub) + maxLen - 1],
+                subpanelHTML: stringStepsHTML({ ...map }, left, n - 1) + `<div style="margin-top:6px; color:#22c55e"><strong>Result:</strong> Longest Substring Without Repeats = <strong>"${maxSub}"</strong> (Length: ${maxLen})</div>`,
+                explanation: `Completed! Longest substring without repeating characters is "${maxSub}" with length ${maxLen}.`
+            });
+        }
+
+        // 2. Anagram Check and Group Anagrams
+        function generateAnagrams() {
+            let items = activeBase.split(',').map(s => s.trim()).filter(s => s !== "");
+            
+            if (items.length === 2) {
+                // Anagram Check between 2 words
+                let w1 = items[0], w2 = items[1];
+                let f1 = {}, f2 = {};
+                for (let c of w1) f1[c] = (f1[c] || 0) + 1;
+                for (let c of w2) f2[c] = (f2[c] || 0) + 1;
+
+                let isAna = JSON.stringify(f1) === JSON.stringify(f2);
+                let tableHTML = `<div class="graph-subpanel"><strong>Character Frequency Comparison:</strong><br>
+                <code>"${w1}": ${JSON.stringify(f1)}</code><br>
+                <code>"${w2}": ${JSON.stringify(f2)}</code></div>`;
+
+                sentenceSteps.push({
+                    words: [w1, w2],
+                    subpanelHTML: tableHTML,
+                    explanation: `Comparing character frequency tables for "${w1}" and "${w2}".`
+                });
+
+                sentenceSteps.push({
+                    words: [w1, w2],
+                    matchedWords: isAna ? [0, 1] : [],
+                    subpanelHTML: tableHTML + `<div style="margin-top:6px; color:${isAna ? '#22c55e' : '#ef4444'}"><strong>${isAna ? '✅ Valid Anagrams!' : '❌ Not Anagrams.'}</strong></div>`,
+                    explanation: isAna ? `"${w1}" and "${w2}" have identical character frequencies!` : `Character frequencies do not match.`
+                });
+            } else {
+                // Group Anagrams
+                let groups = {};
+                items.forEach((word, idx) => {
+                    let sortedKey = word.split('').sort().join('');
+                    if (!groups[sortedKey]) groups[sortedKey] = [];
+                    groups[sortedKey].push(word);
+
+                    let groupHTML = `<div class="graph-subpanel"><strong>Group Anagrams Hash Map:</strong><table class="hashmap-table"><tr><th>Sorted Key</th><th>Group Words</th></tr>`;
+                    for (let k in groups) groupHTML += `<tr><td><code>${k}</code></td><td>[ ${groups[k].join(', ')} ]</td></tr>`;
+                    groupHTML += `</table></div>`;
+
+                    sentenceSteps.push({
+                        words: [...items],
+                        activeWordIdx: idx,
+                        subpanelHTML: groupHTML,
+                        explanation: `Word "${word}" ➔ Sorted key: "${sortedKey}". Added to hash group.`
+                    });
+                });
+
+                let finalGroupHTML = `<div class="graph-subpanel"><strong>Group Anagrams Complete:</strong><table class="hashmap-table"><tr><th>Sorted Key</th><th>Group Words</th></tr>`;
+                for (let k in groups) finalGroupHTML += `<tr><td><code>${k}</code></td><td>[ ${groups[k].join(', ')} ]</td></tr>`;
+                finalGroupHTML += `</table></div>`;
+
+                sentenceSteps.push({
+                    words: [...items],
+                    subpanelHTML: finalGroupHTML,
+                    explanation: `Group Anagrams complete. Formed ${Object.keys(groups).length} distinct anagram groups.`
+                });
+            }
+        }
+
+        // 3. Word Frequency Counter
+        function generateWordFrequency() {
+            let words = activeBase.split(' ').map(s => s.trim().toLowerCase()).filter(s => s !== "");
+            let freqMap = {};
+
+            sentenceSteps.push({
+                words: [...words],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Word Frequency Map:</strong> { }</div>`,
+                explanation: "Word Frequency Counter initialized."
+            });
+
+            words.forEach((word, idx) => {
+                freqMap[word] = (freqMap[word] || 0) + 1;
+
+                let tableHTML = `<div class="graph-subpanel"><strong>Building Hash Map:</strong><table class="hashmap-table"><tr><th>Word Token</th><th>Frequency Count</th></tr>`;
+                for (let w in freqMap) tableHTML += `<tr><td><code>${w}</code></td><td><strong>${freqMap[w]}</strong></td></tr>`;
+                tableHTML += `</table></div>`;
+
+                sentenceSteps.push({
+                    words: [...words],
+                    activeWordIdx: idx,
+                    subpanelHTML: tableHTML,
+                    explanation: `Read word "${word}". Incrementing count ➔ ${freqMap[word]}`
+                });
+            });
+
+            sentenceSteps.push({
+                words: [...words],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Final Word Frequency Hash Map:</strong><br><code>${JSON.stringify(freqMap, null, 2)}</code></div>`,
+                explanation: `Completed! Processed ${words.length} words into frequency map.`
+            });
+        }
+
+        // 4. Longest Common Prefix
+        function generateLCP() {
+            let words = activeBase.split(',').map(s => s.trim()).filter(s => s !== "");
+            if (words.length === 0) return;
+
+            sentenceSteps.push({
+                words: [...words],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Longest Common Prefix:</strong> Comparing column by column across words...</div>`,
+                explanation: `Comparing prefix columns for [ ${words.join(', ')} ].`
+            });
+
+            let first = words[0];
+            let lcpStr = "";
+
+            for (let col = 0; col < first.length; col++) {
+                let ch = first[col];
+                let mismatch = false;
+
+                for (let wIdx = 1; wIdx < words.length; wIdx++) {
+                    if (col >= words[wIdx].length || words[wIdx][col] !== ch) {
+                        mismatch = true;
+                        break;
+                    }
+                }
+
+                if (mismatch) {
+                    sentenceSteps.push({
+                        words: [...words],
+                        columnIdx: col,
+                        subpanelHTML: `<div class="graph-subpanel" style="border-color:#ef4444"><strong>Column Mismatch at index ${col} ('${ch}')!</strong> Stopped prefix search.</div>`,
+                        explanation: `Character mismatch at column index ${col}. Common prefix finalized.`
+                    });
+                    break;
+                }
+
+                lcpStr += ch;
+                sentenceSteps.push({
+                    words: [...words],
+                    columnIdx: col,
+                    subpanelHTML: `<div class="graph-subpanel" style="border-color:#22c55e"><strong>Column ${col} Match ('${ch}'):</strong> Current Prefix = <strong>"${lcpStr}"</strong></div>`,
+                    explanation: `All words match character '${ch}' at column ${col}. Prefix extended to "${lcpStr}".`
+                });
+            }
+
+            sentenceSteps.push({
+                words: [...words],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Longest Common Prefix Result:</strong> <strong>"${lcpStr}"</strong></div>`,
+                explanation: `Longest Common Prefix resolved: "${lcpStr}".`
+            });
+        }
+
+        // 5. Reverse Words in a Sentence
+        function generateReverseWords() {
+            let sentence = activeBase;
+            let fullReversed = sentence.split('').reverse().join('');
+            let words = fullReversed.split(' ');
+
+            let finalReversed = words.map(w => w.split('').reverse().join('')).join(' ');
+
+            sentenceSteps.push({
+                rawText: sentence,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Original Sentence:</strong> "${sentence}"</div>`,
+                explanation: `Step 0: Original input sentence.`
+            });
+
+            sentenceSteps.push({
+                rawText: fullReversed,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Step 1: Reverse Whole Character Array:</strong><br><code>"${fullReversed}"</code></div>`,
+                explanation: `Step 1: Reversed whole string character array in-place ➔ "${fullReversed}"`
+            });
+
+            sentenceSteps.push({
+                words: finalReversed.split(' '),
+                subpanelHTML: `<div class="graph-subpanel"><strong>Step 2: Reverse Each Individual Word Back:</strong><br><code>"${finalReversed}"</code></div>`,
+                explanation: `Step 2: Reversed individual words back to proper orientation ➔ "${finalReversed}"`
+            });
+        }
+
+        // 6. Longest Palindromic Substring
+        function generateLongestPalindromicSubstring() {
+            let s = activeBase;
+            let n = s.length;
+            let start = 0, maxLen = 0;
+
+            sentenceSteps.push({
+                chars: s.split(''),
+                explanation: `Longest Palindromic Substring search (Expand Around Center) for "${s}".`
+            });
+
+            function expandAroundCenter(left, right) {
+                while (left >= 0 && right < n && s[left] === s[right]) {
+                    let curLen = right - left + 1;
+                    if (curLen > maxLen) {
+                        maxLen = curLen;
+                        start = left;
+                    }
+
+                    sentenceSteps.push({
+                        chars: s.split(''),
+                        centerIdx: Math.floor((left + right) / 2),
+                        range: [left, right],
+                        subpanelHTML: `<div class="graph-subpanel"><strong>Expanding Center:</strong> [${left}..${right}] ➔ "${s.substring(left, right + 1)}"</div>`,
+                        explanation: `Expanded around center [${left}..${right}]: Palindrome "${s.substring(left, right + 1)}"`
+                    });
+
+                    left--;
+                    right++;
+                }
+            }
+
+            for (let i = 0; i < n; i++) {
+                expandAroundCenter(i, i);       // Odd
+                expandAroundCenter(i, i + 1);   // Even
+            }
+
+            let palRes = s.substring(start, start + maxLen);
+            sentenceSteps.push({
+                chars: s.split(''),
+                matchedRange: [start, start + maxLen - 1],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Longest Palindromic Substring:</strong> <strong>"${palRes}"</strong> (Length: ${maxLen})</div>`,
+                explanation: `Completed! Longest palindromic substring is "${palRes}" with length ${maxLen}.`
+            });
+        }
+
+        // 7. Caesar Cipher & Run-Length Encoding
+        function generateCipherAndRLE() {
+            let text = activeBase;
+            
+            // Run-Length Encoding check
+            let rleResult = "";
+            let i = 0;
+            while (i < text.length) {
+                let count = 1;
+                while (i + 1 < text.length && text[i] === text[i + 1]) {
+                    count++;
+                    i++;
+                }
+                rleResult += text[i] + count;
+                i++;
+            }
+
+            // Caesar Cipher check
+            let shift = parseInt(activeParam) || 3;
+            let cipherResult = "";
+            for (let c of text) {
+                let code = c.charCodeAt(0);
+                if (code >= 65 && code <= 90) cipherResult += String.fromCharCode(((code - 65 + shift) % 26) + 65);
+                else if (code >= 97 && code <= 122) cipherResult += String.fromCharCode(((code - 97 + shift) % 26) + 97);
+                else cipherResult += c;
+            }
+
+            function renderAlignedHTML(inStr, outStr, label) {
+                let html = `<div class="graph-subpanel"><strong>${label}:</strong><div class="aligned-char-grid">`;
+                html += `<div class="aligned-char-row"><span style="width:70px; font-size:11px;">Input:</span>`;
+                for (let c of inStr) html += `<div class="aligned-char-cell">${c}</div>`;
+                html += `</div><div class="aligned-char-row"><span style="width:70px; font-size:11px;">Output:</span>`;
+                for (let c of outStr) html += `<div class="aligned-char-cell active">${c}</div>`;
+                html += `</div></div></div>`;
+                return html;
+            }
+
+            sentenceSteps.push({
+                subpanelHTML: renderAlignedHTML(text, cipherResult.split(''), `Caesar Cipher (Shift k=${shift})`),
+                explanation: `Caesar Cipher: Shifted each character by +${shift} positions.`
+            });
+
+            sentenceSteps.push({
+                subpanelHTML: renderAlignedHTML(text, rleResult.split(''), `Run-Length Encoding (RLE)`),
+                explanation: `Run-Length Encoding (RLE): Compressed repeated runs into character-frequency pairs ➔ "${rleResult}".`
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // FRAME RENDERER
+        // ─────────────────────────────────────────────────────────────────────
         function renderSentenceFrame(frame) {
             if (!frame) return;
 
             const canvas = document.getElementById("sentenceCanvas");
             canvas.innerHTML = "";
 
-            frame.words.forEach((word, idx) => {
-                let div = document.createElement("div");
-                div.classList.add("sentence-word");
-                div.innerText = word;
+            if (frame.words) {
+                let row = document.createElement("div");
+                row.className = "string-char-container";
 
-                if (frame.matching && frame.matching.includes(idx)) {
-                    div.classList.add("highlight-match");
-                } else if (frame.comparing && frame.comparing.includes(idx)) {
-                    div.classList.add("highlight-compare");
-                }
+                frame.words.forEach((w, idx) => {
+                    let chip = document.createElement("div");
+                    chip.className = "sentence-word-chip";
+                    chip.innerText = w;
 
-                canvas.appendChild(div);
-            });
+                    if (frame.matchedWords && frame.matchedWords.includes(idx)) chip.classList.add("match-highlight");
+                    else if (frame.activeWordIdx === idx) chip.classList.add("compare-highlight");
 
+                    row.appendChild(chip);
+                });
+                canvas.appendChild(row);
+            } else if (frame.chars) {
+                let row = document.createElement("div");
+                row.className = "string-char-container";
+
+                frame.chars.forEach((c, idx) => {
+                    let box = document.createElement("div");
+                    box.className = "string-char-box";
+                    box.innerHTML = `<span>${c}</span><span class="char-idx">${idx}</span>`;
+
+                    if (frame.window && idx >= frame.window[0] && idx <= frame.window[1]) box.classList.add("active-window");
+                    if (frame.matchedRange && idx >= frame.matchedRange[0] && idx <= frame.matchedRange[1]) {
+                        box.style.background = "#22c55e";
+                        box.style.color = "#000000";
+                    }
+                    if (frame.centerIdx === idx) box.classList.add("pal-center");
+
+                    row.appendChild(box);
+                });
+                canvas.appendChild(row);
+            } else if (frame.rawText) {
+                let row = document.createElement("div");
+                row.className = "string-char-container";
+                frame.rawText.split('').forEach((c, idx) => {
+                    let box = document.createElement("div");
+                    box.className = "string-char-box";
+                    box.innerHTML = `<span>${c}</span><span class="char-idx">${idx}</span>`;
+                    row.appendChild(box);
+                });
+                canvas.appendChild(row);
+            }
+
+            document.getElementById("sentenceSubpanelContainer").innerHTML = frame.subpanelHTML || "";
             document.getElementById("sentenceStepText").innerText = "▶ " + frame.explanation;
 
             let slider = document.getElementById("sentenceProgressSlider");
             if (slider && frame.stepIndex !== undefined) {
                 slider.value = frame.stepIndex;
             }
-
-            if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById("sentenceCodeInput");
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) {
-                        startPos += lines[i].length + 1;
-                    }
-                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
-                }
-            }
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // MEDIA CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
         function toggleSentencePlay() {
-            if (sentenceSteps.length === 0) return alert("Click 'Visualize Procedure' to render logic first!");
+            if (sentenceSteps.length === 0) return alert("Select an algorithm and click Visualize first!");
             if (sentenceIsPlaying) pauseSentencePlayback();
             else {
                 if (sentenceCurrentStep >= sentenceSteps.length - 1) sentenceCurrentStep = 0;
@@ -667,7 +834,12 @@ palindrome()</textarea>
             sentenceCurrentStep = parseInt(document.getElementById("sentenceProgressSlider").value);
             renderSentenceFrame(sentenceSteps[sentenceCurrentStep]);
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            selectAlgorithm('substring');
+        });
     </script>
+
     <!-- About Sentences Processing Modal -->
     <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
         <div class="about-modal-card">
@@ -677,42 +849,25 @@ palindrome()</textarea>
             </div>
             <div class="about-modal-body">
                 <h4>Overview</h4>
-                <p>Sentence and text processing parses raw unformatted character streams into tokenized word arrays <code>W = [w₁, w₂, ..., wₖ]</code>, performing linear word searching, structural token reversal, and palindrome validation.</p>
-
-                <h4>Operations & Detailed Mechanics</h4>
+                <p>Sentence algorithms process words and character tokens for NLP analysis, sliding window substring evaluation, frequency counting, anagram grouping, and encryption ciphers.</p>
                 <ul>
-                    <li style="margin-bottom: 16px;">
-                        <strong>1. Word Tokenization & Text Normalization:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Splits input sentences into discrete word tokens using whitespace delimiter regular expressions (<code>/\s+/</code>). Strips punctuation marks, normalizes letter casing, and converts raw text into an indexed array of words <i>W</i>. Serves as the primary stage in Natural Language Processing (NLP) token pipelines.</p>
-                        <span class="about-complexity-badge">Tokenization Time: O(N)</span><span class="about-complexity-badge">Space: O(W)</span><span class="about-complexity-badge">NLP Ingestion</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>2. Linear Word Searching:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Scans tokenized word array <i>W</i> sequentially from index 0 to <i>k - 1</i> to locate target search terms. Performs case-insensitive string equality comparisons on each token, stopping early upon match or highlighting all matching word indices across the sentence array.</p>
-                        <span class="about-complexity-badge">Search Time: O(W · L)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">Exact Match</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>3. Two-Pointer Reversal & Palindrome Validation:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Uses two boundary pointers (<code>left = 0</code>, <code>right = k - 1</code>) moving inward toward the sentence center.
-                            <br>• <em>Sentence Reversal:</em> Swaps tokens at <code>left</code> and <code>right</code> indices in-place until pointers cross in O(W) time.
-                            <br>• <em>Palindrome Validation:</em> Compares equality of token pairs <code>W[left]</code> and <code>W[right]</code>. If any pair fails to match, the sentence is instantly flagged as non-palindromic.
-                        </p>
-                        <span class="about-complexity-badge">Two-Pointer Time: O(W)</span><span class="about-complexity-badge">Space: O(1)</span><span class="about-complexity-badge">In-place</span>
-                    </li>
+                    <li><strong>Longest Substring Without Repeats:</strong> Maintains a sliding window $[L, R]$ with a character-index map.</li>
+                    <li><strong>Anagram Check & Grouping:</strong> Compares character frequency histograms and groups words by sorted character keys.</li>
+                    <li><strong>Word Frequency Counter:</strong> Reads word tokens and builds a dynamic Hash Map frequency table.</li>
+                    <li><strong>Longest Common Prefix:</strong> Compares character columns across all input words simultaneously.</li>
+                    <li><strong>Reverse Words:</strong> Performs a two-step reversal (reverses full string, then reverses each individual word).</li>
+                    <li><strong>Longest Palindromic Substring:</strong> Expands around all odd and even centers to locate the maximal palindrome range.</li>
+                    <li><strong>Caesar Cipher & RLE:</strong> Aligns input characters with output character shifts and run-length frequency pairs.</li>
                 </ul>
-
-                <h4>Real-World Applications</h4>
-                <p>Natural language tokenization pipelines in AI models, inverted index building in search engines (Google/Elasticsearch), auto-correct spell checkers, and Sentiment Analysis preprocessing.</p>
             </div>
         </div>
     </div>
     <script>
         function toggleAboutModal(show) {
-            const modal = document.getElementById("aboutModal");
-            if (modal) modal.classList.toggle("active", show);
+            const m = document.getElementById('aboutModal');
+            if (m) m.style.display = show ? 'flex' : 'none';
         }
     </script>
-    <script src="i18n.js"></script>
 </body>
 
 </html>
