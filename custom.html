@@ -18,7 +18,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -129,27 +129,6 @@ for(int i=0;i<n;i++){
                         Complexity</strong>
                     <span id="spaceText" style="color:var(--amber); font-weight:600;">-</span>
                 </div>
-            </div>
-
-            <!-- Feedback Prompt -->
-            <div id="feedbackPrompt"
-                style="display: none; margin-top: 15px; padding: 14px 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                <div style="font-size: 13px; font-weight: 500; color: var(--text); font-family: var(--fb);">Is this
-                    visualization correct?</div>
-                <div style="display: flex; gap: 12px; width: 100%; justify-content: center;">
-                    <button type="button" onclick="submitFeedback(event, true)"
-                        style="padding: 6px 20px; background: rgba(0, 224, 150, 0.15); border: 1px solid var(--green); color: var(--green); border-radius: 6px; cursor: pointer; font-family: var(--ff); font-weight: 700; font-size: 12px; transition: all 0.2s;"
-                        onmouseover="this.style.background='rgba(0, 224, 150, 0.3)'"
-                        onmouseout="this.style.background='rgba(0, 224, 150, 0.15)'">Yes</button>
-                    <button type="button" onclick="submitFeedback(event, false)"
-                        style="padding: 6px 20px; background: rgba(255, 79, 106, 0.15); border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-family: var(--ff); font-weight: 700; font-size: 12px; transition: all 0.2s;"
-                        onmouseover="this.style.background='rgba(255, 79, 106, 0.3)'"
-                        onmouseout="this.style.background='rgba(255, 79, 106, 0.15)'">No</button>
-                </div>
-            </div>
-
-            <div id="feedbackResponse"
-                style="display: none; margin-top: 15px; padding: 12px 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--glow); font-family: var(--fb); text-align: center;">
             </div>
 
             <!-- Optimization Suggestion Panel -->
@@ -490,6 +469,10 @@ for(int i=0;i<n;i++){
                     }),
                 });
 
+                if (!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+
                 const data = await response.json();
 
                 // --- Syntax Error Interception ---
@@ -501,12 +484,150 @@ for(int i=0;i<n;i++){
                     continueVisualization(data);
                 }
             } catch (err) {
-                stepText.innerText =
-                    "▶ Connection Error: Is your Node server running on port 5000?";
+                console.warn("Backend server API unavailable, using local client fallback:", err);
+                runLocalFallbackVisualization(code, parsedArray);
             } finally {
                 btn.innerText = "Visualize Logic";
                 btn.disabled = false;
             }
+        }
+
+        function runLocalFallbackVisualization(code, initialArray) {
+            let stepText = document.getElementById("stepText");
+            let lowerCode = (code || "").toLowerCase();
+
+            let fallbackData = {
+                language: "JavaScript (Client Fallback)",
+                complexity: {
+                    time: { best: "O(N log N)", average: "O(N²)", worst: "O(N²)" },
+                    space: "O(1)"
+                },
+                code_summary: "Local Client Execution Tracer (Backend Offline)",
+                optimization_suggestion: "To leverage Gemini 2.5 AI code analysis and multi-language tracing, start your backend server by running 'node server/src/index.js' on port 5000.",
+                steps: [],
+                interview_steps: []
+            };
+
+            if (lowerCode.includes("selection")) {
+                fallbackData.algorithm = "Selection Sort";
+                fallbackData.steps = generateLocalSelectionSortSteps(initialArray);
+            } else if (lowerCode.includes("insertion")) {
+                fallbackData.algorithm = "Insertion Sort";
+                fallbackData.steps = generateLocalInsertionSortSteps(initialArray);
+            } else if (lowerCode.includes("quick")) {
+                fallbackData.algorithm = "Quick Sort";
+                fallbackData.steps = generateLocalQuickSortSteps(initialArray);
+            } else {
+                fallbackData.algorithm = "Bubble Sort / Array Dry-Run";
+                fallbackData.steps = generateLocalBubbleSortSteps(initialArray);
+            }
+
+            continueVisualization(fallbackData);
+
+            if (stepText) {
+                stepText.innerHTML = `<span style="color: #e67e22; font-weight: 600;">⚡ Offline Mode:</span> Visualizing locally (Start Node server on port 5000 for full Gemini 2.5 AI features)`;
+            }
+        }
+
+        function generateLocalBubbleSortSteps(arrInput) {
+            let steps = [];
+            let arr = [...arrInput];
+            let sortedIndices = [];
+            for (let i = 0; i < arr.length; i++) {
+                let swappedThisPass = false;
+                for (let j = 0; j < arr.length - i - 1; j++) {
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", sorted: [...sortedIndices], explanation: `Checking ${arr[j]} and ${arr[j + 1]}` });
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        swappedThisPass = true;
+                        steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[j + 1]} and ${arr[j]}` });
+                    }
+                }
+                sortedIndices.push(arr.length - 1 - i);
+                steps.push({ array: [...arr], highlight: [], action: "none", sorted: [...sortedIndices], explanation: `${arr[arr.length - 1 - i]} is in sorted position.` });
+                if (!swappedThisPass) break;
+            }
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted! Execution complete." });
+            return steps;
+        }
+
+        function generateLocalSelectionSortSteps(arrInput) {
+            let steps = [];
+            let arr = [...arrInput];
+            let sortedIndices = [];
+            for (let i = 0; i < arr.length - 1; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < arr.length; j++) {
+                    steps.push({ array: [...arr], highlight: [minIdx, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with minimum ${arr[minIdx]}` });
+                    if (arr[j] < arr[minIdx]) minIdx = j;
+                }
+                if (minIdx !== i) {
+                    [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+                    steps.push({ array: [...arr], highlight: [i, minIdx], action: "swap", sorted: [...sortedIndices], explanation: `Swapping minimum ${arr[i]} into position` });
+                }
+                sortedIndices.push(i);
+            }
+            sortedIndices.push(arr.length - 1);
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
+
+        function generateLocalInsertionSortSteps(arrInput) {
+            let steps = [];
+            let arr = [...arrInput];
+            let sortedIndices = [0];
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                steps.push({ array: [...arr], highlight: [i], action: "compare", sorted: [...sortedIndices], explanation: `Selecting ${key} to insert` });
+                while (j >= 0 && arr[j] > key) {
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", sorted: [...sortedIndices], explanation: `Checking ${arr[j]} > ${key}` });
+                    arr[j + 1] = arr[j];
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Moving ${arr[j]} right` });
+                    j--;
+                }
+                arr[j + 1] = key;
+                sortedIndices.push(i);
+                steps.push({ array: [...arr], highlight: [j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Inserted ${key} at position ${j + 1}` });
+            }
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            return steps;
+        }
+
+        function generateLocalQuickSortSteps(arrInput) {
+            let steps = [];
+            let arr = [...arrInput];
+            let sortedIndices = [];
+
+            function partition(low, high) {
+                let pivot = arr[high];
+                steps.push({ array: [...arr], highlight: [high], action: "compare", sorted: [...sortedIndices], explanation: `Pivot chosen as ${pivot}` });
+                let i = low - 1;
+                for (let j = low; j < high; j++) {
+                    steps.push({ array: [...arr], highlight: [high, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with pivot ${pivot}` });
+                    if (arr[j] < pivot) {
+                        i++;
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                        steps.push({ array: [...arr], highlight: [i, j], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[i]} and ${arr[j]}` });
+                    }
+                }
+                [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+                sortedIndices.push(i + 1);
+                steps.push({ array: [...arr], highlight: [i + 1, high], action: "swap", sorted: [...sortedIndices], explanation: `Placed pivot ${pivot} at index ${i + 1}` });
+                return i + 1;
+            }
+
+            function quickSort(low, high) {
+                if (low < high) {
+                    let pi = partition(low, high);
+                    quickSort(low, pi - 1);
+                    quickSort(pi + 1, high);
+                }
+            }
+
+            quickSort(0, arr.length - 1);
+            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Quick sort finished!" });
+            return steps;
         }
 
         let correctionCallback = null;
