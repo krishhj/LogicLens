@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LogicLens - Graphs</title>
+    <title>LogicLens - Graph Algorithms</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
@@ -16,7 +16,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -39,83 +39,110 @@
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
-        <h1>Graph Data Structure</h1>
-        <p>Visualize complex geometric node structures and BFS/DFS routing algorithms dynamically.</p>
+        <h1>Graph Algorithms</h1>
+        <p>Explore graph traversals, shortest path, MST, topological sorting, cycle detection, and SCCs step-by-step.</p>
     </section>
 
-    <div class="container" id="graphContainer" style="margin-top: 40px;">
+    <div class="container" id="graphContainer" style="margin-top: 20px;">
         <div class="editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="margin: 0;">Graph Setup</h3>
+                <h3 style="margin: 0;">Algorithm Selection</h3>
                 <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Graphs</button>
             </div>
 
-            <!-- Context Tabs -->
-            <div class="mode-tabs" style="margin-bottom: 20px;">
-                <button class="mode-tab active" id="tab-undirected"
-                    onclick="switchMode('undirected')">UNDIRECTED</button>
-                <button class="mode-tab" id="tab-directed" onclick="switchMode('directed')">DIRECTED</button>
-                <button class="mode-tab" id="tab-weighted" onclick="switchMode('weighted')">WEIGHTED</button>
+            <!-- Algorithm Mode Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px;">
+                <button class="mode-tab active" id="alg-tab-bfsdfs" onclick="selectAlgorithm('bfsdfs')">BFS & DFS</button>
+                <button class="mode-tab" id="alg-tab-dijkstra" onclick="selectAlgorithm('dijkstra')">Dijkstra</button>
+                <button class="mode-tab" id="alg-tab-astar" onclick="selectAlgorithm('astar')">A* Grid</button>
+                <button class="mode-tab" id="alg-tab-toposort" onclick="selectAlgorithm('toposort')">Topo Sort</button>
+                <button class="mode-tab" id="alg-tab-cycledetect" onclick="selectAlgorithm('cycledetect')">Cycle Detect</button>
+                <button class="mode-tab" id="alg-tab-kruskal" onclick="selectAlgorithm('kruskal')">Kruskal MST</button>
+                <button class="mode-tab" id="alg-tab-prim" onclick="selectAlgorithm('prim')">Prim MST</button>
+                <button class="mode-tab" id="alg-tab-bellman" onclick="selectAlgorithm('bellman')">Bellman-Ford</button>
+                <button class="mode-tab" id="alg-tab-floyd" onclick="selectAlgorithm('floyd')">Floyd-Warshall</button>
+                <button class="mode-tab" id="alg-tab-tarjan" onclick="selectAlgorithm('tarjan')">Tarjan SCC</button>
             </div>
 
-            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="graphInputNode" placeholder="Node (e.g. A)" style="flex:1; margin-bottom:0;"
-                    autocomplete="off" />
-                <input type="text" id="graphInputTarget" placeholder="Target (e.g. B)" style="flex:1; margin-bottom:0;"
-                    autocomplete="off" />
-                <input type="number" id="graphInputWeight" placeholder="Weight (e.g. 5)"
-                    style="flex:1; margin-bottom:0; display:none;" autocomplete="off" />
+            <!-- Graph Topology Type Controls -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;" id="graphTypeControls">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text2);">GRAPH TYPE:</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="sample-btn active" id="type-undirected" onclick="setGraphType('undirected')">Undirected</button>
+                    <button class="sample-btn" id="type-directed" onclick="setGraphType('directed')">Directed</button>
+                    <button class="sample-btn" id="type-weighted" onclick="setGraphType('weighted')">Weighted</button>
+                </div>
             </div>
 
-            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
-                <button class="op-btn push" onclick="doOp('addNode')"><span style="color:var(--green)">➕</span> Add
-                    Node</button>
+            <!-- Inputs for Manual Editing -->
+            <div id="graphInputRow" style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="graphInputNode" placeholder="Node (e.g. A)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="graphInputTarget" placeholder="Target (e.g. B)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="number" id="graphInputWeight" placeholder="Weight (e.g. 5)" style="flex:1; margin-bottom:0;" autocomplete="off" />
+            </div>
+
+            <div class="op-grid" id="opGridStandard" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                <button class="op-btn push" onclick="doOp('addNode')"><span style="color:var(--green)">➕</span> Add Node</button>
                 <button class="op-btn enqueue" onclick="doOp('addEdge')">🔗 Add Edge</button>
-                <button class="op-btn check" onclick="doOp('runBFS')">👣 Run BFS</button>
-                <button class="op-btn check" onclick="doOp('runDFS')">👣 Run DFS</button>
-                <button class="op-btn clear" style="grid-column: span 2;" onclick="doOp('clear')">🗑 Clear
-                    Graph</button>
+                <button class="op-btn check" id="runAlgPrimaryBtn" onclick="runSelectedAlgorithm()">🚀 Run Algorithm</button>
+                <button class="op-btn clear" onclick="doOp('clear')">🗑 Clear Graph</button>
+            </div>
+
+            <!-- Presets / Quick Load -->
+            <div class="samples-row" style="margin-bottom: 12px;">
+                <span class="sample-lbl">Presets:</span>
+                <button class="sample-btn" onclick="loadPreset('default')">Standard Graph</button>
+                <button class="sample-btn" onclick="loadPreset('weighted')">Weighted Net</button>
+                <button class="sample-btn" onclick="loadPreset('dag')">DAG</button>
+                <button class="sample-btn" onclick="loadPreset('cycle')">Cycle Graph</button>
+                <button class="sample-btn" onclick="loadPreset('scc')">SCC Graph</button>
             </div>
 
             <div class="adv-section-head" style="margin-top: 6px;">
-                <h3>Recorded Operations</h3>
+                <h3>Recorded Operations / Commands</h3>
             </div>
-            <textarea id="graphCodeInput" class="notranslate" translate="no" readonly style="height: 120px;">node(A)
+            <textarea id="graphCodeInput" class="notranslate" translate="no" style="height: 110px;">node(A)
 node(B)
 node(C)
 node(D)
-edge(A,B)
-edge(B,C)
-edge(C,D)
+node(E)
+edge(A,B,4)
+edge(A,C,2)
+edge(B,C,1)
+edge(B,D,5)
+edge(C,D,8)
+edge(C,E,10)
+edge(D,E,2)
 bfs(A)</textarea>
 
-            <button class="viz-btn" id="graphVizBtn" onclick="analyzeGraphCode()">
-                Visualize Graph
+            <button class="viz-btn" id="graphVizBtn" onclick="runSelectedAlgorithm();">
+                Visualize Logic
             </button>
 
             <!-- Op Log -->
-            <div class="op-log-panel" style="margin-top: 20px;">
+            <div class="op-log-panel" style="margin-top: 15px;">
                 <div class="op-log-header">
                     <span class="op-log-title">📋 Operation Log</span>
-                    <button class="op-log-clear-btn" onclick="clearLog()">Clear Log</button>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear</button>
                 </div>
                 <div class="op-log-entries" id="opLog">
                     <div class="op-log-entry log-info">
                         <span class="op-log-num">#0</span>
                         <span class="op-log-icon">🚀</span>
-                        <span class="op-log-msg">Graph initialized. Undirected mode active.</span>
+                        <span class="op-log-msg">Graph Visualizer ready. Select an algorithm to view steps.</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="visualizer">
-            <h3>Graph Visualization</h3>
+            <h3 id="visualizerTitle">Graph Visualization</h3>
 
-            <div class="legend">
-                <span><span class="box" style="background: #38bdf8"></span>Unvisited</span>
-                <span><span class="box" style="background: #eab308"></span>Exploring</span>
-                <span><span class="box" style="background: #22c55e"></span>Visited</span>
+            <div class="legend" id="graphLegend">
+                <span><span class="box" style="background: #38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background: #eab308"></span>Yellow (Comparing)</span>
+                <span><span class="box" style="background: #ef4444"></span>Red (Swapping/Conflict)</span>
+                <span><span class="box" style="background: #22c55e"></span>Green (Sorted/Visited)</span>
             </div>
 
             <div class="canvas graph-canvas-wrapper" id="graphCanvasWrapper">
@@ -124,16 +151,24 @@ bfs(A)</textarea>
                         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
                             <polygon points="0 0, 8 3, 0 6" fill="var(--text3)" />
                         </marker>
-                        <marker id="arrowhead-highlight" markerWidth="8" markerHeight="6" refX="28" refY="3"
-                            orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#eab308" />
+                        <marker id="arrowhead-highlight" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#00e5ff" />
+                        </marker>
+                        <marker id="arrowhead-accepted" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#22c55e" />
+                        </marker>
+                        <marker id="arrowhead-rejected" markerWidth="8" markerHeight="6" refX="28" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#ef4444" />
                         </marker>
                     </defs>
                 </svg>
                 <div id="graphCanvas"></div>
             </div>
 
-            <div class="step-box" id="graphStepText">▶ System Ready.</div>
+            <!-- Subpanel for Live Queues, Stacks, Matrices, in-degree tables -->
+            <div id="graphSubpanelContainer"></div>
+
+            <div class="step-box" id="graphStepText">▶ System Ready. Select an algorithm and click Visualize.</div>
 
             <div class="media-controls">
                 <div class="btn-group">
@@ -146,15 +181,13 @@ bfs(A)</textarea>
 
                 <div class="slider-group" style="margin-bottom: 10px;">
                     <span>Timeline</span>
-                    <input type="range" id="graphProgressSlider" min="0" max="0" value="0"
-                        oninput="scrubGraphTimeline()" />
+                    <input type="range" id="graphProgressSlider" min="0" max="0" value="0" oninput="scrubGraphTimeline()" />
                 </div>
 
                 <div class="speed-controls">
                     <span class="speed-label">Speed:</span>
                     <button class="speed-btn" id="btn-graph-slow" onclick="setGraphSpeed(1600, 'slow')">Slow</button>
-                    <button class="speed-btn active" id="btn-graph-normal"
-                        onclick="setGraphSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn active" id="btn-graph-normal" onclick="setGraphSpeed(1000, 'normal')">Normal</button>
                     <button class="speed-btn" id="btn-graph-fast" onclick="setGraphSpeed(400, 'fast')">Fast</button>
                 </div>
 
@@ -170,27 +203,23 @@ bfs(A)</textarea>
         <div class="cards">
             <div class="card" onclick="window.location.href='index.html'">
                 <h3>Sort</h3>
-                <p>Bubble, Insertion, Selection, Quick</p>
+                <p>Bar & Array Visualizations</p>
             </div>
             <div class="card" onclick="window.location.href='stack.html'">
-                <h3>Stack</h3>
-                <p>Push / Pop animation</p>
-            </div>
-            <div class="card" onclick="window.location.href='queue.html'">
-                <h3>Queue</h3>
-                <p>Enqueue / Dequeue flow</p>
+                <h3>Stack & Queue</h3>
+                <p>Parentheses, Monotonic, Deque</p>
             </div>
             <div class="card" onclick="window.location.href='trees.html'">
                 <h3>Trees</h3>
-                <p>Binary tree traversal</p>
+                <p>BST, AVL, RB-Tree, Segment, Trie</p>
             </div>
             <div class="card" onclick="window.location.href='strings.html'">
                 <h3>Strings</h3>
                 <p>Pattern matching</p>
             </div>
-            <div class="card" onclick="window.location.href='sentences.html'">
-                <h3>Sentences</h3>
-                <p>Text structure visualization</p>
+            <div class="card" onclick="window.location.href='dp.html'">
+                <h3>DP & Backtracking</h3>
+                <p>Coin Change, Knapsack, N-Queens</p>
             </div>
         </div>
     </section>
@@ -198,6 +227,7 @@ bfs(A)</textarea>
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
+        // Theme Toggle Setup
         const themeToggle = document.getElementById("themeToggle");
         const savedTheme = localStorage.getItem("logiclens_theme") || "light";
         if (savedTheme === "dark") {
@@ -219,25 +249,77 @@ bfs(A)</textarea>
             });
         }
 
-        let graphMode = 'undirected'; // undefined, directed, weighted
+        // Global State Variables
+        let currentAlg = 'bfsdfs';
+        let graphMode = 'weighted'; // 'undirected', 'directed', 'weighted'
+        let graphNodes = [];
+        let adjacencyList = {};
+        let graphSteps = [];
+        let graphCurrentStep = 0;
+        let graphIsPlaying = false;
+        let graphPlayInterval = null;
+        let graphSpeedMs = 1000;
         let logCount = 0;
 
-        function switchMode(mode) {
-            pauseGraphPlayback();
-            graphMode = mode;
-            ['undirected', 'directed', 'weighted'].forEach(m => {
-                document.getElementById(`tab-${m}`).classList.remove('active');
-            });
-            document.getElementById(`tab-${mode}`).classList.add('active');
+        // A* Grid Specific Wall State (10x10)
+        let aStarGridWalls = new Set();
 
-            if (mode === 'weighted') {
-                document.getElementById('graphInputWeight').style.display = 'block';
+        // Algorithm Selection Switcher
+        function selectAlgorithm(algKey) {
+            pauseGraphPlayback();
+            currentAlg = algKey;
+            
+            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.getElementById(`alg-tab-${algKey}`);
+            if (tabBtn) tabBtn.classList.add('active');
+
+            const titleMap = {
+                bfsdfs: "BFS and DFS (State & Live Panel)",
+                dijkstra: "Dijkstra's Shortest Path Algorithm",
+                astar: "A* Search on a 10x10 Grid",
+                toposort: "Topological Sort (Kahn's & DFS)",
+                cycledetect: "Cycle Detection (Directed & Undirected)",
+                kruskal: "Kruskal's Minimum Spanning Tree",
+                prim: "Prim's Minimum Spanning Tree",
+                bellman: "Bellman-Ford Shortest Path & Negative Cycle",
+                floyd: "Floyd-Warshall All-Pairs Shortest Path",
+                tarjan: "Tarjan's Strongly Connected Components"
+            };
+            document.getElementById('visualizerTitle').innerText = titleMap[algKey] || "Graph Visualization";
+
+            // Adjust controls visibility for A*
+            const graphTypeControls = document.getElementById('graphTypeControls');
+            const graphInputRow = document.getElementById('graphInputRow');
+            const opGridStandard = document.getElementById('opGridStandard');
+
+            if (algKey === 'astar') {
+                graphTypeControls.style.display = 'none';
+                graphInputRow.style.display = 'none';
+                opGridStandard.style.display = 'none';
             } else {
-                document.getElementById('graphInputWeight').style.display = 'none';
+                graphTypeControls.style.display = 'flex';
+                graphInputRow.style.display = 'flex';
+                opGridStandard.style.display = 'grid';
             }
 
-            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Graph mode. Graph cleared.`);
-            doOp('clear');
+            // Auto-load suitable presets if needed
+            if (algKey === 'toposort') loadPreset('dag');
+            else if (algKey === 'cycledetect') loadPreset('cycle');
+            else if (algKey === 'tarjan') loadPreset('scc');
+            else if (algKey === 'bellman') loadPreset('bellman');
+            else if (algKey === 'astar') generateAStarGridState();
+            else loadPreset('default');
+
+            addLog('info', '⚙️', `Switched algorithm mode to ${titleMap[algKey]}.`);
+            runSelectedAlgorithm();
+        }
+
+        function setGraphType(type) {
+            graphMode = type;
+            document.querySelectorAll('#graphTypeControls .sample-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`type-${type}`).classList.add('active');
+            addLog('info', '🔄', `Graph type set to ${type.toUpperCase()}.`);
+            generateNewStaticGraphState();
         }
 
         const appendCode = (codeStr) => {
@@ -274,118 +356,106 @@ bfs(A)</textarea>
             const targetIn = document.getElementById('graphInputTarget');
             const weightIn = document.getElementById('graphInputWeight');
 
-            const n = nodeIn.value.trim();
-            const t = targetIn.value.trim();
+            const n = nodeIn.value.trim().toUpperCase();
+            const t = targetIn.value.trim().toUpperCase();
             const w = parseFloat(weightIn.value) || 1;
 
             if (op === 'addNode') {
                 if (!n) { addLog('error', '⚠️', 'Enter a Node Name.'); return; }
                 if (graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" already exists.`); return; }
-
                 graphNodes.push(n);
                 adjacencyList[n] = [];
                 addLog('push', '➕', `Added Node "${n}".`);
                 appendCode(`node(${n})`);
                 nodeIn.value = '';
                 generateNewStaticGraphState();
-
             } else if (op === 'addEdge') {
-                if (!n || !t) { addLog('error', '⚠️', 'Enter both source and target nodes.'); return; }
-                if (!graphNodes.includes(n) || !graphNodes.includes(t)) { addLog('error', '⚠️', 'Both nodes must exist in the graph.'); return; }
+                if (!n || !t) { addLog('error', '⚠️', 'Enter source and target nodes.'); return; }
+                if (!graphNodes.includes(n)) { graphNodes.push(n); adjacencyList[n] = []; }
+                if (!graphNodes.includes(t)) { graphNodes.push(t); adjacencyList[t] = []; }
 
-                // Add relation depending on mode
-                let exists = adjacencyList[n].some(edge => edge.to === t);
+                let exists = adjacencyList[n].some(e => e.to === t);
                 if (exists) { addLog('error', '⚠️', `Edge ${n}→${t} already exists.`); return; }
 
                 if (graphMode === 'weighted') {
                     adjacencyList[n].push({ to: t, weight: w });
                     if (n !== t) adjacencyList[t].push({ to: n, weight: w });
-                    addLog('push', '🔗', `Added Weighted Edge ${n}↔${t} (W: ${w}).`);
                     appendCode(`edge(${n},${t},${w})`);
+                    addLog('push', '🔗', `Added Weighted Edge ${n}↔${t} (W:${w}).`);
                 } else if (graphMode === 'directed') {
                     adjacencyList[n].push({ to: t, weight: 1 });
-                    addLog('push', '🔗', `Added Directed Edge ${n}→${t}.`);
                     appendCode(`edge(${n},${t})`);
+                    addLog('push', '🔗', `Added Directed Edge ${n}→${t}.`);
                 } else {
                     adjacencyList[n].push({ to: t, weight: 1 });
                     if (n !== t) adjacencyList[t].push({ to: n, weight: 1 });
-                    addLog('push', '🔗', `Added Undirected Edge ${n}↔${t}.`);
                     appendCode(`edge(${n},${t})`);
+                    addLog('push', '🔗', `Added Undirected Edge ${n}↔${t}.`);
                 }
-
                 targetIn.value = '';
                 weightIn.value = '';
                 generateNewStaticGraphState();
-
-            } else if (op === 'runBFS' || op === 'runDFS') {
-                if (!n) { addLog('error', '⚠️', `Enter a starting node first.`); return; }
-                if (!graphNodes.includes(n)) { addLog('error', '⚠️', `Node "${n}" does not exist.`); return; }
-                addLog('info', '👣', `Initiated ${op.replace('run', '')} from "${n}".`);
-                if (op === 'runBFS') appendCode(`bfs(${n})`); else appendCode(`dfs(${n})`);
-                analyzeGraphCode(); // Boot timeline analyzer magically!
-
             } else if (op === 'clear') {
                 graphNodes = [];
                 adjacencyList = {};
                 graphSteps = [];
-                graphCurrentStep = 0;
-                addLog('info', '🗑️', `Cleared graph topological mappings.`);
                 document.getElementById('graphCodeInput').value = '';
+                addLog('info', '🗑️', 'Cleared graph topology.');
                 generateNewStaticGraphState();
             }
         }
 
-        function generateNewStaticGraphState() {
-            // A pseudo-step to render live graph editing instantly before algorithms run
-            graphSteps = [{ visited: [], comparing: [], action: "none", explanation: "Live Editing...", stepIndex: 0 }];
-            document.getElementById("graphProgressSlider").max = 0;
-            graphCurrentStep = 0;
-            updateGraphPlayBtnUI();
-            renderGraphFrame(graphSteps[0]);
+        function loadPreset(key) {
+            pauseGraphPlayback();
+            let code = "";
+            if (key === 'default' || key === 'weighted') {
+                setGraphType('weighted');
+                code = "node(A)\nnode(B)\nnode(C)\nnode(D)\nnode(E)\nnode(F)\nedge(A,B,4)\nedge(A,C,2)\nedge(B,C,1)\nedge(B,D,5)\nedge(C,D,8)\nedge(C,E,10)\nedge(D,E,2)\nedge(D,F,6)";
+            } else if (key === 'dag') {
+                setGraphType('directed');
+                code = "node(A)\nnode(B)\nnode(C)\nnode(D)\nnode(E)\nnode(F)\nedge(A,B)\nedge(A,C)\nedge(B,D)\nedge(C,D)\nedge(D,E)\nedge(C,F)";
+            } else if (key === 'cycle') {
+                setGraphType('directed');
+                code = "node(A)\nnode(B)\nnode(C)\nnode(D)\nnode(E)\nedge(A,B)\nedge(B,C)\nedge(C,A)\nedge(C,D)\nedge(D,E)";
+            } else if (key === 'scc') {
+                setGraphType('directed');
+                code = "node(0)\nnode(1)\nnode(2)\nnode(3)\nnode(4)\nedge(0,1)\nedge(1,2)\nedge(2,0)\nedge(1,3)\nedge(3,4)";
+            } else if (key === 'bellman') {
+                setGraphType('weighted');
+                code = "node(A)\nnode(B)\nnode(C)\nnode(D)\nedge(A,B,4)\nedge(A,C,2)\nedge(B,C,-3)\nedge(C,D,2)";
+            }
+            document.getElementById('graphCodeInput').value = code;
+            parseGraphCode();
+            runSelectedAlgorithm();
         }
 
-        let graphSteps = [];
-        let graphCurrentStep = 0;
-        let graphIsPlaying = false;
-        let graphPlayInterval = null;
-        let graphSpeedMs = 1000;
-
-        let graphNodes = [];
-        let adjacencyList = {};
-
-        function analyzeGraphCode() {
-            pauseGraphPlayback();
+        function parseGraphCode() {
             const code = document.getElementById("graphCodeInput").value;
             const lines = code.split('\n');
-
             graphNodes = [];
             adjacencyList = {};
-            graphSteps = [];
 
-            let commands = [];
-            lines.forEach((line, idx) => {
+            lines.forEach(line => {
                 let text = line.trim();
                 if (!text) return;
-
-                let matchNode = text.match(/node\(([^)]+)\)/);
+                let matchNode = text.match(/node\(([^)]+)\)/i);
                 if (matchNode) {
-                    let n = matchNode[1].trim();
+                    let n = matchNode[1].trim().toUpperCase();
                     if (!graphNodes.includes(n)) {
                         graphNodes.push(n);
                         adjacencyList[n] = [];
                     }
                 }
-
-                let matchEdge = text.match(/edge\(([^,]+),([^,)]+)(?:,([^)]+))?\)/);
+                let matchEdge = text.match(/edge\(([^,]+),([^,)]+)(?:,([^)]+))?\)/i);
                 if (matchEdge) {
-                    let u = matchEdge[1].trim();
-                    let v = matchEdge[2].trim();
+                    let u = matchEdge[1].trim().toUpperCase();
+                    let v = matchEdge[2].trim().toUpperCase();
                     let w = matchEdge[3] ? parseFloat(matchEdge[3].trim()) : 1;
 
                     if (!graphNodes.includes(u)) { graphNodes.push(u); adjacencyList[u] = []; }
                     if (!graphNodes.includes(v)) { graphNodes.push(v); adjacencyList[v] = []; }
 
-                    let exists = adjacencyList[u].some(edge => edge.to === v);
+                    let exists = adjacencyList[u].some(e => e.to === v);
                     if (!exists) {
                         if (graphMode === 'weighted') {
                             adjacencyList[u].push({ to: v, weight: w });
@@ -398,187 +468,929 @@ bfs(A)</textarea>
                         }
                     }
                 }
-
-                let matchBFS = text.match(/bfs\((([^)]+))\)/);
-                if (matchBFS) {
-                    commands.push({ type: 'bfs', node: matchBFS[1].trim(), line: idx });
-                }
-
-                let matchDFS = text.match(/dfs\((([^)]+))\)/);
-                if (matchDFS) {
-                    commands.push({ type: 'dfs', node: matchDFS[1].trim(), line: idx });
-                }
             });
+        }
 
-            graphSteps.push({
+        function generateNewStaticGraphState() {
+            parseGraphCode();
+            graphSteps = [{
                 visited: [],
+                frontier: [],
+                current: null,
                 comparing: [],
-                action: "none",
                 explanation: "Graph Topology Initialized.",
-                stepIndex: 0,
-                line: -1
-            });
+                stepIndex: 0
+            }];
+            document.getElementById("graphProgressSlider").max = 0;
+            graphCurrentStep = 0;
+            updateGraphPlayBtnUI();
+            renderGraphFrame(graphSteps[0]);
+        }
 
-            commands.forEach(cmd => {
-                if (cmd.type === 'bfs') runBFS(cmd.node, cmd.line);
-                if (cmd.type === 'dfs') runDFS(cmd.node, cmd.line);
-            });
+        // ─────────────────────────────────────────────────────────────────────
+        // ALGORITHM GENERATOR CONTROLLER
+        // ─────────────────────────────────────────────────────────────────────
+        function runSelectedAlgorithm() {
+            pauseGraphPlayback();
+            parseGraphCode();
+            graphSteps = [];
 
-            if (graphSteps.length === 1 && commands.length === 0) {
-                graphSteps.push({
-                    visited: [],
-                    comparing: [],
-                    action: "none",
-                    explanation: "Topology generated. No Traversal specified.",
-                    stepIndex: 1,
-                    line: -1
-                });
+            const startNode = graphNodes.length > 0 ? graphNodes[0] : 'A';
+            const targetNode = graphNodes.length > 1 ? graphNodes[graphNodes.length - 1] : 'E';
+
+            switch (currentAlg) {
+                case 'bfsdfs':
+                    generateBFSDFS(startNode);
+                    break;
+                case 'dijkstra':
+                    generateDijkstra(startNode, targetNode);
+                    break;
+                case 'astar':
+                    generateAStarGridState();
+                    return;
+                case 'toposort':
+                    generateTopoSort();
+                    break;
+                case 'cycledetect':
+                    generateCycleDetection();
+                    break;
+                case 'kruskal':
+                    generateKruskalMST();
+                    break;
+                case 'prim':
+                    generatePrimMST(startNode);
+                    break;
+                case 'bellman':
+                    generateBellmanFord(startNode);
+                    break;
+                case 'floyd':
+                    generateFloydWarshall();
+                    break;
+                case 'tarjan':
+                    generateTarjanSCC();
+                    break;
             }
 
             if (graphSteps.length > 0) {
                 document.getElementById("graphProgressSlider").max = graphSteps.length - 1;
                 graphCurrentStep = 0;
-                toggleGraphPlay();
+                startGraphPlayback(); // Auto-start animation when Visualize Logic is clicked
             }
         }
 
-        function runBFS(start, lineIdx) {
-            if (!adjacencyList[start]) return;
-            let visited = new Set();
+        // 1. BFS and DFS Generator
+        function generateBFSDFS(start) {
+            if (!graphNodes.includes(start)) return;
+            // BFS Phase
+            let bfsVisited = new Set([start]);
             let queue = [start];
-            visited.add(start);
-
-            let visitedList = [start];
-
             graphSteps.push({
-                visited: [...visitedList],
-                comparing: [start],
-                action: "start",
-                explanation: `BFS initialized at source node ${start}.`,
-                stepIndex: graphSteps.length,
-                line: lineIdx
+                visited: Array.from(bfsVisited),
+                frontier: [...queue],
+                current: start,
+                comparing: [],
+                subpanelHTML: `<div class="graph-subpanel"><strong>BFS Queue:</strong> [ ${queue.join(', ')} ]</div>`,
+                explanation: `BFS initialized at source node ${start}.`
             });
 
             while (queue.length > 0) {
                 let u = queue.shift();
-
                 graphSteps.push({
-                    visited: [...visitedList],
+                    visited: Array.from(bfsVisited),
+                    frontier: [...queue],
+                    current: u,
                     comparing: [u],
-                    action: "compare",
-                    explanation: `Dequeued & exploring neighbors of node ${u}.`,
-                    stepIndex: graphSteps.length,
-                    line: lineIdx
+                    subpanelHTML: `<div class="graph-subpanel"><strong>BFS Queue:</strong> [ ${queue.join(', ')} ] | <strong>Current:</strong> ${u}</div>`,
+                    explanation: `Dequeued ${u}. Exploring unvisited neighbors...`
                 });
 
                 for (let edge of adjacencyList[u]) {
                     let v = edge.to;
-                    if (!visited.has(v)) {
-                        visited.add(v);
+                    if (!bfsVisited.has(v)) {
+                        bfsVisited.add(v);
                         queue.push(v);
-                        visitedList.push(v);
-
                         graphSteps.push({
-                            visited: [...visitedList],
+                            visited: Array.from(bfsVisited),
+                            frontier: [...queue],
+                            current: u,
                             comparing: [u, v],
-                            action: "visited",
-                            explanation: `Discovered neighbor ${v} recursively.`,
-                            stepIndex: graphSteps.length,
-                            line: lineIdx
+                            subpanelHTML: `<div class="graph-subpanel"><strong>BFS Queue:</strong> [ ${queue.join(', ')} ]</div>`,
+                            explanation: `Enqueued unvisited neighbor ${v} from node ${u}.`
                         });
                     }
                 }
             }
 
+            // DFS Phase
+            let dfsVisited = new Set();
+            let stack = [start];
             graphSteps.push({
-                visited: [...visitedList],
+                visited: [],
+                frontier: [],
+                current: null,
                 comparing: [],
-                action: "none",
-                explanation: `BFS Traversal logically exhausted from origin ${start}.`,
-                stepIndex: graphSteps.length,
-                line: lineIdx
+                subpanelHTML: `<div class="graph-subpanel"><strong>DFS Stack:</strong> [ ${stack.join(', ')} ]</div>`,
+                explanation: `Transitioning to DFS Traversal starting from ${start}.`
             });
-        }
 
-        function runDFS(start, lineIdx) {
-            if (!adjacencyList[start]) return;
-            let visited = new Set();
-            let visitedList = [];
-
-            function dfsHelper(u) {
-                visited.add(u);
-                visitedList.push(u);
-
+            function dfs(u) {
+                dfsVisited.add(u);
                 graphSteps.push({
-                    visited: [...visitedList],
+                    visited: Array.from(dfsVisited),
+                    stack: [...stack],
+                    current: u,
                     comparing: [u],
-                    action: "visited",
-                    explanation: `Stepping deeply into node ${u}.`,
-                    stepIndex: graphSteps.length,
-                    line: lineIdx
+                    subpanelHTML: `<div class="graph-subpanel"><strong>DFS Call Stack:</strong> [ ${stack.join(' → ')} ]</div>`,
+                    explanation: `Pushed & exploring node ${u} deeply.`
                 });
 
                 for (let edge of adjacencyList[u]) {
                     let v = edge.to;
-                    if (!visited.has(v)) {
+                    if (!dfsVisited.has(v)) {
+                        stack.push(v);
+                        dfs(v);
+                        stack.pop();
+                    }
+                }
+            }
+            dfs(start);
+
+            graphSteps.push({
+                visited: Array.from(dfsVisited),
+                frontier: [],
+                current: null,
+                comparing: [],
+                explanation: "BFS and DFS Visualizations completed cleanly."
+            });
+        }
+
+        // 2. Dijkstra Shortest Path Generator
+        function generateDijkstra(start, target) {
+            if (!graphNodes.includes(start)) return;
+            let dist = {};
+            let prev = {};
+            let pq = [];
+
+            graphNodes.forEach(n => dist[n] = Infinity);
+            dist[start] = 0;
+            pq.push({ node: start, dist: 0 });
+
+            graphSteps.push({
+                distances: { ...dist },
+                comparing: [],
+                visited: [],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Priority Queue:</strong> [ (0, ${start}) ]</div>`,
+                explanation: `Dijkstra initialized with dist[${start}] = 0 and rest set to ∞.`
+            });
+
+            let visitedSet = new Set();
+
+            while (pq.length > 0) {
+                pq.sort((a, b) => a.dist - b.dist);
+                let { node: u, dist: dU } = pq.shift();
+
+                if (visitedSet.has(u)) continue;
+                visitedSet.add(u);
+
+                let pqStr = pq.map(x => `(${x.dist}, ${x.node})`).join(', ');
+                graphSteps.push({
+                    distances: { ...dist },
+                    current: u,
+                    comparing: [u],
+                    visited: Array.from(visitedSet),
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Extract Min Node:</strong> ${u} (Dist: ${dU}) | <strong>PQ:</strong> [ ${pqStr} ]</div>`,
+                    explanation: `Extracted minimum distance node ${u} with distance ${dU}.`
+                });
+
+                for (let edge of adjacencyList[u]) {
+                    let v = edge.to;
+                    let w = edge.weight;
+                    if (dist[u] + w < dist[v]) {
+                        dist[v] = dist[u] + w;
+                        prev[v] = u;
+                        pq.push({ node: v, dist: dist[v] });
+
+                        let newPqStr = pq.map(x => `(${x.dist}, ${x.node})`).join(', ');
                         graphSteps.push({
-                            visited: [...visitedList],
+                            distances: { ...dist },
+                            current: u,
                             comparing: [u, v],
-                            action: "compare",
-                            explanation: `Branching into sub-neighbor ${v} from branch ${u}.`,
-                            stepIndex: graphSteps.length,
-                            line: lineIdx
+                            visited: Array.from(visitedSet),
+                            subpanelHTML: `<div class="graph-subpanel"><strong>Relax Edge ${u}→${v} (W:${w}):</strong> dist[${v}] updated to ${dist[v]} | <strong>PQ:</strong> [ ${newPqStr} ]</div>`,
+                            explanation: `Relaxed edge (${u} → ${v}): New shortest distance to ${v} is ${dist[v]}.`
                         });
-                        dfsHelper(v);
                     }
                 }
             }
 
-            dfsHelper(start);
+            // Reconstruction of Shortest Path
+            let path = [];
+            let curr = target;
+            while (curr) {
+                path.unshift(curr);
+                curr = prev[curr];
+            }
+            let pathEdges = [];
+            for (let i = 0; i < path.length - 1; i++) {
+                pathEdges.push([path[i], path[i+1]]);
+            }
 
             graphSteps.push({
-                visited: [...visitedList],
+                distances: { ...dist },
+                visited: path,
+                pathEdges: pathEdges,
                 comparing: [],
-                action: "none",
-                explanation: `DFS Exhaustive Traversal originated from ${start} natively finalized.`,
-                stepIndex: graphSteps.length,
-                line: lineIdx
+                subpanelHTML: `<div class="graph-subpanel"><strong>Shortest Path from ${start} to ${target}:</strong> ${path.join(' → ')} (Total Cost: ${dist[target]})</div>`,
+                explanation: `Final Shortest Path to ${target} highlighted with cost ${dist[target]}.`
             });
         }
 
-        // RENDER LOGIC MULTI-POINT
+        // 3. A* Grid Visualizer Generator & Interactive Drawing
+        function generateAStarGridState() {
+            let canvas = document.getElementById("graphCanvas");
+            let svgEdges = document.getElementById("graphEdges");
+            let subpanelContainer = document.getElementById("graphSubpanelContainer");
+            svgEdges.innerHTML = "";
+            
+            const startCell = "0,0";
+            const goalCell = "9,9";
+
+            let openSet = [{ r: 0, c: 0, g: 0, h: 18, f: 18, parent: null }];
+            let closedSet = new Set();
+            let gScore = {};
+            let fScore = {};
+            let cameFrom = {};
+
+            gScore[startCell] = 0;
+            fScore[startCell] = 18;
+
+            let aStarSteps = [];
+
+            function getH(r, c) {
+                return Math.abs(r - 9) + Math.abs(c - 9);
+            }
+
+            aStarSteps.push({
+                open: ["0,0"],
+                closed: [],
+                path: [],
+                current: "0,0",
+                explanation: "A* Grid setup initialized from Start (0,0) to Goal (9,9)."
+            });
+
+            let found = false;
+
+            while (openSet.length > 0) {
+                openSet.sort((a, b) => a.f - b.f);
+                let current = openSet.shift();
+                let curKey = `${current.r},${current.c}`;
+
+                closedSet.add(curKey);
+
+                if (current.r === 9 && current.c === 9) {
+                    found = true;
+                    let path = [];
+                    let temp = current;
+                    while (temp) {
+                        path.push(`${temp.r},${temp.c}`);
+                        temp = temp.parent;
+                    }
+                    aStarSteps.push({
+                        open: openSet.map(o => `${o.r},${o.c}`),
+                        closed: Array.from(closedSet),
+                        path: path,
+                        current: "9,9",
+                        explanation: `Goal reached! Shortest path length: ${path.length} steps.`
+                    });
+                    break;
+                }
+
+                let neighbors = [
+                    { r: current.r - 1, c: current.c },
+                    { r: current.r + 1, c: current.c },
+                    { r: current.r, c: current.c - 1 },
+                    { r: current.r, c: current.c + 1 }
+                ];
+
+                for (let n of neighbors) {
+                    if (n.r < 0 || n.r >= 10 || n.c < 0 || n.c >= 10) continue;
+                    let nKey = `${n.r},${n.c}`;
+                    if (aStarGridWalls.has(nKey) || closedSet.has(nKey)) continue;
+
+                    let tentativeG = current.g + 1;
+                    let existingOpen = openSet.find(o => o.r === n.r && o.c === n.c);
+
+                    if (!existingOpen || tentativeG < existingOpen.g) {
+                        let h = getH(n.r, n.c);
+                        let f = tentativeG + h;
+                        let neighborObj = { r: n.r, c: n.c, g: tentativeG, h: h, f: f, parent: current };
+
+                        if (!existingOpen) {
+                            openSet.push(neighborObj);
+                        } else {
+                            existingOpen.g = tentativeG;
+                            existingOpen.f = f;
+                            existingOpen.parent = current;
+                        }
+
+                        aStarSteps.push({
+                            open: openSet.map(o => `${o.r},${o.c}`),
+                            closed: Array.from(closedSet),
+                            current: curKey,
+                            evalCell: nKey,
+                            evalG: tentativeG,
+                            evalH: h,
+                            evalF: f,
+                            explanation: `Evaluated cell (${n.r},${n.c}): g=${tentativeG}, h=${h} ➔ f=${f}`
+                        });
+                    }
+                }
+            }
+
+            if (!found) {
+                aStarSteps.push({
+                    open: [],
+                    closed: Array.from(closedSet),
+                    path: [],
+                    explanation: "No path exists to Goal cell due to wall blocks!"
+                });
+            }
+
+            graphSteps = aStarSteps;
+            document.getElementById("graphProgressSlider").max = graphSteps.length - 1;
+            graphCurrentStep = 0;
+            renderAStarFrame(graphSteps[0]);
+        }
+
+        function renderAStarFrame(frame) {
+            const canvas = document.getElementById("graphCanvas");
+            canvas.innerHTML = "";
+
+            let wrap = document.createElement("div");
+            wrap.className = "astar-grid-wrap";
+
+            for (let r = 0; r < 10; r++) {
+                for (let c = 0; c < 10; c++) {
+                    let cellKey = `${r},${c}`;
+                    let cell = document.createElement("div");
+                    cell.className = "astar-cell";
+
+                    if (r === 0 && c === 0) {
+                        cell.classList.add("start");
+                        cell.innerText = "S";
+                    } else if (r === 9 && c === 9) {
+                        cell.classList.add("goal");
+                        cell.innerText = "G";
+                    } else if (aStarGridWalls.has(cellKey)) {
+                        cell.classList.add("wall");
+                    } else if (frame.path && frame.path.includes(cellKey)) {
+                        cell.classList.add("path");
+                    } else if (frame.closed && frame.closed.includes(cellKey)) {
+                        cell.classList.add("closed");
+                    } else if (frame.open && frame.open.includes(cellKey)) {
+                        cell.classList.add("open");
+                    }
+
+                    cell.onclick = () => {
+                        if ((r===0 && c===0) || (r===9 && c===9)) return;
+                        if (aStarGridWalls.has(cellKey)) aStarGridWalls.delete(cellKey);
+                        else aStarGridWalls.add(cellKey);
+                        generateAStarGridState();
+                    };
+
+                    wrap.appendChild(cell);
+                }
+            }
+            canvas.appendChild(wrap);
+
+            let subpanelHTML = `<div class="graph-subpanel">💡 <strong>Interactive Grid:</strong> Click any cell to toggle walls! Start=(0,0), Goal=(9,9).`;
+            if (frame.evalF !== undefined) {
+                subpanelHTML += ` | <strong>Evaluating (${frame.evalCell}):</strong> g=${frame.evalG} + h=${frame.evalH} = <strong>f=${frame.evalF}</strong>`;
+            }
+            subpanelHTML += `</div>`;
+
+            document.getElementById("graphSubpanelContainer").innerHTML = subpanelHTML;
+            document.getElementById("graphStepText").innerText = "▶ " + frame.explanation;
+        }
+
+        // 4. Topological Sort Generator (Kahn's & DFS)
+        function generateTopoSort() {
+            let inDegree = {};
+            graphNodes.forEach(n => inDegree[n] = 0);
+
+            graphNodes.forEach(u => {
+                adjacencyList[u].forEach(e => {
+                    inDegree[e.to] = (inDegree[e.to] || 0) + 1;
+                });
+            });
+
+            let zeroQueue = graphNodes.filter(n => inDegree[n] === 0);
+            let topoOrder = [];
+
+            graphSteps.push({
+                visited: [],
+                inDegree: { ...inDegree },
+                subpanelHTML: `<div class="graph-subpanel"><strong>In-Degree Table:</strong> ${JSON.stringify(inDegree)} | <strong>Zero In-Degree Queue:</strong> [ ${zeroQueue.join(', ')} ]</div>`,
+                explanation: "Topological Sort (Kahn's algorithm) computed initial node in-degrees."
+            });
+
+            while (zeroQueue.length > 0) {
+                let u = zeroQueue.shift();
+                topoOrder.push(u);
+
+                graphSteps.push({
+                    visited: [...topoOrder],
+                    current: u,
+                    inDegree: { ...inDegree },
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Topo Order:</strong> [ ${topoOrder.join(' → ')} ] | <strong>Processing:</strong> ${u}</div>`,
+                    explanation: `Dequeued zero in-degree node ${u}. Added to topological order.`
+                });
+
+                for (let e of adjacencyList[u]) {
+                    let v = e.to;
+                    inDegree[v]--;
+                    if (inDegree[v] === 0) {
+                        zeroQueue.push(v);
+                    }
+                    graphSteps.push({
+                        visited: [...topoOrder],
+                        current: u,
+                        comparing: [u, v],
+                        inDegree: { ...inDegree },
+                        subpanelHTML: `<div class="graph-subpanel"><strong>Decremented In-Degree of ${v}:</strong> ${inDegree[v]} | <strong>Zero Queue:</strong> [ ${zeroQueue.join(', ')} ]</div>`,
+                        explanation: `Decremented in-degree of neighbor ${v}.`
+                    });
+                }
+            }
+
+            graphSteps.push({
+                visited: topoOrder,
+                comparing: [],
+                subpanelHTML: `<div class="graph-subpanel"><strong>Final Topological Ordering:</strong> [ ${topoOrder.join(' → ')} ]</div>`,
+                explanation: `Topological Sorting completed successfully: ${topoOrder.join(' → ')}`
+            });
+        }
+
+        // 5. Cycle Detection Generator
+        function generateCycleDetection() {
+            let color = {}; // 0: White (Unvisited), 1: Gray (In Stack), 2: Black (Visited)
+            graphNodes.forEach(n => color[n] = 0);
+            let hasCycle = false;
+
+            graphSteps.push({
+                nodeColors: { ...color },
+                explanation: "Cycle Detection (3-Color algorithm) started. White=Unvisited, Gray=Recursion Stack, Black=Finished."
+            });
+
+            function dfsCycle(u, parent) {
+                color[u] = 1; // Gray
+                graphSteps.push({
+                    nodeColors: { ...color },
+                    current: u,
+                    explanation: `Marked node ${u} as GRAY (currently in active recursion stack).`
+                });
+
+                for (let e of adjacencyList[u]) {
+                    let v = e.to;
+                    if (color[v] === 1 && (graphMode === 'directed' || v !== parent)) {
+                        hasCycle = true;
+                        graphSteps.push({
+                            nodeColors: { ...color },
+                            comparing: [u, v],
+                            cycleEdge: [u, v],
+                            subpanelHTML: `<div class="graph-subpanel" style="border-color:#ef4444; background:rgba(239,68,68,0.15)"><strong>⚠️ CYCLE DETECTED!</strong> Back-edge (${u} → ${v}) points to active recursion stack node.</div>`,
+                            explanation: `⚠️ Cycle Detected! Edge (${u} → ${v}) forms a cycle loop.`
+                        });
+                        return true;
+                    }
+                    if (color[v] === 0) {
+                        if (dfsCycle(v, u)) return true;
+                    }
+                }
+
+                color[u] = 2; // Black
+                graphSteps.push({
+                    nodeColors: { ...color },
+                    current: u,
+                    explanation: `Finished processing node ${u}. Marked as BLACK.`
+                });
+                return false;
+            }
+
+            for (let n of graphNodes) {
+                if (color[n] === 0) {
+                    if (dfsCycle(n, null)) break;
+                }
+            }
+
+            if (!hasCycle) {
+                graphSteps.push({
+                    nodeColors: { ...color },
+                    explanation: "Graph fully explored. No cycles detected!"
+                });
+            }
+        }
+
+        // 6. Kruskal's MST Generator
+        function generateKruskalMST() {
+            let edges = [];
+            let seen = new Set();
+            graphNodes.forEach(u => {
+                adjacencyList[u].forEach(e => {
+                    let v = e.to;
+                    let key = u < v ? `${u}-${v}` : `${v}-${u}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        edges.push({ u, v, w: e.weight });
+                    }
+                });
+            });
+
+            edges.sort((a, b) => a.w - b.w);
+
+            let parent = {};
+            graphNodes.forEach(n => parent[n] = n);
+            function find(i) {
+                if (parent[i] === i) return i;
+                return parent[i] = find(parent[i]);
+            }
+            function union(i, j) {
+                let rootI = find(i);
+                let rootJ = find(j);
+                if (rootI !== rootJ) {
+                    parent[rootI] = rootJ;
+                    return true;
+                }
+                return false;
+            }
+
+            let mstEdges = [];
+            let totalWeight = 0;
+
+            graphSteps.push({
+                edgesStatus: {},
+                unionFind: { ...parent },
+                totalWeight: 0,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Sorted Edges:</strong> ${edges.map(e => `${e.u}-${e.v}(${e.w})`).join(', ')}</div>`,
+                explanation: `Kruskal's MST: Sorted ${edges.length} edges by weight.`
+            });
+
+            let status = {};
+
+            for (let edge of edges) {
+                let { u, v, w } = edge;
+                let key = `${u}-${v}`;
+                status[key] = 'considered';
+
+                graphSteps.push({
+                    edgesStatus: { ...status },
+                    comparing: [u, v],
+                    unionFind: { ...parent },
+                    totalWeight: totalWeight,
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Considering Edge:</strong> ${u} ↔ ${v} (Weight: ${w}) | <strong>Find(${u})=${find(u)}, Find(${v})=${find(v)}</strong></div>`,
+                    explanation: `Considering edge (${u} ↔ ${v}, weight ${w})...`
+                });
+
+                if (union(u, v)) {
+                    status[key] = 'accepted';
+                    mstEdges.push(edge);
+                    totalWeight += w;
+                    graphSteps.push({
+                        edgesStatus: { ...status },
+                        comparing: [u, v],
+                        unionFind: { ...parent },
+                        totalWeight: totalWeight,
+                        subpanelHTML: `<div class="graph-subpanel" style="border-color:#22c55e"><strong>Accepted Edge!</strong> Connected components. <strong>Total MST Weight:</strong> ${totalWeight}</div>`,
+                        explanation: `Accepted edge (${u} ↔ ${v}). Total MST Weight = ${totalWeight}.`
+                    });
+                } else {
+                    status[key] = 'rejected';
+                    graphSteps.push({
+                        edgesStatus: { ...status },
+                        comparing: [u, v],
+                        unionFind: { ...parent },
+                        totalWeight: totalWeight,
+                        subpanelHTML: `<div class="graph-subpanel" style="border-color:#ef4444"><strong>Rejected Edge!</strong> (${u} ↔ ${v}) forms a cycle in current MST forest.</div>`,
+                        explanation: `Rejected edge (${u} ↔ ${v}) as it forms a cycle.`
+                    });
+                }
+            }
+
+            graphSteps.push({
+                edgesStatus: { ...status },
+                unionFind: { ...parent },
+                totalWeight: totalWeight,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Minimum Spanning Tree Complete!</strong> Total Weight: <strong>${totalWeight}</strong></div>`,
+                explanation: `Kruskal's Minimum Spanning Tree constructed with total weight ${totalWeight}.`
+            });
+        }
+
+        // 7. Prim's MST Generator
+        function generatePrimMST(start) {
+            if (!graphNodes.includes(start)) return;
+            let visited = new Set([start]);
+            let pq = [];
+            let totalWeight = 0;
+            let mstEdges = [];
+
+            function addEdges(u) {
+                for (let e of adjacencyList[u]) {
+                    if (!visited.has(e.to)) {
+                        pq.push({ u: u, v: e.to, w: e.weight });
+                    }
+                }
+            }
+
+            addEdges(start);
+            let status = {};
+
+            graphSteps.push({
+                visited: Array.from(visited),
+                totalWeight: 0,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Prim's Tree Start:</strong> ${start} | <strong>Candidate Edges:</strong> [ ${pq.map(e => `${e.u}-${e.v}(${e.w})`).join(', ')} ]</div>`,
+                explanation: `Prim's MST initialized at node ${start}.`
+            });
+
+            while (pq.length > 0 && visited.size < graphNodes.length) {
+                pq.sort((a, b) => a.w - b.w);
+                let edge = pq.shift();
+
+                if (visited.has(edge.v)) continue;
+
+                visited.add(edge.v);
+                mstEdges.push(edge);
+                totalWeight += edge.w;
+                status[`${edge.u}-${edge.v}`] = 'accepted';
+                status[`${edge.v}-${edge.u}`] = 'accepted';
+
+                addEdges(edge.v);
+
+                graphSteps.push({
+                    visited: Array.from(visited),
+                    edgesStatus: { ...status },
+                    comparing: [edge.u, edge.v],
+                    totalWeight: totalWeight,
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Added MST Edge:</strong> ${edge.u} ↔ ${edge.v} (W:${edge.w}) | <strong>Total Weight:</strong> ${totalWeight}</div>`,
+                    explanation: `Added lowest weight edge (${edge.u} ↔ ${edge.v}, weight ${edge.w}) to MST tree.`
+                });
+            }
+
+            graphSteps.push({
+                visited: Array.from(visited),
+                edgesStatus: { ...status },
+                comparing: [],
+                totalWeight: totalWeight,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Prim's MST Complete!</strong> Total Weight: <strong>${totalWeight}</strong></div>`,
+                explanation: `Prim's MST completed with total weight ${totalWeight}.`
+            });
+        }
+
+        // 8. Bellman-Ford Generator
+        function generateBellmanFord(start) {
+            let dist = {};
+            graphNodes.forEach(n => dist[n] = Infinity);
+            dist[start] = 0;
+
+            let edgeList = [];
+            graphNodes.forEach(u => {
+                adjacencyList[u].forEach(e => {
+                    edgeList.push({ u: u, v: e.to, w: e.weight });
+                });
+            });
+
+            graphSteps.push({
+                distances: { ...dist },
+                explanation: `Bellman-Ford initialized: dist[${start}] = 0.`
+            });
+
+            let V = graphNodes.length;
+            for (let i = 1; i <= V - 1; i++) {
+                let updated = false;
+                for (let edge of edgeList) {
+                    let { u, v, w } = edge;
+                    if (dist[u] !== Infinity && dist[u] + w < dist[v]) {
+                        dist[v] = dist[u] + w;
+                        updated = true;
+                        graphSteps.push({
+                            distances: { ...dist },
+                            comparing: [u, v],
+                            subpanelHTML: `<div class="graph-subpanel"><strong>Pass ${i}/${V-1}:</strong> Relaxed edge ${u} → ${v} (w:${w}). dist[${v}] = ${dist[v]}</div>`,
+                            explanation: `Pass ${i}: Relaxed edge (${u} → ${v}), updated distance of ${v} to ${dist[v]}.`
+                        });
+                    }
+                }
+                if (!updated) break;
+            }
+
+            // Negative Cycle Check
+            let hasNegCycle = false;
+            for (let edge of edgeList) {
+                let { u, v, w } = edge;
+                if (dist[u] !== Infinity && dist[u] + w < dist[v]) {
+                    hasNegCycle = true;
+                    graphSteps.push({
+                        distances: { ...dist },
+                        comparing: [u, v],
+                        subpanelHTML: `<div class="graph-subpanel" style="border-color:#ef4444; background:rgba(239,68,68,0.15)"><strong>⚠️ NEGATIVE WEIGHT CYCLE DETECTED!</strong> Edge ${u}→${v} reduces distance further.</div>`,
+                        explanation: `⚠️ Negative Cycle Detected at edge (${u} → ${v})!`
+                    });
+                    break;
+                }
+            }
+
+            if (!hasNegCycle) {
+                graphSteps.push({
+                    distances: { ...dist },
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Bellman-Ford Completed cleanly.</strong> No negative cycles present.</div>`,
+                    explanation: "Bellman-Ford completed. Final shortest distances determined."
+                });
+            }
+        }
+
+        // 9. Floyd-Warshall Generator
+        function generateFloydWarshall() {
+            let n = graphNodes.length;
+            let distMatrix = Array(n).fill(0).map(() => Array(n).fill(Infinity));
+
+            for (let i = 0; i < n; i++) distMatrix[i][i] = 0;
+
+            graphNodes.forEach((u, i) => {
+                adjacencyList[u].forEach(e => {
+                    let j = graphNodes.indexOf(e.to);
+                    if (j !== -1) distMatrix[i][j] = e.weight;
+                });
+            });
+
+            function renderMatrixHTML(mat, pivotK, activeI, activeJ) {
+                let html = `<div class="graph-subpanel"><strong>Floyd-Warshall Matrix (Pivot k=${pivotK !== undefined ? graphNodes[pivotK] : '-'}):</strong><table class="fw-matrix-table"><tr><th></th>`;
+                graphNodes.forEach(node => html += `<th>${node}</th>`);
+                html += `</tr>`;
+                for (let r = 0; r < n; r++) {
+                    html += `<tr><th>${graphNodes[r]}</th>`;
+                    for (let c = 0; c < n; c++) {
+                        let val = mat[r][c] === Infinity ? '∞' : mat[r][c];
+                        let cls = "";
+                        if (r === activeI && c === activeJ) cls = "active-cell";
+                        else if (r === pivotK || c === pivotK) cls = "pivot-cell";
+                        html += `<td class="${cls}">${val}</td>`;
+                    }
+                    html += `</tr>`;
+                }
+                html += `</table></div>`;
+                return html;
+            }
+
+            graphSteps.push({
+                subpanelHTML: renderMatrixHTML(distMatrix),
+                explanation: "Floyd-Warshall initialized initial adjacency matrix."
+            });
+
+            for (let k = 0; k < n; k++) {
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        if (distMatrix[i][k] !== Infinity && distMatrix[k][j] !== Infinity) {
+                            if (distMatrix[i][k] + distMatrix[k][j] < distMatrix[i][j]) {
+                                distMatrix[i][j] = distMatrix[i][k] + distMatrix[k][j];
+                                graphSteps.push({
+                                    comparing: [graphNodes[i], graphNodes[j]],
+                                    subpanelHTML: renderMatrixHTML(distMatrix, k, i, j),
+                                    explanation: `Pivot k=${graphNodes[k]}: Updated path ${graphNodes[i]}➔${graphNodes[j]} = ${distMatrix[i][j]}`
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            graphSteps.push({
+                subpanelHTML: renderMatrixHTML(distMatrix),
+                explanation: "Floyd-Warshall All-Pairs Shortest Path completed."
+            });
+        }
+
+        // 10. Tarjan's SCC Generator
+        function generateTarjanSCC() {
+            let disc = {};
+            let low = {};
+            let inStack = {};
+            let stack = [];
+            let timer = 0;
+            let componentMap = {};
+            let sccCount = 0;
+            const colors = ['#38bdf8', '#22c55e', '#a855f7', '#eab308', '#ef4444', '#ec4899'];
+
+            graphNodes.forEach(n => { disc[n] = -1; low[n] = -1; inStack[n] = false; });
+
+            graphSteps.push({
+                disc: { ...disc },
+                low: { ...low },
+                componentMap: { ...componentMap },
+                subpanelHTML: `<div class="graph-subpanel"><strong>Tarjan Stack:</strong> [ ]</div>`,
+                explanation: "Tarjan's SCC Algorithm initialized discovery and low-link arrays."
+            });
+
+            function tarjanDFS(u) {
+                disc[u] = low[u] = ++timer;
+                stack.push(u);
+                inStack[u] = true;
+
+                graphSteps.push({
+                    disc: { ...disc },
+                    low: { ...low },
+                    current: u,
+                    componentMap: { ...componentMap },
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Visited ${u}:</strong> disc=${disc[u]}, low=${low[u]} | <strong>Stack:</strong> [ ${stack.join(', ')} ]</div>`,
+                    explanation: `Discovered node ${u}: disc[${u}] = ${disc[u]}, low[${u}] = ${low[u]}.`
+                });
+
+                for (let e of adjacencyList[u]) {
+                    let v = e.to;
+                    if (disc[v] === -1) {
+                        tarjanDFS(v);
+                        low[u] = Math.min(low[u], low[v]);
+                        graphSteps.push({
+                            disc: { ...disc },
+                            low: { ...low },
+                            current: u,
+                            comparing: [u, v],
+                            componentMap: { ...componentMap },
+                            subpanelHTML: `<div class="graph-subpanel"><strong>Updated low[${u}]:</strong> ${low[u]} from child ${v}</div>`,
+                            explanation: `Updated low-link value of ${u} to ${low[u]} from subtree ${v}.`
+                        });
+                    } else if (inStack[v]) {
+                        low[u] = Math.min(low[u], disc[v]);
+                        graphSteps.push({
+                            disc: { ...disc },
+                            low: { ...low },
+                            current: u,
+                            comparing: [u, v],
+                            componentMap: { ...componentMap },
+                            subpanelHTML: `<div class="graph-subpanel"><strong>Back-edge (${u} → ${v}):</strong> updated low[${u}] = ${low[u]}</div>`,
+                            explanation: `Back-edge to in-stack node ${v}: updated low[${u}] = ${low[u]}.`
+                        });
+                    }
+                }
+
+                if (low[u] === disc[u]) {
+                    sccCount++;
+                    let compColor = colors[(sccCount - 1) % colors.length];
+                    let compNodes = [];
+                    while (true) {
+                        let node = stack.pop();
+                        inStack[node] = false;
+                        componentMap[node] = compColor;
+                        compNodes.push(node);
+                        if (node === u) break;
+                    }
+
+                    graphSteps.push({
+                        disc: { ...disc },
+                        low: { ...low },
+                        componentMap: { ...componentMap },
+                        subpanelHTML: `<div class="graph-subpanel" style="border-color:${compColor}"><strong>Identified SCC #${sccCount}:</strong> { ${compNodes.join(', ')} }</div>`,
+                        explanation: `Identified Strongly Connected Component #${sccCount}: { ${compNodes.join(', ')} }`
+                    });
+                }
+            }
+
+            for (let n of graphNodes) {
+                if (disc[n] === -1) tarjanDFS(n);
+            }
+
+            graphSteps.push({
+                disc: { ...disc },
+                low: { ...low },
+                componentMap: { ...componentMap },
+                explanation: `Tarjan's SCC complete. Identified ${sccCount} distinct components.`
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // GRAPH CANVAS & FRAME RENDERER
+        // ─────────────────────────────────────────────────────────────────────
         function getGraphCoordinate(nodeName) {
             let idx = graphNodes.indexOf(nodeName);
             if (idx === -1) return { x: 50, y: 50 };
-
             let total = graphNodes.length;
             if (total === 1) return { x: 50, y: 50 };
-
             let angle = (idx * 2 * Math.PI) / total - (Math.PI / 2);
-            let radius = 35; // 35% of container
-
-            let xPerc = 50 + radius * Math.cos(angle);
-            let yPerc = 50 + radius * Math.sin(angle);
-
-            return { x: xPerc, y: yPerc };
+            let radius = 34; // %
+            return { x: 50 + radius * Math.cos(angle), y: 50 + radius * Math.sin(angle) };
         }
 
-        function drawGraphLine(svg, pos1, pos2, isHighlighted, isDirected, weight) {
+        function drawGraphLine(svg, pos1, pos2, strokeColor, isDirected, weight, markerId) {
             let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("x1", pos1.x + "%");
             line.setAttribute("y1", pos1.y + "%");
             line.setAttribute("x2", pos2.x + "%");
             line.setAttribute("y2", pos2.y + "%");
-
             line.classList.add("graph-edge");
-            if (isHighlighted) {
-                line.style.stroke = "#eab308";
-                line.style.strokeWidth = "3.5px";
-                line.style.opacity = "1";
-                if (isDirected) line.setAttribute("marker-end", "url(#arrowhead-highlight)");
-            } else {
-                if (isDirected) line.setAttribute("marker-end", "url(#arrowhead)");
-            }
+
+            line.style.stroke = strokeColor || "var(--border2)";
+            line.style.strokeWidth = strokeColor ? "3.5px" : "2px";
+            if (markerId) line.setAttribute("marker-end", `url(#${markerId})`);
+            else if (isDirected) line.setAttribute("marker-end", "url(#arrowhead)");
+            
             svg.appendChild(line);
 
             if (weight !== undefined && weight !== null && graphMode === 'weighted') {
@@ -587,11 +1399,9 @@ bfs(A)</textarea>
                 text.setAttribute("y", (pos1.y + pos2.y) / 2 + "%");
                 text.setAttribute("text-anchor", "middle");
                 text.setAttribute("fill", "var(--green)");
-                text.setAttribute("font-size", "14px");
+                text.setAttribute("font-size", "13px");
                 text.setAttribute("font-weight", "bold");
-                text.setAttribute("dy", "-8");
-                text.setAttribute("class", "graph-weight-badge");
-                // Optional glowing drop shadow for readability over edges
+                text.setAttribute("dy", "-6");
                 text.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.8))";
                 text.textContent = weight;
                 svg.appendChild(text);
@@ -600,32 +1410,52 @@ bfs(A)</textarea>
 
         function renderGraphFrame(frame) {
             if (!frame) return;
+            if (currentAlg === 'astar') {
+                renderAStarFrame(frame);
+                return;
+            }
 
             const canvas = document.getElementById("graphCanvas");
             const svgEdges = document.getElementById("graphEdges");
             canvas.innerHTML = "";
             svgEdges.innerHTML = "";
 
-            // Draw Edges (deduplicate)
+            let isDirected = (graphMode === 'directed');
+
+            // Draw Edges
             let drawnEdges = new Set();
             graphNodes.forEach(u => {
                 adjacencyList[u].forEach(edge => {
                     let v = edge.to;
                     let w = edge.weight;
-                    let isDirected = (graphMode === 'directed');
-
                     let hash = isDirected ? (u + "->" + v) : (u < v ? u + "-" + v : v + "-" + u);
                     if (!drawnEdges.has(hash)) {
                         drawnEdges.add(hash);
                         let p1 = getGraphCoordinate(u);
                         let p2 = getGraphCoordinate(v);
 
-                        let isHighlighted = false;
-                        if (frame.comparing && frame.comparing.includes(u) && frame.comparing.includes(v)) {
-                            isHighlighted = true;
+                        let strokeColor = null;
+                        let markerId = isDirected ? "arrowhead" : null;
+
+                        if (frame.pathEdges && frame.pathEdges.some(e => (e[0]===u && e[1]===v) || (!isDirected && e[0]===v && e[1]===u))) {
+                            strokeColor = "#00e5ff";
+                            markerId = isDirected ? "arrowhead-highlight" : null;
+                        } else if (frame.cycleEdge && frame.cycleEdge[0]===u && frame.cycleEdge[1]===v) {
+                            strokeColor = "#ef4444";
+                            markerId = isDirected ? "arrowhead-rejected" : null;
+                        } else if (frame.edgesStatus) {
+                            let key1 = `${u}-${v}`;
+                            let key2 = `${v}-${u}`;
+                            let st = frame.edgesStatus[key1] || frame.edgesStatus[key2];
+                            if (st === 'accepted') { strokeColor = "#22c55e"; markerId = isDirected ? "arrowhead-accepted" : null; }
+                            else if (st === 'rejected') { strokeColor = "#ef4444"; markerId = isDirected ? "arrowhead-rejected" : null; }
+                            else if (st === 'considered') strokeColor = "#eab308";
+                        } else if (frame.comparing && frame.comparing.includes(u) && frame.comparing.includes(v)) {
+                            strokeColor = "#00e5ff";
+                            markerId = isDirected ? "arrowhead-highlight" : null;
                         }
 
-                        drawGraphLine(svgEdges, p1, p2, isHighlighted, isDirected, w);
+                        drawGraphLine(svgEdges, p1, p2, strokeColor, isDirected, w, markerId);
                     }
                 });
             });
@@ -639,50 +1469,58 @@ bfs(A)</textarea>
                 node.style.top = pos.y + "%";
                 node.innerText = n;
 
-                if (frame.visited && frame.visited.includes(n)) {
-                    node.classList.add("highlight-visited");
+                if (frame.componentMap && frame.componentMap[n]) {
+                    node.style.background = frame.componentMap[n];
+                    node.style.borderColor = "#ffffff";
+                    node.style.color = "#000000";
+                    node.style.fontWeight = "bold";
+                } else if (frame.nodeColors) {
+                    if (frame.nodeColors[n] === 1) node.classList.add("highlight-frontier");
+                    else if (frame.nodeColors[n] === 2) node.classList.add("highlight-visited");
+                } else {
+                    if (frame.visited && frame.visited.includes(n)) node.classList.add("highlight-visited");
+                    if (frame.frontier && frame.frontier.includes(n)) node.classList.add("highlight-frontier");
+                    if (frame.current === n) node.classList.add("highlight-current");
                 }
-                if (frame.comparing && frame.comparing.includes(n)) {
-                    node.classList.add("highlight-compare"); // Yellow overrides implicitly
+
+                // Node Distances Badges (Dijkstra / Bellman-Ford)
+                if (frame.distances && frame.distances[n] !== undefined) {
+                    let badge = document.createElement("div");
+                    badge.className = "graph-node-dist-badge";
+                    let d = frame.distances[n];
+                    badge.innerText = d === Infinity ? "∞" : d;
+                    node.appendChild(badge);
+                }
+
+                // Tarjan Discovery / Low-link badges
+                if (frame.disc && frame.disc[n] !== undefined && frame.disc[n] !== -1) {
+                    let badge = document.createElement("div");
+                    badge.className = "graph-node-dist-badge";
+                    badge.innerText = `${frame.disc[n]}/${frame.low[n]}`;
+                    node.appendChild(badge);
                 }
 
                 canvas.appendChild(node);
             });
 
+            document.getElementById("graphSubpanelContainer").innerHTML = frame.subpanelHTML || "";
             document.getElementById("graphStepText").innerText = "▶ " + frame.explanation;
 
             let slider = document.getElementById("graphProgressSlider");
             if (slider && frame.stepIndex !== undefined) {
                 slider.value = frame.stepIndex;
             }
-
-            // Sync Textarea Highlight
-            if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById("graphCodeInput");
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) {
-                        startPos += lines[i].length + 1;
-                    }
-                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
-                }
-            }
         }
 
-        // MEDIA CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
+        // MEDIA & PLAYBACK CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
         function toggleGraphPlay() {
-            if (graphSteps.length === 0) return alert("Click 'Visualize Graph' to render logic first!");
+            if (graphSteps.length === 0) return alert("Select an algorithm and click Visualize first!");
             if (graphIsPlaying) {
                 pauseGraphPlayback();
             } else {
-                if (graphCurrentStep >= graphSteps.length - 1) {
-                    graphCurrentStep = 0;
-                }
+                if (graphCurrentStep >= graphSteps.length - 1) graphCurrentStep = 0;
                 startGraphPlayback();
             }
         }
@@ -757,9 +1595,7 @@ bfs(A)</textarea>
             document.getElementById("btn-graph-normal").classList.remove("active");
             document.getElementById("btn-graph-fast").classList.remove("active");
             document.getElementById("btn-graph-" + type).classList.add("active");
-            if (graphIsPlaying) {
-                startGraphPlayback();
-            }
+            if (graphIsPlaying) startGraphPlayback();
         }
 
         function scrubGraphTimeline() {
@@ -768,7 +1604,13 @@ bfs(A)</textarea>
             graphCurrentStep = parseInt(document.getElementById("graphProgressSlider").value);
             renderGraphFrame(graphSteps[graphCurrentStep]);
         }
+
+        // Initialize default state
+        window.addEventListener('DOMContentLoaded', () => {
+            selectAlgorithm('bfsdfs');
+        });
     </script>
+
     <!-- About Graphs Modal -->
     <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
         <div class="about-modal-card">
@@ -778,39 +1620,23 @@ bfs(A)</textarea>
             </div>
             <div class="about-modal-body">
                 <h4>Overview</h4>
-                <p>A Graph <i>G = (V, E)</i> consists of <i>V</i> vertices (nodes) and <i>E</i> edges (connections). Graphs model pairwise relationships, mapping complex networks such as social connections, spatial routing, and dependency graphs.</p>
-
-                <h4>Algorithms & Detailed Mechanics</h4>
+                <p>Graphs model nodes and edge connections for spatial routing, network analysis, topological dependencies, and MST trees.</p>
                 <ul>
-                    <li style="margin-bottom: 16px;">
-                        <strong>1. Breadth-First Search (BFS):</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Explores a graph level-by-level starting from a source vertex <i>S</i> using a FIFO (First-In, First-Out) Queue. It visits all immediate neighbors at distance 1, then all unvisited neighbors at distance 2, systematically expanding concentric frontier rings. Guarantees finding the shortest path (fewest edges) in unweighted graphs. Uses a <code>visited[]</code> set to avoid cyclic loops.</p>
-                        <span class="about-complexity-badge">Time: O(V + E)</span><span class="about-complexity-badge">Space: O(V)</span><span class="about-complexity-badge">Data Structure: FIFO Queue</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>2. Depth-First Search (DFS):</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Explores as deep as possible along each branch before backtracking, utilizing a LIFO Stack or recursive call stack. Traverses down an edge path until reaching a node with no unvisited neighbors, then backtracks to the most recent decision point. Crucial for topological sorting (DAGs), detecting cycles, finding connected components, and maze generation.</p>
-                        <span class="about-complexity-badge">Time: O(V + E)</span><span class="about-complexity-badge">Space: O(V)</span><span class="about-complexity-badge">Data Structure: LIFO Stack / Recursion</span>
-                    </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>3. Dijkstra's Shortest Path Algorithm:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">A greedy algorithm that finds the shortest path from a source vertex <i>S</i> to all other vertices in non-negative weighted graphs. Maintains tentative distance array <code>dist[]</code> and repeatedly extracts node <i>U</i> with the minimum tentative distance using a Min-Heap / Priority Queue. Performs <strong>Edge Relaxation</strong>: if <code>dist[U] + W(U, V) &lt; dist[V]</code>, updates <code>dist[V] = dist[U] + W(U, V)</code>. Fails if negative edge weights exist (where Bellman-Ford applies).</p>
-                        <span class="about-complexity-badge">Time: O((V + E) log V)</span><span class="about-complexity-badge">Space: O(V)</span><span class="about-complexity-badge">Data Structure: Min-Heap</span>
-                    </li>
+                    <li><strong>BFS & DFS:</strong> Level-by-level queue exploration vs. deep recursion call stack traversal.</li>
+                    <li><strong>Dijkstra & A*:</strong> Priority Queue shortest path with edge relaxation and heuristic estimation.</li>
+                    <li><strong>MST (Kruskal & Prim):</strong> Disjoint-Set Union-Find edge sorting vs greedy tree expansion.</li>
+                    <li><strong>Topological Sort & Cycle Detection:</strong> Kahn's in-degree table and 3-color recursion stack tracking.</li>
+                    <li><strong>Floyd-Warshall & Tarjan's SCC:</strong> All-pairs distance matrix updates and low-link strongly connected components.</li>
                 </ul>
-
-                <h4>Real-World Applications</h4>
-                <p>GPS navigation systems (Google Maps route calculation), Social network friend recommendation engines, Network packet routing protocols (OSPF), and Web page crawler link graphs.</p>
             </div>
         </div>
     </div>
     <script>
         function toggleAboutModal(show) {
-            const modal = document.getElementById("aboutModal");
-            if (modal) modal.classList.toggle("active", show);
+            const m = document.getElementById('aboutModal');
+            if (m) m.style.display = show ? 'flex' : 'none';
         }
     </script>
-    <script src="i18n.js"></script>
 </body>
 
 </html>

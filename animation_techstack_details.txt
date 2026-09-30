@@ -1,0 +1,127 @@
+================================================================================
+LOGICLENS - ANIMATION ARCHITECTURE & TECH STACK SPECIFICATION
+================================================================================
+
+1. OVERVIEW OF ANIMATION ENGINE
+--------------------------------------------------------------------------------
+LogicLens implements a deterministic, state-driven discrete animation engine.
+Rather than using continuous physics simulations, the system pre-computes or 
+receives an array of discrete execution snapshots ("steps"). The animation 
+controller then steps through this state sequence frame-by-frame using a 
+configurable time-interval clock (`setInterval` / `setTimeout`).
+
+Each step snapshot contains:
+  - `array`       : Complete snapshot of data array/structure at step N.
+  - `highlight`   : Array of index/node IDs currently active.
+  - `action`      : Operational state ("compare", "swap", "visit", "none").
+  - `sorted`      : Array of indices/nodes marked as finalized.
+  - `explanation` : Human-readable log string detailing the execution step.
+  - `line`        : Active line index for editor line-highlighting.
+
+--------------------------------------------------------------------------------
+2. ANIMATION TECH STACK BREAKDOWN
+--------------------------------------------------------------------------------
+The animation subsystem is built with 100% Native Web Standards (Zero Heavy 3D/Canvas Framework Dependencies):
+
+  [Tech Stack Component]      [Usage & Implementation]
+  ------------------------    --------------------------------------------------
+  1. HTML5 DOM Structure      - Reactive DOM elements (div, span) representing
+                                array bars, memory blocks, stack/queue items.
+  2. CSS3 Custom Properties   - Dynamic design tokens (--glow, --swap, --compare,
+                                --sorted, --bg) enabling seamless real-time
+                                theme switching and color transitions.
+  3. CSS Transitions          - Smooth GPU-accelerated property interpolation:
+                                `transition: height 0.3s ease, transform 0.3s ease,
+                                background-color 0.3s ease;`
+  4. CSS3 Keyframe FX         - `@keyframes pulse`, `@keyframes nodePop`,
+                                `@keyframes slideIn`, `@keyframes swapBounce` for
+                                state entry/exit emphasis.
+  5. Dynamic SVG (<svg>)      - Scalable Vector Graphics for tree/graph edges,
+                                directed arrows (<marker>), edge weights, and
+                                connection paths (<line>, <path>).
+  6. ES6+ JavaScript Ticker   - Modular playback state machine managing Play, Pause,
+                                Step Next, Step Prev, Speed Toggling, and Timeline
+                                Scrubbing.
+
+--------------------------------------------------------------------------------
+3. HOW ANIMATION OCCURS STEP-BY-STEP (VISUALIZER MECHANICS)
+--------------------------------------------------------------------------------
+
+A. Sorting & Custom Code Visualizer (index.html, custom.html)
+--------------------------------------------------------------------------------
+1. STEP GENERATION:
+   - Standard Algos: Local generators (e.g. `generateBubbleSortSteps`) calculate 
+     array state arrays.
+   - Custom Algos: Server `/api/analyze` (Gemini 2.5 AI + Node `vm` Proxy) returns 
+     exact step timeline array.
+2. RENDERING PIPELINE (`renderFrame`):
+   - The container `#canvas` is cleared or reactively mapped.
+   - Each element is rendered as a vertical `<div class="bar">`.
+   - `height` percentage is calculated: `(value / maxValue) * 100%`.
+   - Active indices are assigned state CSS classes:
+       * `.compare` -> Yellow/Amber glow (--compare)
+       * `.swap`    -> Coral/Red pulse (--swap)
+       * `.sorted`  -> Emerald Green glow (--sorted)
+3. INTERPOLATION:
+   - CSS `transition: all 0.3s ease` smoothly animates height updates and color 
+     morphing frame-to-frame.
+
+B. Tree Visualizer (trees.html - BST & AVL Trees)
+--------------------------------------------------------------------------------
+1. COORDINATE CALCULATION:
+   - Tree depth and horizontal span determine `(x, y)` coordinate offsets for 
+     each node.
+2. SVG LINK DRAWING:
+   - Lines are dynamically injected inside `<svg id="svgCanvas">`:
+     `<line x1="..." y1="..." x2="..." y2="..." stroke="var(--border)" />`
+3. NODE ANIMATION:
+   - Circular HTML nodes `<div class="tree-node">` are positioned using 
+     `style.left` and `style.top`.
+   - AVL Balance Rotations (LL, RR, LR, RL) animate nodes sliding along 
+     computed trajectory vectors.
+
+C. Graph Visualizer (graphs.html - BFS, DFS, Dijkstra)
+--------------------------------------------------------------------------------
+1. GRAPH CANVAS:
+   - Nodes are draggable coordinate points `(x, y)`.
+   - Weighted edges are drawn using SVG `<path>` and `<text>` weight labels.
+2. TRAVERSAL ANIMATION:
+   - Visited nodes highlight with glowing boundary borders.
+   - Active traversal edges animate using SVG `stroke-dashoffset` / glowing 
+     stroke colors (`#00f2fe`).
+3. SIDEWAY STATE TRACKING:
+   - LIFO Stack / FIFO Queue containers update DOM cards in real time to show 
+     memory allocation during search.
+
+D. String & NLP Visualizers (strings.html, sentences.html)
+--------------------------------------------------------------------------------
+1. SLIDING WINDOW:
+   - Pattern string box translates horizontally across the main text using CSS 
+     `transform: translateX(N * charWidth)`.
+2. TOKEN MATCHING:
+   - Character boxes highlight green on match (`KMP` / `Rabin-Karp`), red on 
+     mismatch.
+
+--------------------------------------------------------------------------------
+4. PLAYBACK CONTROLLER ENGINE LOGIC
+--------------------------------------------------------------------------------
+The animation controller maintains strict execution state:
+
+  ```
+  State Variables:
+    - steps        : Array<FrameObject>
+    - currentStep  : Number (0 to steps.length - 1)
+    - isPlaying    : Boolean
+    - speedDelay   : Number (Slow=1000ms, Normal=500ms, Fast=200ms)
+    - playInterval : Timer Reference
+  ```
+
+Workflow Cycle:
+1. User clicks `Play`: `startPlayback()` triggers `setInterval(stepNext, speedDelay)`.
+2. Each tick increments `currentStep++` and calls `renderFrame(steps[currentStep])`.
+3. Timeline slider updates `progressSlider.value = currentStep`.
+4. On `currentStep === steps.length - 1`, playback automatically stops with 
+   completion indicators.
+5. Scrubbing slider: User drags slider -> `pausePlayback()` -> `renderFrame(steps[sliderValue])`.
+
+================================================================================

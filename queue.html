@@ -19,7 +19,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -60,6 +60,9 @@
                 <button class="mode-tab" id="tab-circular" onclick="switchMode('circular')">Circular Queue</button>
                 <button class="mode-tab" id="tab-deque" onclick="switchMode('deque')">Deque</button>
                 <button class="mode-tab" id="tab-priority" onclick="switchMode('priority')">Priority Queue</button>
+                <button class="mode-tab" id="tab-slidingmax" onclick="switchMode('slidingmax')">🪟 Sliding Win Max</button>
+                <button class="mode-tab" id="tab-queue2stacks" onclick="switchMode('queue2stacks')">🔄 Queue via 2 Stacks</button>
+                <button class="mode-tab" id="tab-lru" onclick="switchMode('lru')">⚡ LRU Cache</button>
             </div>
 
             <!-- Capacity (Array/Circular Mode) -->
@@ -364,12 +367,20 @@ peek()</textarea>
             cSize = 0;
             peekActiveIndex = -1;
 
-            ['simple', 'circular', 'deque', 'priority'].forEach(m => {
-                document.getElementById(`tab-${m}`).classList.remove('active');
+            ['simple', 'circular', 'deque', 'priority', 'slidingmax', 'queue2stacks', 'lru'].forEach(m => {
+                const el = document.getElementById(`tab-${m}`);
+                if (el) el.classList.remove('active');
             });
-            document.getElementById(`tab-${mode}`).classList.add('active');
+            const tabEl = document.getElementById(`tab-${mode}`);
+            if (tabEl) tabEl.classList.add('active');
 
-            if (mode === 'circular') {
+            if (['slidingmax', 'queue2stacks', 'lru'].includes(mode)) {
+                document.getElementById('capacityRow').style.display = 'none';
+                document.getElementById('opGridStandard').style.display = 'none';
+                document.getElementById('opGridDeque').style.display = 'none';
+                document.getElementById('queueInputPrio').style.display = 'none';
+                loadQueuePresetAlgorithm(mode);
+            } else if (mode === 'circular') {
                 document.getElementById('capacityRow').style.display = 'flex';
                 document.getElementById('opGridStandard').style.display = 'grid';
                 document.getElementById('opGridDeque').style.display = 'none';
@@ -391,9 +402,11 @@ peek()</textarea>
                 document.getElementById('queueInputPrio').style.display = 'none';
             }
 
-            addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Queue mode. Queue cleared.`);
-            renderLiveQueue();
-            setStepText(`▶ ${mode.toUpperCase()} mode active.`);
+            if (!['slidingmax', 'queue2stacks', 'lru'].includes(mode)) {
+                addLog('info', '🔄', `Switched to ${mode.toUpperCase()} Queue mode. Queue cleared.`);
+                renderLiveQueue();
+                setStepText(`▶ ${mode.toUpperCase()} mode active.`);
+            }
         }
 
         function updateCapacity() {
@@ -917,41 +930,163 @@ peek()</textarea>
 
             document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
             queueCurrentStep = 0;
-            if (queueSteps.length > 0) toggleQueuePlay();
+            if (queueSteps.length > 0) startQueuePlayback();
+        }
+
+        function loadQueuePresetAlgorithm(mode) {
+            pauseQueuePlayback();
+            let codeText = "";
+            if (mode === 'slidingmax') {
+                codeText = "// Sliding Window Maximum (Monotonic Deque)\n// Array: [1, 3, -1, -3, 5, 3, 6, 7], K=3\nslidingWindowMax([1, 3, -1, -3, 5, 3, 6, 7], 3);";
+                queueSteps = generateSlidingWindowMaxSteps([1, 3, -1, -3, 5, 3, 6, 7], 3);
+            } else if (mode === 'queue2stacks') {
+                codeText = "// Queue using Two Stacks\nenqueue(10);\nenqueue(20);\nenqueue(30);\ndequeue();\nenqueue(40);\ndequeue();";
+                queueSteps = generateQueue2StacksSteps();
+            } else if (mode === 'lru') {
+                codeText = "// LRU Cache (Hash Map + Doubly Linked List)\n// Capacity: 3\nput('A', 100);\nput('B', 200);\nput('C', 300);\nget('A');\nput('D', 400);";
+                queueSteps = generateLRUSteps();
+            }
+
+            document.getElementById("queueCodeInput").value = codeText;
+            document.getElementById("queueProgressSlider").max = Math.max(0, queueSteps.length - 1);
+            queueCurrentStep = 0;
+            if (queueSteps.length > 0) {
+                startQueuePlayback();
+            }
+        }
+
+        function generateSlidingWindowMaxSteps(arr = [1, 3, -1, -3, 5, 3, 6, 7], k = 3) {
+            let steps = []; let n = arr.length; let deque = []; let result = [];
+            steps.push({ algo: 'slidingmax', arr, k, winStart: 0, winEnd: k - 1, deque: [], result: [], explanation: `Sliding Window Max (K=${k}) starting.` });
+            for (let i = 0; i < n; i++) {
+                if (deque.length > 0 && deque[0] <= i - k) {
+                    let rem = deque.shift();
+                    steps.push({ algo: 'slidingmax', arr, k, winStart: Math.max(0, i - k + 1), winEnd: i, deque: [...deque], result: [...result], explanation: `Index ${rem} outside window. Evicted from Front of Deque.` });
+                }
+                while (deque.length > 0 && arr[deque[deque.length - 1]] <= arr[i]) {
+                    let popped = deque.pop();
+                    steps.push({ algo: 'slidingmax', arr, k, winStart: Math.max(0, i - k + 1), winEnd: i, deque: [...deque], result: [...result], explanation: `arr[${i}] (${arr[i]}) >= arr[${popped}] (${arr[popped]}). Removed smaller from Deque Rear.` });
+                }
+                deque.push(i);
+                steps.push({ algo: 'slidingmax', arr, k, winStart: Math.max(0, i - k + 1), winEnd: i, deque: [...deque], result: [...result], explanation: `Pushed index ${i} (${arr[i]}) to Deque Rear.` });
+
+                if (i >= k - 1) {
+                    let maxVal = arr[deque[0]];
+                    result.push(maxVal);
+                    steps.push({ algo: 'slidingmax', arr, k, winStart: i - k + 1, winEnd: i, deque: [...deque], result: [...result], explanation: `Window [${i-k+1}..${i}] max is ${maxVal}. Saved to Result.` });
+                }
+            }
+            return steps;
+        }
+
+        function generateQueue2StacksSteps() {
+            let steps = []; let stack1 = []; let stack2 = [];
+            const ops = [ {op:'enqueue',val:10}, {op:'enqueue',val:20}, {op:'enqueue',val:30}, {op:'dequeue'}, {op:'enqueue',val:40}, {op:'dequeue'} ];
+            ops.forEach(item => {
+                if (item.op === 'enqueue') {
+                    stack1.push(item.val);
+                    steps.push({ algo: 'queue2stacks', stack1: [...stack1], stack2: [...stack2], explanation: `Enqueue(${item.val}): Pushed to Stack 1 (Input).` });
+                } else if (item.op === 'dequeue') {
+                    if (stack2.length === 0) {
+                        steps.push({ algo: 'queue2stacks', stack1: [...stack1], stack2: [...stack2], explanation: 'Dequeue(): Stack 2 empty. Transferring Stack 1 -> Stack 2...' });
+                        while (stack1.length > 0) {
+                            let tr = stack1.pop(); stack2.push(tr);
+                            steps.push({ algo: 'queue2stacks', stack1: [...stack1], stack2: [...stack2], explanation: `Transferred "${tr}" from Stack 1 -> Stack 2.` });
+                        }
+                    }
+                    let popped = stack2.pop();
+                    steps.push({ algo: 'queue2stacks', stack1: [...stack1], stack2: [...stack2], explanation: `Dequeue(): Popped "${popped}" from top of Stack 2 (Output).` });
+                }
+            });
+            return steps;
+        }
+
+        function generateLRUSteps() {
+            let steps = []; let capacity = 3; let cacheMap = {}; let lruOrder = [];
+            const ops = [ {op:'put',key:'A',val:100}, {op:'put',key:'B',val:200}, {op:'put',key:'C',val:300}, {op:'get',key:'A'}, {op:'put',key:'D',val:400} ];
+            ops.forEach(item => {
+                if (item.op === 'put') {
+                    if (cacheMap[item.key] !== undefined) {
+                        lruOrder = lruOrder.filter(k => k !== item.key);
+                    } else if (lruOrder.length >= capacity) {
+                        let evictKey = lruOrder.pop(); delete cacheMap[evictKey];
+                        steps.push({ algo: 'lru', cacheMap: {...cacheMap}, lruOrder: [...lruOrder], explanation: `Cache FULL (Cap ${capacity}). Evicted LRU key "${evictKey}".` });
+                    }
+                    cacheMap[item.key] = item.val; lruOrder.unshift(item.key);
+                    steps.push({ algo: 'lru', cacheMap: {...cacheMap}, lruOrder: [...lruOrder], explanation: `Put("${item.key}", ${item.val}): Inserted at FRONT (MRU).` });
+                } else if (item.op === 'get') {
+                    if (cacheMap[item.key] !== undefined) {
+                        lruOrder = lruOrder.filter(k => k !== item.key); lruOrder.unshift(item.key);
+                        steps.push({ algo: 'lru', cacheMap: {...cacheMap}, lruOrder: [...lruOrder], explanation: `Get("${item.key}") -> ${cacheMap[item.key]}. Moved "${item.key}" to FRONT (MRU).` });
+                    }
+                }
+            });
+            return steps;
         }
 
         function renderQueueFrame(frame) {
             if (!frame) return;
-            // Sync simulated queue with live view
-            if (queueMode === 'circular') {
-                cQueue = [...frame.cQueue];
-                front = frame.front;
-                rear = frame.rear;
-                cSize = frame.cSize;
+            const canvas = document.getElementById('queueCanvas');
+
+            if (frame.algo) {
+                canvas.innerHTML = '';
+                if (frame.algo === 'slidingmax') {
+                    let wrap = document.createElement('div');
+                    wrap.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%; gap:12px;';
+
+                    let b1 = document.createElement('div'); b1.className = 'nge-box'; b1.style.width = '100%';
+                    b1.innerHTML = `<div class="col-header">Main Array & Sliding Window [K=${frame.k}]</div><div style="display:flex;gap:6px;justify-content:center;">${frame.arr.map((v, i) => `<div class="token-chip ${i >= frame.winStart && i <= frame.winEnd ? 'active' : ''}">${v}</div>`).join('')}</div>`;
+
+                    let b2 = document.createElement('div'); b2.className = 'nge-box'; b2.style.width = '100%';
+                    b2.innerHTML = `<div class="col-header">Monotonic Deque (Indices & Values)</div><div style="display:flex;gap:6px;justify-content:center;">${frame.deque.map(idx => `<div class="token-chip" style="background:var(--glow);color:#000;">idx:${idx} (${frame.arr[idx]})</div>`).join('') || '<em>Empty Deque</em>'}</div>`;
+
+                    let b3 = document.createElement('div'); b3.className = 'nge-box'; b3.style.width = '100%';
+                    b3.innerHTML = `<div class="col-header">Window Max Result Array</div><div style="display:flex;gap:6px;justify-content:center;">${frame.result.map(v => `<div class="token-chip" style="color:#22c55e;">${v}</div>`).join('') || '<em>Pending</em>'}</div>`;
+
+                    wrap.appendChild(b1); wrap.appendChild(b2); wrap.appendChild(b3);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'queue2stacks') {
+                    let wrap = document.createElement('div');
+                    wrap.classList.add('two-stacks-wrap');
+
+                    let c1 = document.createElement('div'); c1.classList.add('stack-col');
+                    c1.innerHTML = `<div class="col-header">Stack 1 (Enqueue / Input)</div><div style="display:flex;flex-direction:column-reverse;gap:4px;width:120px;">${frame.stack1.map(v => `<div class="token-chip">${v}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    let c2 = document.createElement('div'); c2.classList.add('stack-col');
+                    c2.innerHTML = `<div class="col-header">Stack 2 (Dequeue / Output)</div><div style="display:flex;flex-direction:column-reverse;gap:4px;width:120px;">${frame.stack2.map(v => `<div class="token-chip" style="background:#22c55e;color:#000;">${v}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    wrap.appendChild(c1); wrap.appendChild(c2);
+                    canvas.appendChild(wrap);
+                } else if (frame.algo === 'lru') {
+                    let wrap = document.createElement('div');
+                    wrap.classList.add('lru-wrap');
+
+                    let c1 = document.createElement('div'); c1.classList.add('lru-col');
+                    c1.innerHTML = `<div class="col-header">Hash Map (Key -> Value)</div><div style="display:flex;flex-direction:column;gap:6px;">${Object.keys(frame.cacheMap).map(k => `<div class="lru-node">Key: "${k}" ➔ Val: ${frame.cacheMap[k]}</div>`).join('') || '<em>Empty</em>'}</div>`;
+
+                    let c2 = document.createElement('div'); c2.classList.add('lru-col');
+                    c2.innerHTML = `<div class="col-header">Doubly Linked List (MRU ↔ LRU)</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">${frame.lruOrder.map((k, idx) => `<div class="lru-node ${idx === 0 ? 'mru' : idx === frame.lruOrder.length - 1 ? 'lru-end' : ''}">${idx === 0 ? 'MRU: ' : ''}"${k}" (${frame.cacheMap[k]})</div>`).join(' ↔ ') || '<em>Empty List</em>'}</div>`;
+
+                    wrap.appendChild(c1); wrap.appendChild(c2);
+                    canvas.appendChild(wrap);
+                }
             } else {
-                qData = [...frame.simQueue];
+                if (queueMode === 'circular') {
+                    cQueue = [...frame.cQueue];
+                    front = frame.front;
+                    rear = frame.rear;
+                    cSize = frame.cSize;
+                } else {
+                    qData = [...frame.simQueue];
+                }
+
+                let action = frame.action === 'enqueue' ? 'enqueue' : frame.action === 'dequeue' ? 'dequeue' : frame.action === 'peek' ? 'peek' : null;
+                renderLiveQueue(action, frame.highlight >= 0 ? frame.highlight : undefined);
             }
 
-            let action = frame.action === 'enqueue' ? 'enqueue' : frame.action === 'dequeue' ? 'dequeue' : frame.action === 'peek' ? 'peek' : null;
-            renderLiveQueue(action, frame.highlight >= 0 ? frame.highlight : undefined);
             setStepText('▶ ' + (frame.explanation || 'Processing...'));
-
             const slider = document.getElementById("queueProgressSlider");
             if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
-
-            if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById("queueCodeInput");
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) startPos += lines[i].length + 1;
-                    const endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
-                }
-            }
         }
 
         function toggleQueuePlay() {

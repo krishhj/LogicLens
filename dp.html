@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogicLens - DP & Backtracking</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="logiclens.css">
+</head>
+
+<body class="light">
+    <nav>
+        <div class="logo">
+            <a href="cover.html"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
+                <div class="logo-text">LogicLens</div>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="cover.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Home</a>
+            <a href="index.html"
+                style="color: var(--glow); text-decoration: none; font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--glow); padding-bottom: 4px;">DSA
+                Learning</a>
+            <a href="custom.html"
+                style="color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--glow)'" onmouseout="this.style.color='var(--text2)'">Custom
+                Code</a>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </nav>
+
+    <section class="hero" style="padding-bottom: 20px;">
+        <h1>Dynamic Programming & Backtracking</h1>
+        <p>Cell-by-cell DP table fill, dependency traceback, top-down vs bottom-up toggles, and recursion trees with pruning counters.</p>
+    </section>
+
+    <div class="container" id="dpContainer" style="margin-top: 20px;">
+        <div class="editor">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Algorithm Selection</h3>
+                <button class="about-btn" onclick="toggleAboutModal(true)">💡 About DP & Backtracking</button>
+            </div>
+
+            <!-- Algorithm Mode Tabs -->
+            <div class="mode-tabs" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px;">
+                <!-- DP Section -->
+                <button class="mode-tab active" id="alg-tab-coinchange" onclick="selectAlgorithm('coinchange')">Coin Change</button>
+                <button class="mode-tab" id="alg-tab-knapsack" onclick="selectAlgorithm('knapsack')">0/1 Knapsack</button>
+                <button class="mode-tab" id="alg-tab-lis" onclick="selectAlgorithm('lis')">LIS</button>
+                <button class="mode-tab" id="alg-tab-mcm" onclick="selectAlgorithm('mcm')">Matrix Chain</button>
+                <!-- Backtracking Section -->
+                <button class="mode-tab" id="alg-tab-hanoi" onclick="selectAlgorithm('hanoi')">Tower of Hanoi</button>
+                <button class="mode-tab" id="alg-tab-subsets" onclick="selectAlgorithm('subsets')">Subsets / Perms</button>
+                <button class="mode-tab" id="alg-tab-ratmaze" onclick="selectAlgorithm('ratmaze')">Rat in a Maze</button>
+                <button class="mode-tab" id="alg-tab-nqueens" onclick="selectAlgorithm('nqueens')">N-Queens</button>
+                <button class="mode-tab" id="alg-tab-sudoku" onclick="selectAlgorithm('sudoku')">Sudoku Solver</button>
+            </div>
+
+            <!-- DP Strategy Toggle (Memoization vs Tabulation) -->
+            <div id="dpStrategyRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text2);">DP EVALUATION MODE:</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="sample-btn active" id="strat-tabulation" onclick="setDPStrategy('tabulation')">Bottom-Up (Tabulation)</button>
+                    <button class="sample-btn" id="strat-memoization" onclick="setDPStrategy('memoization')">Top-Down (Memoization)</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="dpInputBase" placeholder="Input Values / Coins (e.g. 1, 2, 5 or items)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
+                <input type="text" id="dpInputTarget" placeholder="Target / Capacity (e.g. 11)"
+                    style="flex:1; margin-bottom:0;" autocomplete="off" />
+            </div>
+
+            <div class="op-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                <button class="op-btn push" onclick="doOp('setInputs')"><span style="color:var(--green)">➕</span> Set Parameters</button>
+                <button class="op-btn check" id="btn-run-dp" onclick="runSelectedAlgorithm()">🚀 Run Algorithm</button>
+            </div>
+
+            <!-- Presets / Quick Load -->
+            <div class="samples-row" style="margin-bottom: 12px;">
+                <span class="sample-lbl">Presets:</span>
+                <button class="sample-btn" onclick="loadPreset('coinchange')">Coin Change</button>
+                <button class="sample-btn" onclick="loadPreset('knapsack')">0/1 Knapsack</button>
+                <button class="sample-btn" onclick="loadPreset('lis')">LIS Sequence</button>
+                <button class="sample-btn" onclick="loadPreset('mcm')">Matrix Chain</button>
+                <button class="sample-btn" onclick="loadPreset('nqueens')">4-Queens</button>
+                <button class="sample-btn" onclick="loadPreset('sudoku')">Sudoku 4x4</button>
+            </div>
+
+            <div class="adv-section-head" style="margin-top: 6px;">
+                <h3>Recorded Commands</h3>
+            </div>
+            <textarea id="dpCodeInput" class="notranslate" translate="no" style="height: 100px;">input(1,2,5)
+target(11)</textarea>
+
+            <button class="viz-btn" id="dpVizBtn" onclick="runSelectedAlgorithm();">
+                Visualize Logic
+            </button>
+
+            <!-- Op Log -->
+            <div class="op-log-panel" style="margin-top: 15px;">
+                <div class="op-log-header">
+                    <span class="op-log-title">📋 Operation Log</span>
+                    <button class="op-log-clear-btn" onclick="clearLog()">Clear</button>
+                </div>
+                <div class="op-log-entries" id="opLog">
+                    <div class="op-log-entry log-info">
+                        <span class="op-log-num">#0</span>
+                        <span class="op-log-icon">🚀</span>
+                        <span class="op-log-msg">DP & Backtracking Visualizer ready. Select an algorithm to begin.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualizer">
+            <h3 id="visualizerTitle">DP Table & Recursion Tree</h3>
+
+            <div class="legend" id="dpLegend">
+                <span><span class="box" style="background: #38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background: #eab308"></span>Yellow (Comparing/Dependency)</span>
+                <span><span class="box" style="background: #ef4444"></span>Red (Swapping/Pruned)</span>
+                <span><span class="box" style="background: #22c55e"></span>Green (Sorted/Solution)</span>
+            </div>
+
+            <div class="canvas dp-canvas-wrapper" id="dpCanvas" style="min-height: 240px; flex-direction: column; justify-content: center; overflow: auto;"></div>
+
+            <!-- Metrics Counter Bar -->
+            <div id="metricsCounterBar" style="margin-top: 10px; display: flex; justify-content: space-around; font-family: var(--fm); font-size: 12px; font-weight: 700; color: var(--text2);">
+                <span>States Explored: <strong id="metricExplored" style="color: var(--glow);">0</strong></span>
+                <span>Pruned Branches: <strong id="metricPruned" style="color: #ef4444;">0</strong></span>
+                <span>Solutions Found: <strong id="metricSolutions" style="color: #22c55e;">0</strong></span>
+            </div>
+
+            <!-- Subpanel for formulas, recursion tree chips, board details -->
+            <div id="dpSubpanelContainer"></div>
+
+            <div class="step-box" id="dpStepText">▶ System Ready. Select an algorithm and click Visualize.</div>
+
+            <div class="media-controls">
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="jumpToDPStart()">⏮</button>
+                    <button class="btn-icon" onclick="stepDPBack()">◀</button>
+                    <button class="btn-play" id="dpPlayPauseBtn" onclick="toggleDPPlay()">▶ Play</button>
+                    <button class="btn-icon" onclick="stepDPForward()">▶</button>
+                    <button class="btn-icon" onclick="jumpToDPEnd()">⏭</button>
+                </div>
+
+                <div class="slider-group" style="margin-bottom: 10px;">
+                    <span>Timeline</span>
+                    <input type="range" id="dpProgressSlider" min="0" max="0" value="0" oninput="scrubDPTimeline()" />
+                </div>
+
+                <div class="speed-controls">
+                    <span class="speed-label">Speed:</span>
+                    <button class="speed-btn" id="btn-dp-slow" onclick="setDPSpeed(1600, 'slow')">Slow</button>
+                    <button class="speed-btn active" id="btn-dp-normal" onclick="setDPSpeed(1000, 'normal')">Normal</button>
+                    <button class="speed-btn" id="btn-dp-fast" onclick="setDPSpeed(400, 'fast')">Fast</button>
+                </div>
+
+                <button class="btn-incorrect-viz" id="incorrectVizBtn" onclick="saveVisualizationFeedback(false)">
+                    ❌ Incorrect Visualisation?
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="structures">
+        <h2 style="margin-bottom: 25px">Data Structures & Categories</h2>
+        <div class="cards">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h3>Sort</h3>
+                <p>Bar & Array Visualizations</p>
+            </div>
+            <div class="card" onclick="window.location.href='stack.html'">
+                <h3>Stack & Queue</h3>
+                <p>Monotonic, Deque, Parentheses</p>
+            </div>
+            <div class="card" onclick="window.location.href='trees.html'">
+                <h3>Trees</h3>
+                <p>BST, AVL, Segment, Trie</p>
+            </div>
+            <div class="card" onclick="window.location.href='graphs.html'">
+                <h3>Graphs</h3>
+                <p>BFS/DFS, Dijkstra, A*, Tarjan</p>
+            </div>
+            <div class="card" onclick="window.location.href='strings.html'">
+                <h3>Strings</h3>
+                <p>KMP, Z-Box, Boyer-Moore, DP Edit</p>
+            </div>
+            <div class="card" onclick="window.location.href='sentences.html'">
+                <h3>Sentences</h3>
+                <p>Tokenization, Word Hash Maps</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>LogicLens • Visualizing Code Logic</footer>
+
+    <script>
+        // Theme Setup
+        const themeToggle = document.getElementById("themeToggle");
+        const savedTheme = localStorage.getItem("logiclens_theme") || "light";
+        if (savedTheme === "dark") {
+            document.body.classList.remove("light");
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.body.classList.add("light");
+            if (themeToggle) themeToggle.checked = false;
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener("change", () => {
+                if (themeToggle.checked) {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("logiclens_theme", "dark");
+                } else {
+                    document.body.classList.add("light");
+                    localStorage.setItem("logiclens_theme", "light");
+                }
+            });
+        }
+
+        // Global State Variables
+        let currentAlg = 'coinchange';
+        let dpStrategy = 'tabulation'; // 'tabulation' (bottom-up) vs 'memoization' (top-down)
+        let dpSteps = [];
+        let dpCurrentStep = 0;
+        let dpIsPlaying = false;
+        let dpPlayInterval = null;
+        let dpSpeedMs = 1000;
+        let logCount = 0;
+
+        let activeInput = "1, 2, 5";
+        let activeTarget = "11";
+
+        function selectAlgorithm(algKey) {
+            pauseDPPlayback();
+            currentAlg = algKey;
+
+            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.getElementById(`alg-tab-${algKey}`);
+            if (tabBtn) tabBtn.classList.add('active');
+
+            const isDP = ['coinchange', 'knapsack', 'lis', 'mcm'].includes(algKey);
+            document.getElementById('dpStrategyRow').style.display = isDP ? 'flex' : 'none';
+
+            const titleMap = {
+                coinchange: "Coin Change Problem (Min Coins)",
+                knapsack: "0/1 Knapsack Problem",
+                lis: "Longest Increasing Subsequence (LIS)",
+                mcm: "Matrix Chain Multiplication (MCM)",
+                hanoi: "Tower of Hanoi Recursion",
+                subsets: "Subsets & Permutations Generator",
+                ratmaze: "Rat in a Maze Backtracking",
+                nqueens: "N-Queens Chessboard Backtracking",
+                sudoku: "4x4 Mini-Sudoku Solver"
+            };
+            document.getElementById('visualizerTitle').innerText = titleMap[algKey] || "DP & Backtracking";
+
+            loadPreset(algKey);
+            addLog('info', '⚙️', `Switched mode to ${titleMap[algKey]}.`);
+            runSelectedAlgorithm();
+        }
+
+        function setDPStrategy(strat) {
+            dpStrategy = strat;
+            document.getElementById('strat-tabulation').classList.remove('active');
+            document.getElementById('strat-memoization').classList.remove('active');
+            document.getElementById(`strat-${strat}`).classList.add('active');
+            addLog('info', '🔄', `DP Evaluation strategy set to ${strat.toUpperCase()}.`);
+            runSelectedAlgorithm();
+        }
+
+        const appendCode = (codeStr) => {
+            const ta = document.getElementById("dpCodeInput");
+            if (ta) {
+                let cur = ta.value.trim();
+                ta.value = cur ? cur + '\n' + codeStr : codeStr;
+                ta.scrollTop = ta.scrollHeight;
+            }
+        };
+
+        function addLog(type, icon, msg) {
+            logCount++;
+            const entries = document.getElementById('opLog');
+            const entry = document.createElement('div');
+            entry.className = `op-log-entry log-${type}`;
+            entry.innerHTML = `
+                <span class="op-log-num">#${logCount}</span>
+                <span class="op-log-icon">${icon}</span>
+                <span class="op-log-msg">${msg}</span>`;
+            entries.appendChild(entry);
+            entries.scrollTop = entries.scrollHeight;
+        }
+
+        function clearLog() {
+            logCount = 0;
+            document.getElementById('opLog').innerHTML = '';
+            addLog('info', '🧹', 'Log cleared.');
+        }
+
+        function doOp(op) {
+            pauseDPPlayback();
+            const baseIn = document.getElementById('dpInputBase');
+            const targetIn = document.getElementById('dpInputTarget');
+            const b = baseIn.value.trim();
+            const t = targetIn.value.trim();
+
+            if (op === 'setInputs') {
+                activeInput = b;
+                activeTarget = t;
+                document.getElementById('dpCodeInput').value = `input(${b})\ntarget(${t})`;
+            }
+            runSelectedAlgorithm();
+        }
+
+        function loadPreset(key) {
+            pauseDPPlayback();
+            if (key === 'coinchange') {
+                activeInput = "1, 2, 5";
+                activeTarget = "11";
+            } else if (key === 'knapsack') {
+                activeInput = "W:[2,3,4,5], V:[3,4,5,6]";
+                activeTarget = "5";
+            } else if (key === 'lis') {
+                activeInput = "10, 22, 9, 33, 21, 50, 41, 60";
+                activeTarget = "";
+            } else if (key === 'mcm') {
+                activeInput = "10, 30, 5, 60";
+                activeTarget = "";
+            } else if (key === 'hanoi') {
+                activeInput = "3";
+                activeTarget = "";
+            } else if (key === 'subsets') {
+                activeInput = "1, 2, 3";
+                activeTarget = "";
+            } else if (key === 'ratmaze') {
+                activeInput = "4x4 Grid";
+                activeTarget = "";
+            } else if (key === 'nqueens') {
+                activeInput = "4";
+                activeTarget = "";
+            } else if (key === 'sudoku') {
+                activeInput = "4x4 Grid";
+                activeTarget = "";
+            }
+            document.getElementById('dpCodeInput').value = `input(${activeInput})\ntarget(${activeTarget})`;
+        }
+
+        function parseInputCode() {
+            const code = document.getElementById("dpCodeInput").value;
+            const lines = code.split('\n');
+            lines.forEach(line => {
+                let m1 = line.match(/input\(([^)]*)\)/i);
+                if (m1) activeInput = m1[1].trim();
+                let m2 = line.match(/target\(([^)]*)\)/i);
+                if (m2) activeTarget = m2[1].trim();
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // ALGORITHM GENERATOR ROUTER
+        // ─────────────────────────────────────────────────────────────────────
+        function runSelectedAlgorithm() {
+            pauseDPPlayback();
+            parseInputCode();
+            dpSteps = [];
+
+            switch (currentAlg) {
+                case 'coinchange': generateCoinChange(); break;
+                case 'knapsack': generateKnapsack(); break;
+                case 'lis': generateLIS(); break;
+                case 'mcm': generateMCM(); break;
+                case 'hanoi': generateHanoi(); break;
+                case 'subsets': generateSubsets(); break;
+                case 'ratmaze': generateRatInMaze(); break;
+                case 'nqueens': generateNQueens(); break;
+                case 'sudoku': generateSudoku(); break;
+            }
+
+            if (dpSteps.length > 0) {
+                document.getElementById("dpProgressSlider").max = dpSteps.length - 1;
+                dpCurrentStep = 0;
+                startDPPlayback();
+            }
+        }
+
+        // 1. Coin Change
+        function generateCoinChange() {
+            let coins = activeInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            if (coins.length === 0) coins = [1, 2, 5];
+            let amount = parseInt(activeTarget) || 11;
+
+            let dp = new Array(amount + 1).fill(Infinity);
+            dp[0] = 0;
+
+            let parent = new Array(amount + 1).fill(-1);
+
+            function renderCoinTableHTML(dpArr, activeIdx, depIdx, tracebackArr) {
+                let html = `<div class="graph-subpanel"><strong>Coin Change DP Array (Coins: [${coins.join(', ')}]):</strong><table class="dp-cell-table"><tr>`;
+                for (let i = 0; i <= amount; i++) html += `<th>${i}</th>`;
+                html += `</tr><tr>`;
+                for (let i = 0; i <= amount; i++) {
+                    let val = dpArr[i] === Infinity ? '∞' : dpArr[i];
+                    let cls = "";
+                    if (tracebackArr && tracebackArr.includes(i)) cls = "dp-traceback";
+                    else if (i === activeIdx) cls = "dp-active";
+                    else if (i === depIdx) cls = "dp-dep";
+                    html += `<td class="${cls}">${val}</td>`;
+                }
+                html += `</tr></table></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderCoinTableHTML(dp, 0),
+                explored: 1, pruned: 0, solutions: 0,
+                explanation: `Coin Change (${dpStrategy.toUpperCase()}): Base case dp[0] = 0.`
+            });
+
+            for (let i = 1; i <= amount; i++) {
+                for (let coin of coins) {
+                    if (i - coin >= 0 && dp[i - coin] + 1 < dp[i]) {
+                        dp[i] = dp[i - coin] + 1;
+                        parent[i] = i - coin;
+
+                        dpSteps.push({
+                            subpanelHTML: renderCoinTableHTML(dp, i, i - coin),
+                            explored: dpSteps.length + 1, pruned: 0, solutions: 0,
+                            explanation: `dp[${i}] updated using coin ${coin}: 1 + dp[${i - coin}] = ${dp[i]}`
+                        });
+                    }
+                }
+            }
+
+            // Traceback
+            let tb = [];
+            let curr = amount;
+            let usedCoins = [];
+            while (curr > 0 && parent[curr] !== -1) {
+                tb.push(curr);
+                usedCoins.push(curr - parent[curr]);
+                curr = parent[curr];
+            }
+            tb.push(0);
+
+            dpSteps.push({
+                subpanelHTML: renderCoinTableHTML(dp, null, null, tb) + `<div style="margin-top:6px; color:#22c55e"><strong>Optimal Solution:</strong> Min Coins = <strong>${dp[amount]}</strong> (Used Coins: [${usedCoins.join(', ')}])</div>`,
+                explored: dpSteps.length + 1, pruned: 0, solutions: 1,
+                explanation: `Coin Change complete! Minimum coins required for amount ${amount} = ${dp[amount]}.`
+            });
+        }
+
+        // 2. 0/1 Knapsack
+        function generateKnapsack() {
+            let weights = [2, 3, 4, 5];
+            let values = [3, 4, 5, 6];
+            let W = parseInt(activeTarget) || 5;
+            let n = weights.length;
+
+            let dp = Array(n + 1).fill(0).map(() => Array(W + 1).fill(0));
+
+            function renderKnapsackHTML(dpMat, activeI, activeW, dep1, dep2, tracebackPath) {
+                let html = `<div class="graph-subpanel"><strong>0/1 Knapsack DP Table (Cap: ${W}):</strong><table class="dp-cell-table"><tr><th>i \\ w</th>`;
+                for (let w = 0; w <= W; w++) html += `<th>${w}</th>`;
+                html += `</tr>`;
+                for (let i = 0; i <= n; i++) {
+                    html += `<tr><th>${i === 0 ? '0' : `Item ${i}`}</th>`;
+                    for (let w = 0; w <= W; w++) {
+                        let cls = "";
+                        if (tracebackPath && tracebackPath.some(p => p[0]===i && p[1]===w)) cls = "dp-traceback";
+                        else if (i === activeI && w === activeW) cls = "dp-active";
+                        else if ((dep1 && dep1[0]===i && dep1[1]===w) || (dep2 && dep2[0]===i && dep2[1]===w)) cls = "dp-dep";
+                        html += `<td class="${cls}">${dpMat[i][w]}</td>`;
+                    }
+                    html += `</tr>`;
+                }
+                html += `</table></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderKnapsackHTML(dp, 0, 0),
+                explored: 1, pruned: 0, solutions: 0,
+                explanation: "0/1 Knapsack DP table initialized."
+            });
+
+            for (let i = 1; i <= n; i++) {
+                for (let w = 0; w <= W; w++) {
+                    let wt = weights[i - 1];
+                    let val = values[i - 1];
+                    if (wt <= w) {
+                        dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - wt] + val);
+                        dpSteps.push({
+                            subpanelHTML: renderKnapsackHTML(dp, i, w, [i-1, w], [i-1, w-wt]),
+                            explored: dpSteps.length + 1, pruned: 0, solutions: 0,
+                            explanation: `Item ${i} (wt:${wt}, val:${val}) @ cap ${w}: max(dp[${i-1}][${w}], dp[${i-1}][${w-wt}]+${val}) = ${dp[i][w]}`
+                        });
+                    } else {
+                        dp[i][w] = dp[i - 1][w];
+                    }
+                }
+            }
+
+            // Traceback
+            let tb = [];
+            let currW = W;
+            let selectedItems = [];
+            for (let i = n; i > 0 && currW > 0; i--) {
+                if (dp[i][currW] !== dp[i - 1][currW]) {
+                    tb.push([i, currW]);
+                    selectedItems.push(i);
+                    currW -= weights[i - 1];
+                }
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderKnapsackHTML(dp, null, null, null, null, tb) + `<div style="margin-top:6px; color:#22c55e"><strong>Max Achievable Value:</strong> <strong>${dp[n][W]}</strong> (Selected Items: [${selectedItems.join(', ')}])</div>`,
+                explored: dpSteps.length + 1, pruned: 0, solutions: 1,
+                explanation: `Knapsack complete! Max total value = ${dp[n][W]}.`
+            });
+        }
+
+        // 3. Longest Increasing Subsequence (LIS)
+        function generateLIS() {
+            let arr = activeInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            if (arr.length === 0) arr = [10, 22, 9, 33, 21, 50, 41, 60];
+            let n = arr.length;
+
+            let dp = new Array(n).fill(1);
+            let parent = new Array(n).fill(-1);
+
+            function renderLISHTML(dpArr, activeI, depJ, tbIndices) {
+                let html = `<div class="graph-subpanel"><strong>LIS DP Array:</strong><table class="dp-cell-table"><tr>`;
+                for (let i = 0; i < n; i++) html += `<th>arr[${i}]<br>${arr[i]}</th>`;
+                html += `</tr><tr>`;
+                for (let i = 0; i < n; i++) {
+                    let cls = "";
+                    if (tbIndices && tbIndices.includes(i)) cls = "dp-traceback";
+                    else if (i === activeI) cls = "dp-active";
+                    else if (i === depJ) cls = "dp-dep";
+                    html += `<td class="${cls}">${dpArr[i]}</td>`;
+                }
+                html += `</tr></table></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderLISHTML(dp, 0),
+                explored: 1, pruned: 0, solutions: 0,
+                explanation: "LIS DP initialized with dp[i] = 1."
+            });
+
+            for (let i = 1; i < n; i++) {
+                for (let j = 0; j < i; j++) {
+                    if (arr[j] < arr[i] && dp[j] + 1 > dp[i]) {
+                        dp[i] = dp[j] + 1;
+                        parent[i] = j;
+
+                        dpSteps.push({
+                            subpanelHTML: renderLISHTML(dp, i, j),
+                            explored: dpSteps.length + 1, pruned: 0, solutions: 0,
+                            explanation: `arr[${j}] (${arr[j]}) < arr[${i}] (${arr[i]}): Extended LIS to length ${dp[i]}`
+                        });
+                    }
+                }
+            }
+
+            let maxLIS = Math.max(...dp);
+            let maxIdx = dp.indexOf(maxLIS);
+            let tb = [];
+            let lisSeq = [];
+            let curr = maxIdx;
+            while (curr !== -1) {
+                tb.push(curr);
+                lisSeq.unshift(arr[curr]);
+                curr = parent[curr];
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderLISHTML(dp, null, null, tb) + `<div style="margin-top:6px; color:#22c55e"><strong>Longest Increasing Subsequence:</strong> [ ${lisSeq.join(', ')} ] (Length: ${maxLIS})</div>`,
+                explored: dpSteps.length + 1, pruned: 0, solutions: 1,
+                explanation: `LIS complete! Max sequence length = ${maxLIS}.`
+            });
+        }
+
+        // 4. Matrix Chain Multiplication
+        function generateMCM() {
+            let p = activeInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            if (p.length < 3) p = [10, 30, 5, 60];
+            let n = p.length - 1;
+
+            let m = Array(n + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+            function renderMCMHTML(mMat, activeI, activeJ, activeK) {
+                let html = `<div class="graph-subpanel"><strong>MCM Min Multiplications Table:</strong><table class="dp-cell-table"><tr><th>i \\ j</th>`;
+                for (let j = 1; j <= n; j++) html += `<th>M${j}</th>`;
+                html += `</tr>`;
+                for (let i = 1; i <= n; i++) {
+                    html += `<tr><th>M${i}</th>`;
+                    for (let j = 1; j <= n; j++) {
+                        let cls = "";
+                        if (i === activeI && j === activeJ) cls = "dp-active";
+                        html += `<td class="${cls}">${i > j ? '-' : mMat[i][j]}</td>`;
+                    }
+                    html += `</tr>`;
+                }
+                html += `</table></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderMCMHTML(m, 1, 1),
+                explored: 1, pruned: 0, solutions: 0,
+                explanation: "MCM DP table initialized. Single matrix costs are 0."
+            });
+
+            for (let L = 2; L <= n; L++) {
+                for (let i = 1; i <= n - L + 1; i++) {
+                    let j = i + L - 1;
+                    m[i][j] = Infinity;
+                    for (let k = i; k <= j - 1; k++) {
+                        let q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
+                        if (q < m[i][j]) {
+                            m[i][j] = q;
+                            dpSteps.push({
+                                subpanelHTML: renderMCMHTML(m, i, j, k),
+                                explored: dpSteps.length + 1, pruned: 0, solutions: 0,
+                                explanation: `M${i}..M${j} split at k=${k}: ${q} multiplications`
+                            });
+                        }
+                    }
+                }
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderMCMHTML(m, 1, n) + `<div style="margin-top:6px; color:#22c55e"><strong>Minimum Multiplications:</strong> <strong>${m[1][n]}</strong></div>`,
+                explored: dpSteps.length + 1, pruned: 0, solutions: 1,
+                explanation: `MCM completed! Minimum total scalar multiplications = ${m[1][n]}.`
+            });
+        }
+
+        // 5. Tower of Hanoi
+        function generateHanoi() {
+            let numDisks = parseInt(activeInput) || 3;
+            let pegs = { A: [3, 2, 1], B: [], C: [] };
+            if (numDisks === 4) pegs.A = [4, 3, 2, 1];
+
+            let explored = 0;
+
+            function renderPegsHTML(pegsObj, moveMsg) {
+                let html = `<div class="graph-subpanel"><strong>Tower of Hanoi Pegs:</strong><br>
+                <code>Peg A: [ ${pegsObj.A.join(', ')} ]</code><br>
+                <code>Peg B: [ ${pegsObj.B.join(', ')} ]</code><br>
+                <code>Peg C: [ ${pegsObj.C.join(', ')} ]</code><br>
+                <span style="color:var(--glow)">${moveMsg || ''}</span></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderPegsHTML(pegs, "Initial Disk Configuration"),
+                explored: 0, pruned: 0, solutions: 0,
+                explanation: `Tower of Hanoi initialized with ${numDisks} disks on Peg A.`
+            });
+
+            function hanoi(n, src, aux, dst) {
+                if (n === 1) {
+                    explored++;
+                    let disk = pegs[src].pop();
+                    pegs[dst].push(disk);
+                    dpSteps.push({
+                        subpanelHTML: renderPegsHTML(pegs, `Moved Disk ${disk}: Peg ${src} ➔ Peg ${dst}`),
+                        explored: explored, pruned: 0, solutions: 0,
+                        explanation: `Move disk ${disk} directly from Peg ${src} to Peg ${dst}.`
+                    });
+                    return;
+                }
+                hanoi(n - 1, src, dst, aux);
+                explored++;
+                let disk = pegs[src].pop();
+                pegs[dst].push(disk);
+                dpSteps.push({
+                    subpanelHTML: renderPegsHTML(pegs, `Moved Disk ${disk}: Peg ${src} ➔ Peg ${dst}`),
+                    explored: explored, pruned: 0, solutions: 0,
+                    explanation: `Moved base disk ${disk} from Peg ${src} to Peg ${dst}.`
+                });
+                hanoi(n - 1, aux, src, dst);
+            }
+
+            hanoi(numDisks, 'A', 'B', 'C');
+
+            dpSteps.push({
+                subpanelHTML: renderPegsHTML(pegs, "Hanoi Solution Complete!"),
+                explored: explored, pruned: 0, solutions: 1,
+                explanation: `Completed Tower of Hanoi in ${explored} optimal moves!`
+            });
+        }
+
+        // 6. Subsets & Permutations
+        function generateSubsets() {
+            let nums = [1, 2, 3];
+            let subsets = [];
+            let explored = 0;
+
+            function backtrack(idx, current) {
+                explored++;
+                subsets.push([...current]);
+
+                dpSteps.push({
+                    chips: subsets.map(s => `{ ${s.join(', ')} }`),
+                    explored: explored, pruned: 0, solutions: subsets.length,
+                    subpanelHTML: `<div class="graph-subpanel"><strong>Recursion Tree Subsets Generated:</strong> ${subsets.map(s => `<span class="tree-node-chip solution">{ ${s.join(',')} }</span>`).join('')}</div>`,
+                    explanation: `Backtrack step: Added subset { ${current.join(', ')} }`
+                });
+
+                for (let i = idx; i < nums.length; i++) {
+                    current.push(nums[i]);
+                    backtrack(i + 1, current);
+                    current.pop();
+                }
+            }
+
+            backtrack(0, []);
+
+            dpSteps.push({
+                chips: subsets.map(s => `{ ${s.join(', ')} }`),
+                explored: explored, pruned: 0, solutions: subsets.length,
+                subpanelHTML: `<div class="graph-subpanel"><strong>Total Subsets Generated:</strong> ${subsets.length}</div>`,
+                explanation: `Generated all 2^N = ${subsets.length} subsets cleanly!`
+            });
+        }
+
+        // 7. Rat in a Maze
+        function generateRatInMaze() {
+            let maze = [
+                [1, 0, 0, 0],
+                [1, 1, 0, 1],
+                [0, 1, 0, 0],
+                [1, 1, 1, 1]
+            ];
+            let n = 4;
+            let sol = Array(n).fill(0).map(() => Array(n).fill(0));
+            let explored = 0, pruned = 0;
+
+            function renderMazeHTML(solMat, prunedCell) {
+                let html = `<div class="graph-subpanel"><strong>Rat in a Maze Grid (4x4):</strong><div class="maze-grid">`;
+                for (let r = 0; r < n; r++) {
+                    for (let c = 0; c < n; c++) {
+                        let cls = "maze-cell";
+                        if (maze[r][c] === 0) cls += " wall";
+                        else if (solMat[r][c] === 1) cls += " path";
+                        else if (prunedCell && prunedCell[0]===r && prunedCell[1]===c) cls += " pruned";
+                        
+                        let txt = (r===0 && c===0) ? 'R' : (r===3 && c===3) ? 'G' : '';
+                        html += `<div class="${cls}">${txt}</div>`;
+                    }
+                }
+                html += `</div></div>`;
+                return html;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderMazeHTML(sol),
+                explored: 0, pruned: 0, solutions: 0,
+                explanation: "Rat in a Maze: Start=(0,0), Goal=(3,3)."
+            });
+
+            function solve(r, c) {
+                explored++;
+                if (r === n - 1 && c === n - 1) {
+                    sol[r][c] = 1;
+                    dpSteps.push({
+                        subpanelHTML: renderMazeHTML(sol),
+                        explored: explored, pruned: pruned, solutions: 1,
+                        explanation: "Goal cell (3,3) reached! Maze path found!"
+                    });
+                    return true;
+                }
+
+                if (r >= 0 && r < n && c >= 0 && c < n && maze[r][c] === 1 && sol[r][c] === 0) {
+                    sol[r][c] = 1;
+                    dpSteps.push({
+                        subpanelHTML: renderMazeHTML(sol),
+                        explored: explored, pruned: pruned, solutions: 0,
+                        explanation: `Moved Rat to cell (${r}, ${c}).`
+                    });
+
+                    if (solve(r + 1, c)) return true;
+                    if (solve(r, c + 1)) return true;
+
+                    // Backtrack
+                    sol[r][c] = 0;
+                    pruned++;
+                    dpSteps.push({
+                        subpanelHTML: renderMazeHTML(sol, [r, c]),
+                        explored: explored, pruned: pruned, solutions: 0,
+                        explanation: `Backtracked from dead-end at cell (${r}, ${c}). Pruned branch.`
+                    });
+                }
+                return false;
+            }
+
+            solve(0, 0);
+        }
+
+        // 8. N-Queens (4-Queens)
+        function generateNQueens() {
+            let n = 4;
+            let board = Array(n).fill(0).map(() => Array(n).fill(0));
+            let explored = 0, pruned = 0, solutions = 0;
+
+            function renderChessboardHTML(bMat, conflictCell) {
+                let html = `<div class="graph-subpanel"><strong>4-Queens Chessboard:</strong><div class="chessboard-grid">`;
+                for (let r = 0; r < n; r++) {
+                    for (let c = 0; c < n; c++) {
+                        let isWhite = (r + c) % 2 === 0;
+                        let cls = `chessboard-cell ${isWhite ? 'white' : 'black'}`;
+                        if (bMat[r][c] === 1) cls += " queen";
+                        else if (conflictCell && conflictCell[0]===r && conflictCell[1]===c) cls += " conflict";
+
+                        let txt = bMat[r][c] === 1 ? '♛' : '';
+                        html += `<div class="${cls}">${txt}</div>`;
+                    }
+                }
+                html += `</div></div>`;
+                return html;
+            }
+
+            function isSafe(r, c) {
+                for (let i = 0; i < r; i++) {
+                    if (board[i][c] === 1) return false;
+                    if (c - (r - i) >= 0 && board[i][c - (r - i)] === 1) return false;
+                    if (c + (r - i) < n && board[i][c + (r - i)] === 1) return false;
+                }
+                return true;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderChessboardHTML(board),
+                explored: 0, pruned: 0, solutions: 0,
+                explanation: "N-Queens initialized for 4x4 chessboard."
+            });
+
+            function solveRow(r) {
+                explored++;
+                if (r === n) {
+                    solutions++;
+                    dpSteps.push({
+                        subpanelHTML: renderChessboardHTML(board),
+                        explored: explored, pruned: pruned, solutions: solutions,
+                        explanation: `Solution #${solutions} found! All 4 Queens safely placed.`
+                    });
+                    return;
+                }
+
+                for (let c = 0; c < n; c++) {
+                    if (isSafe(r, c)) {
+                        board[r][c] = 1;
+                        dpSteps.push({
+                            subpanelHTML: renderChessboardHTML(board),
+                            explored: explored, pruned: pruned, solutions: solutions,
+                            explanation: `Placed Queen at row ${r}, col ${c}.`
+                        });
+
+                        solveRow(r + 1);
+
+                        board[r][c] = 0; // Backtrack
+                    } else {
+                        pruned++;
+                        dpSteps.push({
+                            subpanelHTML: renderChessboardHTML(board, [r, c]),
+                            explored: explored, pruned: pruned, solutions: solutions,
+                            explanation: `Conflict at (${r}, ${c}). Pruned invalid placement.`
+                        });
+                    }
+                }
+            }
+
+            solveRow(0);
+        }
+
+        // 9. Sudoku Solver (4x4 Mini-Sudoku)
+        function generateSudoku() {
+            let grid = [
+                [1, 0, 0, 4],
+                [0, 0, 2, 0],
+                [0, 3, 0, 0],
+                [2, 0, 0, 1]
+            ];
+            let n = 4;
+            let explored = 0, pruned = 0;
+
+            function renderSudokuHTML(gMat, activeCell, prunedCell) {
+                let html = `<div class="graph-subpanel"><strong>4x4 Mini-Sudoku Grid:</strong><div class="sudoku-grid">`;
+                for (let r = 0; r < n; r++) {
+                    for (let c = 0; c < n; c++) {
+                        let cls = "sudoku-cell";
+                        if (activeCell && activeCell[0]===r && activeCell[1]===c) cls += " active";
+                        else if (prunedCell && prunedCell[0]===r && prunedCell[1]===c) cls += " pruned";
+                        
+                        let val = gMat[r][c] === 0 ? '' : gMat[r][c];
+                        html += `<div class="${cls}">${val}</div>`;
+                    }
+                }
+                html += `</div></div>`;
+                return html;
+            }
+
+            function isValid(r, c, num) {
+                for (let i = 0; i < n; i++) {
+                    if (grid[r][i] === num || grid[i][c] === num) return false;
+                }
+                let startR = Math.floor(r / 2) * 2;
+                let startC = Math.floor(c / 2) * 2;
+                for (let i = 0; i < 2; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        if (grid[startR + i][startC + j] === num) return false;
+                    }
+                }
+                return true;
+            }
+
+            dpSteps.push({
+                subpanelHTML: renderSudokuHTML(grid),
+                explored: 0, pruned: 0, solutions: 0,
+                explanation: "4x4 Mini-Sudoku Solver initialized."
+            });
+
+            function solveSudoku() {
+                for (let r = 0; r < n; r++) {
+                    for (let c = 0; c < n; c++) {
+                        if (grid[r][c] === 0) {
+                            for (let num = 1; num <= 4; num++) {
+                                explored++;
+                                if (isValid(r, c, num)) {
+                                    grid[r][c] = num;
+                                    dpSteps.push({
+                                        subpanelHTML: renderSudokuHTML(grid, [r, c]),
+                                        explored: explored, pruned: pruned, solutions: 0,
+                                        explanation: `Placed digit ${num} at cell (${r}, ${c}).`
+                                    });
+
+                                    if (solveSudoku()) return true;
+
+                                    grid[r][c] = 0; // Backtrack
+                                } else {
+                                    pruned++;
+                                    dpSteps.push({
+                                        subpanelHTML: renderSudokuHTML(grid, null, [r, c]),
+                                        explored: explored, pruned: pruned, solutions: 0,
+                                        explanation: `Conflict for digit ${num} at cell (${r}, ${c}). Pruned branch.`
+                                    });
+                                }
+                            }
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            solveSudoku();
+
+            dpSteps.push({
+                subpanelHTML: renderSudokuHTML(grid),
+                explored: explored, pruned: pruned, solutions: 1,
+                explanation: "Sudoku 4x4 Grid completely solved!"
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // FRAME RENDERER
+        // ─────────────────────────────────────────────────────────────────────
+        function renderDPFrame(frame) {
+            if (!frame) return;
+
+            const canvas = document.getElementById("dpCanvas");
+            canvas.innerHTML = "";
+
+            if (frame.subpanelHTML) {
+                canvas.innerHTML = frame.subpanelHTML;
+            }
+
+            document.getElementById("metricExplored").innerText = frame.explored || 0;
+            document.getElementById("metricPruned").innerText = frame.pruned || 0;
+            document.getElementById("metricSolutions").innerText = frame.solutions || 0;
+
+            document.getElementById("dpStepText").innerText = "▶ " + frame.explanation;
+
+            let slider = document.getElementById("dpProgressSlider");
+            if (slider && frame.stepIndex !== undefined) {
+                slider.value = frame.stepIndex;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // MEDIA CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
+        function toggleDPPlay() {
+            if (dpSteps.length === 0) return alert("Select an algorithm and click Visualize first!");
+            if (dpIsPlaying) pauseDPPlayback();
+            else {
+                if (dpCurrentStep >= dpSteps.length - 1) dpCurrentStep = 0;
+                startDPPlayback();
+            }
+        }
+
+        function startDPPlayback() {
+            dpIsPlaying = true;
+            updateDPPlayBtnUI();
+            renderDPFrame(dpSteps[dpCurrentStep]);
+            clearInterval(dpPlayInterval);
+            dpPlayInterval = setInterval(() => {
+                if (dpCurrentStep < dpSteps.length - 1) {
+                    dpCurrentStep++;
+                    renderDPFrame(dpSteps[dpCurrentStep]);
+                } else {
+                    pauseDPPlayback();
+                }
+            }, dpSpeedMs);
+        }
+
+        function pauseDPPlayback() {
+            dpIsPlaying = false;
+            clearInterval(dpPlayInterval);
+            updateDPPlayBtnUI();
+        }
+
+        function updateDPPlayBtnUI() {
+            let playBtn = document.getElementById("dpPlayPauseBtn");
+            if (!playBtn) return;
+            if (dpIsPlaying) {
+                playBtn.innerHTML = "⏸ Pause";
+            } else if (dpCurrentStep >= dpSteps.length - 1 && dpSteps.length > 0) {
+                playBtn.innerHTML = "🔄 Replay";
+            } else {
+                playBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        function jumpToDPStart() {
+            if (dpSteps.length === 0) return;
+            dpCurrentStep = 0;
+            startDPPlayback();
+        }
+
+        function jumpToDPEnd() {
+            if (dpSteps.length === 0) return;
+            pauseDPPlayback();
+            dpCurrentStep = dpSteps.length - 1;
+            renderDPFrame(dpSteps[dpCurrentStep]);
+        }
+
+        function stepDPForward() {
+            if (dpSteps.length === 0) return;
+            pauseDPPlayback();
+            if (dpCurrentStep < dpSteps.length - 1) {
+                dpCurrentStep++;
+                renderDPFrame(dpSteps[dpCurrentStep]);
+            }
+        }
+
+        function stepDPBack() {
+            if (dpSteps.length === 0) return;
+            pauseDPPlayback();
+            if (dpCurrentStep > 0) {
+                dpCurrentStep--;
+                renderDPFrame(dpSteps[dpCurrentStep]);
+            }
+        }
+
+        function setDPSpeed(ms, type) {
+            dpSpeedMs = ms;
+            document.getElementById("btn-dp-slow").classList.remove("active");
+            document.getElementById("btn-dp-normal").classList.remove("active");
+            document.getElementById("btn-dp-fast").classList.remove("active");
+            document.getElementById("btn-dp-" + type).classList.add("active");
+            if (dpIsPlaying) startDPPlayback();
+        }
+
+        function scrubDPTimeline() {
+            if (dpSteps.length === 0) return;
+            pauseDPPlayback();
+            dpCurrentStep = parseInt(document.getElementById("dpProgressSlider").value);
+            renderDPFrame(dpSteps[dpCurrentStep]);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            selectAlgorithm('coinchange');
+        });
+    </script>
+
+    <!-- About DP & Backtracking Modal -->
+    <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
+        <div class="about-modal-card">
+            <div class="about-modal-header">
+                <div class="about-modal-title">💡 About DP & Backtracking</div>
+                <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
+            </div>
+            <div class="about-modal-body">
+                <h4>Overview</h4>
+                <p>Dynamic Programming solves overlapping subproblems using Tabulation (bottom-up) or Memoization (top-down). Backtracking systematically explores decision trees with branch pruning.</p>
+                <ul>
+                    <li><strong>Coin Change & Knapsack:</strong> 1D/2D DP table evaluations with optimal sub-structure traceback.</li>
+                    <li><strong>LIS & MCM:</strong> Longest Increasing Subsequences and optimal matrix parenthesization.</li>
+                    <li><strong>Tower of Hanoi:</strong> Recursive disk transfers across 3 pegs.</li>
+                    <li><strong>Subsets & Permutations:</strong> Exponential $O(2^N)$ decision tree state space generation.</li>
+                    <li><strong>Rat in a Maze, N-Queens, Sudoku:</strong> Grid & board constraint satisfaction with pruned invalid states.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleAboutModal(show) {
+            const m = document.getElementById('aboutModal');
+            if (m) m.style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+
+</html>

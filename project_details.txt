@@ -11,24 +11,32 @@ Below is the clean directory structure of the repository (excluding `node_module
 ```
 Project - LogicLens/
 ├── .gitignore
+├── LogicLens_Logo.png            # Main application brand logo image used in headers across all pages
+├── PROJECT_DESCRIPTION.md        # High-level overview of features, supported algorithms, and architectural breakdown
 ├── analyzer.js                   # Root AI helper/analyzer module (redundant/legacy)
-├── cover.html                    # Homepage (Welcome portal with light/dark glassmorphic UI)
+├── animation_techstack_details.txt # Detailed specification of animation mechanics, render pipeline & tech stack
+├── code_explanation.md           # Comprehensive codebase documentation explaining file mechanisms and integration
+├── correctvisualisation.json     # Ground truth JSON data store for saved visualization session traces
+├── cover.html                    # Homepage (Welcome portal with light/dark glassmorphic UI & complexity cards)
 ├── custom.html                   # Interface for visualizing user-written custom code via AI
 ├── feedback_log.json             # Stores log entries of user correctness feedback
-├── graphs.html                   # Graph visualizer (Directed, Undirected, Weighted BFS/DFS)
+├── graphs.html                   # Graph visualizer (Directed, Undirected, Weighted BFS/DFS/Dijkstra)
+├── i18n.js                       # Multi-language internationalization engine (English, Hindi, Marathi, Gujarati support)
 ├── index.html                    # Main DSA Learning page & Sorting visualizer (Bubble, Insertion, Selection, Quick)
 ├── logiclens.css                 # Master CSS stylesheet (colors, variables, layouts, light/dark themes)
 ├── package-lock.json             # Root package lock
 ├── package.json                  # Root npm configuration (defines server dependencies)
+├── project_details.txt           # Detailed project specifications, architecture map, and feature breakdown
 ├── queue.html                    # Queue visualizer (FIFO flow with front/rear pointers)
 ├── sentences.html                # NLP / Sentence visualizer (Linear Search, Word Reverse, Palindrome check)
 ├── stack.html                    # Stack visualizer (LIFO vertical stack, Array/Linked-List modes)
 ├── strings.html                  # String pattern matching visualizer (Naive, KMP, Rabin-Karp)
 ├── trees.html                    # Tree visualizer (BST and AVL balance trees, rotation/traversal)
-├── vercel.json                   # Vercel deployment configuration (routes /api/* to the serverless function)
+├── vercel.json                   # Vercel deployment configuration (routes /api/* to serverless functions)
 │
 ├── api/
-│   └── index.js                  # Entry point for Vercel serverless functions, forwards to server/src/index.js
+│   ├── index.js                  # Entry point for Vercel serverless functions, forwards to server/src/index.js
+│   └── save-visualization.js     # Endpoint for logging and persisting user visualization sessions
 │
 ├── client/                       # Alternative React-based client workspace (incomplete/template layout)
 │   ├── tailwind.config.js
@@ -59,7 +67,9 @@ Project - LogicLens/
 
 ### A. Frontend Architecture (Vanilla Static Stack)
 The primary user interface consists of static HTML files in the root folder (`cover.html`, `index.html`, `stack.html`, etc.) styled by `logiclens.css`.
-- **CSS Architecture**: Employs CSS custom properties (variables) representing colors, typography, borders, and margins. It supports a system-wide Dark/Light mode triggered by a `.light` body class.
+- **CSS Architecture**: Employs CSS custom properties (variables) representing colors, typography, borders, and margins. It supports a system-wide Dark/Light mode triggered by a `.light` body class with `localStorage` persistence.
+- **Branding & Header UI**: Features unified header navigation with `LogicLens_Logo.png` logo mark branding across all visualizer pages.
+- **Internationalization (`i18n.js`)**: Dynamic multi-language translation switching engine providing full localization for English, Hindi, Marathi, and Gujarati.
 - **Media Controls & Timeline**: Every visualizer includes standard media player controls (`⏮`, `◀`, `▶ Play`, `⏸ Pause`, `▶`, `⏭`, speed controls `Slow`/`Normal`/`Fast`, and a progress scrub slider `Timeline`).
 - **Dynamic Canvases**: DOM elements are dynamically redrawn inside `<div id="canvas">` representing arrays as height-scaled bar graphs, stacks as vertical block lists, queues as horizontal chains, trees as SVG/absolute-positioned node webs, and graphs as interactive canvases.
 
@@ -67,12 +77,14 @@ The primary user interface consists of static HTML files in the root folder (`co
 An Express app running on port 5000 that serves two primary purposes:
 1. **Static File Hosting**: Serves the root directory files using `app.use(express.static(...))` so the entire app can be run locally by accessing `http://localhost:5000`.
 2. **API Services**:
-   - `/api/analyze` (POST): Accepts `{ code, array }`. Coordinates with Gemini to dry-run the custom code, and generates animation frames.
+   - `/api/analyze` (POST): Accepts `{ code, array }`. Coordinates with Gemini 2.5 Flash to dry-run custom code, classify algorithms, evaluate time/space complexity, and generate step animation frames.
+   - `/api/save-visualization` (POST): Accepts visualization session data and appends structured trace logs into `correctvisualisation.json`.
    - `/api/feedback` (POST): Accepts `{ code, array, correct }` and appends entries to `feedback_log.json` to monitor AI accuracy.
 
 ### C. Vercel Serverless Function Config
-- `vercel.json` rewrites all requests matching `/api/(.*)` to `api/index.js`.
+- `vercel.json` rewrites all requests matching `/api/(.*)` to serverless endpoints inside `api/`.
 - `api/index.js` acts as a wrapper that imports and exports the primary Express app (`server/src/index.js`). This enables serverless hosting on Vercel with zero cold-start refactoring.
+- `api/save-visualization.js` handles direct serverless persistence requests for logging visualization runs.
 
 ---
 
@@ -176,7 +188,7 @@ Each sub-visualizer in the root directory manages specific operations:
 ### 6. Graph Visualizer (`graphs.html`)
 - **Graph Types**: Directed, Undirected, Weighted graphs.
 - **Operations**: Add Node, Remove Node, Add Edge, Remove Edge.
-- **Algorithms**: Run BFS (Breadth-First Search) or DFS (Depth-First Search) from a custom source node.
+- **Algorithms**: Run BFS (Breadth-First Search), DFS (Depth-First Search), and Dijkstra's Shortest Path from a custom source node.
 - **Visuals**: Draggable nodes on a coordinate canvas showing traversal highlights.
 
 ### 7. String Visualizer (`strings.html`)
@@ -216,6 +228,10 @@ Each sub-visualizer in the root directory manages specific operations:
    ```
    http://localhost:5000/cover.html
    ```
+
+---
+
+## 6. Development Log & Streak Tracking
 Update log line 1: streak tracking
 Update log line 2: streak tracking
 Update log line 3: streak tracking
@@ -245,3 +261,33 @@ Update log line 26: streak tracking
 Update log line 27: streak tracking
 Update log line 28: streak tracking
 Update log line 29: streak tracking
+Update log line 30: streak tracking for 2026-11-01
+Update log line 31: streak tracking for 2026-11-02
+Update log line 32: streak tracking for 2026-11-03
+Update log line 33: streak tracking for 2026-11-04
+Update log line 34: streak tracking for 2026-11-05
+Update log line 35: streak tracking for 2026-11-06
+Update log line 36: streak tracking for 2026-11-07
+Update log line 37: streak tracking for 2026-11-08
+Update log line 38: streak tracking for 2026-11-09
+Update log line 40: streak tracking for 2026-11-11
+Update log line 41: streak tracking for 2026-11-12
+Update log line 42: streak tracking for 2026-11-13
+Update log line 43: streak tracking for 2026-11-14
+Update log line 44: streak tracking for 2026-11-15
+Update log line 45: streak tracking for 2026-11-16
+Update log line 46: streak tracking for 2026-11-17
+Update log line 47: streak tracking for 2026-11-18
+Update log line 48: streak tracking for 2026-11-19
+Update log line 49: streak tracking for 2026-11-20
+Update log line 50: streak tracking for 2026-11-21
+Update log line 51: streak tracking for 2026-11-22
+Update log line 52: streak tracking for 2026-11-23
+Update log line 53: streak tracking for 2026-11-24
+Update log line 54: streak tracking for 2026-11-25
+Update log line 55: streak tracking for 2026-11-26
+Update log line 56: streak tracking for 2026-11-27
+Update log line 57: streak tracking for 2026-11-28
+Update log line 58: streak tracking for 2026-11-29
+Update log line 59: streak tracking for 2026-11-30: Updated directory structure map, multi-language i18n support, logo mark header UI, Dijkstra graph algorithm, and save-visualization endpoints
+Update log line 60: streak tracking for 2026-12-01: Added Gujarati (gu) language translation support to i18n engine and dropdown controls

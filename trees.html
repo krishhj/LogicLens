@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LogicLens - Trees</title>
+    <title>LogicLens - Trees & Tree Algorithms</title>
     <meta name="description"
-        content="Visualize Binary Search Tree and AVL Tree with insert, search, delete operations and 4 traversal modes — with rotation animations and complexity analysis." />
+        content="Interactive Auto-Layout Visualizer for Binary Search Tree, AVL Tree, Traversals, Min/Max Heap, Trie, LCA, Union-Find, Segment Tree, Fenwick Tree (BIT), Red-Black Tree, and B-Tree." />
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
         rel="stylesheet">
@@ -18,7 +18,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -41,11 +41,11 @@
     </nav>
 
     <section class="hero" style="padding-bottom: 20px;">
-        <h1>Tree Data Structure</h1>
-        <p>Visualize BST and AVL Tree operations — insert, search, delete, rotations and 4 traversal modes.</p>
+        <h1>Tree Data Structures & Algorithms</h1>
+        <p>Interactive auto-layout visualizer with step-by-step animations, dual array/stack representations, and complexity analysis.</p>
     </section>
 
-    <div class="container" id="treeContainer" style="margin-top: 40px;">
+    <div class="container" id="treeContainer" style="margin-top: 20px;">
         <!-- ═══ LEFT: EDITOR PANEL ═══ -->
         <div class="editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -53,77 +53,204 @@
                 <button class="about-btn" onclick="toggleAboutModal(true)">💡 About Trees</button>
             </div>
 
-            <!-- Tree type mode tabs -->
-            <div class="mode-tabs" style="margin-top: 10px;">
+            <!-- Mode tabs -->
+            <div class="mode-tabs" style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">
                 <button class="mode-tab active" id="tab-bst" onclick="switchTreeMode('bst')">🌲 BST</button>
-                <button class="mode-tab" id="tab-avl" onclick="switchTreeMode('avl')">⚖️ AVL Tree</button>
+                <button class="mode-tab" id="tab-avl" onclick="switchTreeMode('avl')">⚖️ AVL</button>
+                <button class="mode-tab" id="tab-traversals" onclick="switchTreeMode('traversals')">🔄 Traversals</button>
+                <button class="mode-tab" id="tab-heap" onclick="switchTreeMode('heap')">🔺 Heap</button>
+                <button class="mode-tab" id="tab-trie" onclick="switchTreeMode('trie')">🔤 Trie</button>
+                <button class="mode-tab" id="tab-lca" onclick="switchTreeMode('lca')">🌿 LCA</button>
+                <button class="mode-tab" id="tab-unionfind" onclick="switchTreeMode('unionfind')">🔗 Union-Find</button>
+                <button class="mode-tab" id="tab-segmenttree" onclick="switchTreeMode('segmenttree')">📊 Segment</button>
+                <button class="mode-tab" id="tab-fenwick" onclick="switchTreeMode('fenwick')">⚡ Fenwick</button>
+                <button class="mode-tab" id="tab-rbtree" onclick="switchTreeMode('rbtree')">🔴⚫ Red-Black</button>
+                <button class="mode-tab" id="tab-btree" onclick="switchTreeMode('btree')">🧱 B-Tree</button>
             </div>
 
-            <!-- Value input -->
-            <span class="input-label">Node Value (integer):</span>
-            <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                <input type="number" id="treeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 50"
-                    onkeydown="if(event.key==='Enter') doTreeOp('insert')" />
+            <!-- ── CONTROLS FOR BST / AVL ── -->
+            <div id="ctrl-bst-avl" class="tree-ctrl-group" style="margin-top: 14px;">
+                <span class="input-label">Node Value (integer):</span>
+                <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                    <input type="number" id="treeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 50"
+                        onkeydown="if(event.key==='Enter') doTreeOp('insert')" />
+                </div>
+                <div class="tree-ops-row" style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <button class="tree-op-btn insert" onclick="doTreeOp('insert')" style="flex:1;">➕ Insert</button>
+                    <button class="tree-op-btn search" onclick="doTreeOp('search')" style="flex:1;">🔍 Search</button>
+                    <button class="tree-op-btn delete" onclick="doTreeOp('delete')" style="flex:1;">🗑 Delete</button>
+                </div>
+                <button class="op-btn clear" style="width:100%; margin-bottom: 14px;" onclick="resetTree()">🔄 Reset Tree</button>
+
+                <div class="adv-section-head">
+                    <h3>Traversals</h3>
+                </div>
+                <div class="traversal-btns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button class="traversal-btn" id="trav-inorder" onclick="doTraversal('inorder')">Inorder</button>
+                    <button class="traversal-btn" id="trav-preorder" onclick="doTraversal('preorder')">Preorder</button>
+                    <button class="traversal-btn" id="trav-postorder" onclick="doTraversal('postorder')">Postorder</button>
+                    <button class="traversal-btn" id="trav-levelorder" onclick="doTraversal('levelorder')">Level-Order</button>
+                </div>
             </div>
 
-            <!-- Tree operations -->
-            <div class="adv-section-head">
-                <h3>Operations</h3>
-            </div>
-            <div class="tree-ops-row">
-                <button class="tree-op-btn insert" onclick="doTreeOp('insert')">➕ Insert</button>
-                <button class="tree-op-btn search" onclick="doTreeOp('search')">🔍 Search</button>
-                <button class="tree-op-btn delete" onclick="doTreeOp('delete')">🗑 Delete</button>
-            </div>
-            <button class="op-btn clear" style="width:100%; margin-bottom: 14px;" onclick="resetTree()">🔄 Reset
-                Tree</button>
-
-            <!-- Traversals -->
-            <div class="adv-section-head">
-                <h3>Traversals</h3>
-            </div>
-            <div class="traversal-btns">
-                <button class="traversal-btn" id="trav-inorder" onclick="doTraversal('inorder')">Inorder</button>
-                <button class="traversal-btn" id="trav-preorder" onclick="doTraversal('preorder')">Preorder</button>
-                <button class="traversal-btn" id="trav-postorder" onclick="doTraversal('postorder')">Postorder</button>
-                <button class="traversal-btn" id="trav-levelorder"
-                    onclick="doTraversal('levelorder')">Level-Order</button>
+            <!-- ── CONTROLS FOR TRAVERSALS ── -->
+            <div id="ctrl-traversals" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Select Traversal Mode:</span>
+                <div class="traversal-btns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 14px;">
+                    <button class="traversal-btn" id="trav-m-inorder" onclick="runTraversalMode('inorder')">Inorder</button>
+                    <button class="traversal-btn" id="trav-m-preorder" onclick="runTraversalMode('preorder')">Preorder</button>
+                    <button class="traversal-btn" id="trav-m-postorder" onclick="runTraversalMode('postorder')">Postorder</button>
+                    <button class="traversal-btn" id="trav-m-levelorder" onclick="runTraversalMode('levelorder')">Level-Order</button>
+                </div>
+                <button class="op-btn clear" style="width:100%;" onclick="resetTree()">🔄 Reset Tree</button>
             </div>
 
-            <div class="traversal-output-wrap" id="traversalOutput">
+            <!-- ── CONTROLS FOR HEAP ── -->
+            <div id="ctrl-heap" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Heap Type:</span>
+                <select id="heapType" onchange="runHeapOp('rebuild')" style="width:100%; margin-bottom: 10px; padding: 8px; border-radius: 6px;">
+                    <option value="min">Min-Heap</option>
+                    <option value="max">Max-Heap</option>
+                </select>
+
+                <span class="input-label">Insert Value:</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="number" id="heapValInput" placeholder="e.g. 12" style="flex:1; margin-bottom:0;" />
+                    <button class="tree-op-btn insert" onclick="runHeapOp('insert')">➕ Insert</button>
+                </div>
+
+                <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+                    <button class="tree-op-btn delete" onclick="runHeapOp('extract')" style="flex:1;">🔻 Extract Root</button>
+                </div>
+
+                <span class="input-label">Build Heap from Array:</span>
+                <input type="text" id="heapArrInput" value="40, 20, 10, 30, 50, 60, 5" style="width:100%; margin-bottom: 8px;" />
+                <button class="viz-btn" onclick="runHeapOp('build')">⚡ Build Heap</button>
+            </div>
+
+            <!-- ── CONTROLS FOR TRIE ── -->
+            <div id="ctrl-trie" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Word Input:</span>
+                <input type="text" id="trieWordInput" placeholder="e.g. cat" style="width:100%; margin-bottom: 10px;" />
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="tree-op-btn insert" onclick="runTrieOp('insert')">➕ Insert Word</button>
+                    <button class="tree-op-btn search" onclick="runTrieOp('search')">🔍 Search Word</button>
+                    <button class="traversal-btn" onclick="runTrieOp('prefix')">🔤 StartsWith Prefix</button>
+                    <button class="op-btn clear" onclick="runTrieOp('reset')">🔄 Reset Trie</button>
+                </div>
+            </div>
+
+            <!-- ── CONTROLS FOR LCA ── -->
+            <div id="ctrl-lca" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Node A Value:</span>
+                <input type="number" id="lcaValA" value="10" style="width:100%; margin-bottom: 10px;" />
+                <span class="input-label">Node B Value:</span>
+                <input type="number" id="lcaValB" value="30" style="width:100%; margin-bottom: 14px;" />
+                <button class="viz-btn" onclick="runLCAOp()">🌿 Find Lowest Common Ancestor</button>
+            </div>
+
+            <!-- ── CONTROLS FOR UNION-FIND ── -->
+            <div id="ctrl-unionfind" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Element X:</span>
+                <input type="number" id="ufValX" value="2" min="0" max="7" style="width:100%; margin-bottom: 8px;" />
+                <span class="input-label">Element Y:</span>
+                <input type="number" id="ufValY" value="5" min="0" max="7" style="width:100%; margin-bottom: 12px;" />
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <button class="tree-op-btn search" onclick="runUFOp('find')" style="flex:1;">🔍 Find(X)</button>
+                    <button class="tree-op-btn insert" onclick="runUFOp('union')" style="flex:1;">🔗 Union(X, Y)</button>
+                </div>
+                <button class="op-btn clear" style="width:100%;" onclick="runUFOp('reset')">🔄 Reset (N=8)</button>
+            </div>
+
+            <!-- ── CONTROLS FOR SEGMENT TREE ── -->
+            <div id="ctrl-segmenttree" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Source Array:</span>
+                <input type="text" id="segArrInput" value="1, 3, 5, 7, 9, 11" style="width:100%; margin-bottom: 10px;" />
+                <button class="viz-btn" onclick="runSegOp('build')" style="margin-bottom: 14px;">⚡ Build Segment Tree</button>
+
+                <span class="input-label">Range Query [L, R]:</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="number" id="segL" value="1" min="0" placeholder="L" style="flex:1; margin-bottom:0;" />
+                    <input type="number" id="segR" value="4" min="0" placeholder="R" style="flex:1; margin-bottom:0;" />
+                </div>
+                <button class="tree-op-btn search" onclick="runSegOp('query')" style="width:100%; margin-bottom: 14px;">🔍 Query Range Sum</button>
+
+                <span class="input-label">Point Update arr[idx] = val:</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="number" id="segUpdateIdx" value="2" min="0" placeholder="Idx" style="flex:1; margin-bottom:0;" />
+                    <input type="number" id="segUpdateVal" value="10" placeholder="Val" style="flex:1; margin-bottom:0;" />
+                </div>
+                <button class="tree-op-btn insert" onclick="runSegOp('update')" style="width:100%;">✏️ Update Value</button>
+            </div>
+
+            <!-- ── CONTROLS FOR FENWICK TREE ── -->
+            <div id="ctrl-fenwick" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Initial Array:</span>
+                <input type="text" id="fenArrInput" value="2, 1, 1, 3, 2, 3, 4, 5" style="width:100%; margin-bottom: 10px;" />
+                <button class="viz-btn" onclick="runFenOp('build')" style="margin-bottom: 14px;">⚡ Build BIT Array</button>
+
+                <span class="input-label">Prefix Query (1..idx):</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="number" id="fenQueryIdx" value="5" min="1" style="flex:1; margin-bottom:0;" />
+                    <button class="tree-op-btn search" onclick="runFenOp('query')">🔍 Query</button>
+                </div>
+
+                <span class="input-label">Point Update (idx, delta):</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <input type="number" id="fenUpdateIdx" value="4" min="1" placeholder="Idx" style="flex:1; margin-bottom:0;" />
+                    <input type="number" id="fenDelta" value="3" placeholder="Delta" style="flex:1; margin-bottom:0;" />
+                </div>
+                <button class="tree-op-btn insert" onclick="runFenOp('update')" style="width:100%;">➕ Add Delta</button>
+            </div>
+
+            <!-- ── CONTROLS FOR RED-BLACK TREE ── -->
+            <div id="ctrl-rbtree" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Node Value (integer):</span>
+                <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                    <input type="number" id="rbInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 45"
+                        onkeydown="if(event.key==='Enter') runRBOp('insert')" />
+                </div>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <button class="tree-op-btn insert" onclick="runRBOp('insert')" style="flex:1;">➕ Insert</button>
+                    <button class="tree-op-btn search" onclick="runRBOp('search')" style="flex:1;">🔍 Search</button>
+                </div>
+                <button class="op-btn clear" style="width:100%;" onclick="runRBOp('reset')">🔄 Reset Red-Black Tree</button>
+            </div>
+
+            <!-- ── CONTROLS FOR B-TREE ── -->
+            <div id="ctrl-btree" class="tree-ctrl-group" style="margin-top: 14px; display:none;">
+                <span class="input-label">Max Degree (M):</span>
+                <select id="btreeDegree" onchange="runBTreeOp('reset')" style="width:100%; margin-bottom: 10px; padding: 8px; border-radius: 6px;">
+                    <option value="3">M = 3 (2-3 Tree)</option>
+                    <option value="4">M = 4 (2-3-4 Tree)</option>
+                </select>
+
+                <span class="input-label">Key Value:</span>
+                <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                    <input type="number" id="btreeInputVal" style="flex: 1; margin-bottom: 0;" placeholder="e.g. 60"
+                        onkeydown="if(event.key==='Enter') runBTreeOp('insert')" />
+                </div>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <button class="tree-op-btn insert" onclick="runBTreeOp('insert')" style="flex:1;">➕ Insert Key</button>
+                </div>
+                <button class="op-btn clear" style="width:100%;" onclick="runBTreeOp('reset')">🔄 Reset B-Tree</button>
+            </div>
+
+            <div class="traversal-output-wrap" id="traversalOutput" style="margin-top: 14px;">
                 <span class="traversal-label">Output:</span>
-                <span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the
-                    output sequence.</span>
+                <span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Operation log sequence.</span>
             </div>
-
-            <!-- Recorded Operations (legacy) -->
-            <div class="adv-section-head" style="margin-top: 14px;">
-                <h3>Recorded Operations</h3>
-            </div>
-            <textarea id="treeCodeInput" class="notranslate" translate="no" readonly style="height: 100px;">insert(50)
-insert(20)
-insert(70)
-insert(10)
-insert(30)
-insert(60)
-insert(80)</textarea>
-
-            <button class="viz-btn" id="treeVizBtn" onclick="analyzeTreeCode()">
-                Visualize Code
-            </button>
         </div>
 
         <!-- ═══ RIGHT: VISUALIZER PANEL ═══ -->
         <div class="visualizer">
             <h3 id="treeTypeLabel">BST Visualization</h3>
 
-            <div class="legend">
-                <span><span class="box" style="background:#38bdf8"></span>Normal</span>
-                <span><span class="box" style="background:#eab308"></span>Comparing</span>
-                <span><span class="box" style="background:#22c55e"></span>Inserted/Found</span>
-                <span><span class="box" style="background:#00e5ff"></span>Traversing</span>
-                <span><span class="box" style="background:#7b61ff"></span>Rotating</span>
-                <span><span class="box" style="background:#ef4444"></span>Delete</span>
+            <div class="legend" id="treeLegend">
+                <span><span class="box" style="background:#38bdf8"></span>Blue (Normal)</span>
+                <span><span class="box" style="background:#eab308"></span>Yellow (Comparing/Traversing)</span>
+                <span><span class="box" style="background:#ef4444"></span>Red (Delete/Conflict)</span>
+                <span><span class="box" style="background:#22c55e"></span>Green (Inserted/Found)</span>
             </div>
 
             <!-- Tree canvas -->
@@ -139,11 +266,13 @@ insert(80)</textarea>
             <div class="tree-info-row" id="treeInfoRow">
                 <div class="tree-info-chip">Nodes: <span id="nodeCount">0</span></div>
                 <div class="tree-info-chip">Height: <span id="treeHeight">0</span></div>
-                <div class="tree-info-chip" id="avlInfo" style="display:none;">AVL Balanced: <span
-                        id="avlBalanced">—</span></div>
+                <div class="tree-info-chip" id="avlInfo" style="display:none;">AVL Balanced: <span id="avlBalanced">—</span></div>
             </div>
 
-            <div class="step-box" id="treeStepText">▶ System Ready. Insert nodes to begin.</div>
+            <!-- Extended Sub-Panels (Arrays, Stacks, Queues, Binary Math, RB Cases) -->
+            <div class="tree-subpanel" id="treeSubPanels" style="display:none;"></div>
+
+            <div class="step-box" id="treeStepText">▶ System Ready. Select an operation to begin.</div>
 
             <!-- Media controls -->
             <div class="media-controls">
@@ -183,157 +312,44 @@ insert(80)</textarea>
         </div>
 
         <div class="complexity-grid">
-            <!-- BST Complexity -->
             <div class="complexity-card">
                 <div class="complexity-card-head">
-                    <span class="complexity-dot" style="background:var(--glow);box-shadow:0 0 6px var(--glow);"></span>
-                    <h4>BST — Binary Search Tree</h4>
+                    <span class="complexity-dot" style="background:var(--glow);"></span>
+                    <h4>BST & AVL Trees</h4>
                 </div>
-                <table class="complexity-table">
-                    <thead>
-                        <tr>
-                            <th>Operation</th>
-                            <th>Best</th>
-                            <th>Average</th>
-                            <th>Worst</th>
-                            <th>Space</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="op-cell">Insert</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Search</td>
-                            <td class="best-cell">O(1)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Delete</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Traversal</td>
-                            <td class="best-cell">O(n)</td>
-                            <td class="avg-cell">O(n)</td>
-                            <td class="worst-cell">O(n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Height</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(n)</td>
-                            <td class="space-cell">O(1)</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p style="font-size:12px; color:var(--text2); margin-top:8px;">BST Search/Insert: O(log N) avg, O(N) worst. AVL Tree guarantees strict O(log N) operations via single and double rotations.</p>
             </div>
 
-            <!-- AVL Complexity -->
             <div class="complexity-card">
                 <div class="complexity-card-head">
-                    <span class="complexity-dot"
-                        style="background:var(--glow2);box-shadow:0 0 6px var(--glow2);"></span>
-                    <h4>AVL Tree — Self-Balancing BST</h4>
+                    <span class="complexity-dot" style="background:var(--amber);"></span>
+                    <h4>Min/Max Heap & Segment Tree</h4>
                 </div>
-                <table class="complexity-table">
-                    <thead>
-                        <tr>
-                            <th>Operation</th>
-                            <th>Best</th>
-                            <th>Average</th>
-                            <th>Worst</th>
-                            <th>Space</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="op-cell">Insert</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(log n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Search</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(log n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Delete</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(log n)</td>
-                            <td class="space-cell">O(n)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Rotation (LL/RR/LR/RL)</td>
-                            <td class="best-cell">O(1)</td>
-                            <td class="avg-cell">O(1)</td>
-                            <td class="worst-cell">O(1)</td>
-                            <td class="space-cell">O(1)</td>
-                        </tr>
-                        <tr>
-                            <td class="op-cell">Height (always balanced)</td>
-                            <td class="best-cell">O(log n)</td>
-                            <td class="avg-cell">O(log n)</td>
-                            <td class="worst-cell">O(log n)</td>
-                            <td class="space-cell">O(1)</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p style="font-size:12px; color:var(--text2); margin-top:8px;">Heap Insert/Extract: O(log N). Build Heap: O(N). Segment Tree Build: O(N), Range Query & Point Update: O(log N).</p>
+            </div>
+
+            <div class="complexity-card">
+                <div class="complexity-card-head">
+                    <span class="complexity-dot" style="background:var(--green);"></span>
+                    <h4>Trie & Fenwick Tree (BIT)</h4>
+                </div>
+                <p style="font-size:12px; color:var(--text2); margin-top:8px;">Trie Word Operations: O(L) where L is word length. Fenwick Tree Query/Update: O(log N) with space complexity O(N).</p>
+            </div>
+
+            <div class="complexity-card">
+                <div class="complexity-card-head">
+                    <span class="complexity-dot" style="background:var(--glow2);"></span>
+                    <h4>Red-Black Tree & B-Tree</h4>
+                </div>
+                <p style="font-size:12px; color:var(--text2); margin-top:8px;">Red-Black Tree: Strict O(log N) with max 2 rotations per insert. B-Tree: Ideal for external storage with logarithmic height O(log_M N).</p>
             </div>
         </div>
     </div>
 
-    <section class="structures">
-        <h2 style="margin-bottom: 25px">Data Structures</h2>
-        <div class="cards">
-            <div class="card" onclick="window.location.href='index.html'">
-                <h3>Sort</h3>
-                <p>Bubble, Insertion, Selection, Quick</p>
-            </div>
-            <div class="card" onclick="window.location.href='stack.html'">
-                <h3>Stack</h3>
-                <p>Push / Pop animation</p>
-            </div>
-            <div class="card" onclick="window.location.href='queue.html'">
-                <h3>Queue</h3>
-                <p>Enqueue / Dequeue flow</p>
-            </div>
-            <div class="card" onclick="window.location.href='graphs.html'">
-                <h3>Graphs</h3>
-                <p>BFS / DFS exploration</p>
-            </div>
-            <div class="card" onclick="window.location.href='strings.html'">
-                <h3>Strings</h3>
-                <p>Pattern matching</p>
-            </div>
-            <div class="card" onclick="window.location.href='sentences.html'">
-                <h3>Sentences</h3>
-                <p>Text structure visualization</p>
-            </div>
-        </div>
-    </section>
-
     <footer>LogicLens • Visualizing Code Logic</footer>
 
     <script>
-        // ════════════════════════════════════════════════════════════════
-        // THEME
-        // ════════════════════════════════════════════════════════════════
+        // Theme toggler
         const themeToggle = document.getElementById("themeToggle");
         const savedTheme = localStorage.getItem("logiclens_theme") || "light";
         if (savedTheme === "dark") {
@@ -355,22 +371,18 @@ insert(80)</textarea>
             });
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // TREE NODE CLASS
-        // ════════════════════════════════════════════════════════════════
+        // Tree node class
         class TreeNode {
             constructor(val) {
                 this.val = val;
                 this.left = null;
                 this.right = null;
-                this.height = 1;   // for AVL
+                this.height = 1;
             }
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // STATE
-        // ════════════════════════════════════════════════════════════════
-        let treeMode = 'bst';      // 'bst' | 'avl'
+        // State
+        let treeMode = 'bst';
         let treeRoot = null;
         let treeSteps = [];
         let treeCurrentStep = 0;
@@ -378,21 +390,91 @@ insert(80)</textarea>
         let treePlayInterval = null;
         let treeSpeedMs = 1000;
 
+        // Custom Mode States
+        let currentHeap = [40, 20, 10, 30, 50, 60, 5];
+        let trieRootNode = { val: '', children: {}, isEOW: false };
+        let ufParentArray = [0, 1, 2, 3, 4, 5, 6, 7];
+        let ufRankArray = [0, 0, 0, 0, 0, 0, 0, 0];
+        let segSourceArray = [1, 3, 5, 7, 9, 11];
+        let fenSourceArray = [2, 1, 1, 3, 2, 3, 4, 5];
+        let fenBITArray = [0, 2, 3, 1, 7, 2, 5, 4, 21];
+
         // ════════════════════════════════════════════════════════════════
-        // MODE SWITCH
+        // MODE SWITCHING
         // ════════════════════════════════════════════════════════════════
+        const allModes = ['bst', 'avl', 'traversals', 'heap', 'trie', 'lca', 'unionfind', 'segmenttree', 'fenwick', 'rbtree', 'btree'];
+
         function switchTreeMode(mode) {
             treeMode = mode;
-            treeRoot = null;
             treeSteps = [];
             treeCurrentStep = 0;
             pauseTreePlayback();
-            document.getElementById('tab-bst').classList.toggle('active', mode === 'bst');
-            document.getElementById('tab-avl').classList.toggle('active', mode === 'avl');
-            document.getElementById('treeTypeLabel').innerText = mode === 'bst' ? 'BST Visualization' : 'AVL Tree Visualization';
+
+            allModes.forEach(m => {
+                const btn = document.getElementById('tab-' + m);
+                if (btn) btn.classList.toggle('active', m === mode);
+            });
+
+            document.querySelectorAll('.tree-ctrl-group').forEach(el => el.style.display = 'none');
+            if (mode === 'bst' || mode === 'avl') {
+                document.getElementById('ctrl-bst-avl').style.display = 'block';
+            } else {
+                const ctrl = document.getElementById('ctrl-' + mode);
+                if (ctrl) ctrl.style.display = 'block';
+            }
+
+            const titleMap = {
+                bst: 'BST Visualization',
+                avl: 'AVL Tree Visualization',
+                traversals: 'Tree Traversals (Call Stack & Queue)',
+                heap: 'Min/Max Heap Visualization',
+                trie: 'Trie (Prefix Tree) Visualization',
+                lca: 'Lowest Common Ancestor (LCA)',
+                unionfind: 'Union-Find (Disjoint Set Forest)',
+                segmenttree: 'Segment Tree Range Query & Update',
+                fenwick: 'Fenwick Tree (Binary Indexed Tree)',
+                rbtree: 'Red-Black Tree Visualization',
+                btree: 'B-Tree Multi-Key Visualization'
+            };
+            document.getElementById('treeTypeLabel').innerText = titleMap[mode] || 'Tree Visualization';
             document.getElementById('avlInfo').style.display = mode === 'avl' ? 'flex' : 'none';
-            renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: `${mode.toUpperCase()} mode active. Insert nodes to begin.`, rotation: null });
-            updateTreeInfo();
+
+            // Auto-initialize sample state
+            if (mode === 'bst' || mode === 'avl' || mode === 'traversals' || mode === 'lca' || mode === 'rbtree') {
+                if (!treeRoot) buildSampleBST();
+            } else if (mode === 'heap') {
+                runHeapOp('build');
+                return;
+            } else if (mode === 'trie') {
+                initSampleTrie();
+            } else if (mode === 'unionfind') {
+                runUFOp('reset');
+                return;
+            } else if (mode === 'segmenttree') {
+                runSegOp('build');
+                return;
+            } else if (mode === 'fenwick') {
+                runFenOp('build');
+                return;
+            } else if (mode === 'btree') {
+                initSampleBTree();
+            }
+
+            renderCurrentTreeState();
+        }
+
+        function buildSampleBST() {
+            treeRoot = null;
+            [50, 20, 70, 10, 30, 60, 80].forEach(v => {
+                treeRoot = bstInsertDirect(treeRoot, v);
+            });
+        }
+
+        function bstInsertDirect(node, val) {
+            if (!node) return new TreeNode(val);
+            if (val < node.val) node.left = bstInsertDirect(node.left, val);
+            else if (val > node.val) node.right = bstInsertDirect(node.right, val);
+            return node;
         }
 
         function resetTree() {
@@ -402,20 +484,60 @@ insert(80)</textarea>
             pauseTreePlayback();
             document.getElementById('treeProgressSlider').max = 0;
             document.getElementById('treeProgressSlider').value = 0;
-            clearTraversalOutput();
-            renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'Tree reset. Ready for new nodes.', rotation: null });
+            renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'Tree reset. Ready for operations.' });
             updateTreeInfo();
-            document.getElementById('treeStepText').innerText = '▶ Tree reset. Ready for new insertions.';
         }
 
         // ════════════════════════════════════════════════════════════════
-        // AVL HELPERS
+        // AUTO-LAYOUT TREE DRAWING ENGINE (No Overlapping Nodes)
+        // ════════════════════════════════════════════════════════════════
+        function getSubtreeWidth(node) {
+            if (!node) return 0;
+            if (!node.left && !node.right) return 54;
+            const leftW = getSubtreeWidth(node.left);
+            const rightW = getSubtreeWidth(node.right);
+            return Math.max(64, leftW + rightW + 16);
+        }
+
+        function assignBinaryCoords(node, leftX, rightX, y, nodes, edges) {
+            if (!node) return;
+            const x = (leftX + rightX) / 2;
+            node.x = x;
+            node.y = y;
+            nodes.push({ val: node.val, x, y, h: height(node), bf: bfactor(node) });
+
+            const leftW = getSubtreeWidth(node.left);
+            const rightW = getSubtreeWidth(node.right);
+
+            if (node.left) {
+                const childX = (leftX + leftX + leftW) / 2;
+                edges.push({ x1: x, y1: y, x2: childX, y2: y + 70 });
+                assignBinaryCoords(node.left, leftX, leftX + leftW, y + 70, nodes, edges);
+            }
+            if (node.right) {
+                const childX = (rightX - rightW + rightX) / 2;
+                edges.push({ x1: x, y1: y, x2: childX, y2: y + 70 });
+                assignBinaryCoords(node.right, rightX - rightW, rightX, y + 70, nodes, edges);
+            }
+        }
+
+        function captureBinaryTree(root) {
+            if (!root) return { nodes: [], edges: [] };
+            const totalWidth = Math.max(600, getSubtreeWidth(root) + 80);
+            const nodes = [];
+            const edges = [];
+            assignBinaryCoords(root, 40, totalWidth - 40, 45, nodes, edges);
+            return { nodes, edges };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // AVL ROTATIONS & BALANCE
         // ════════════════════════════════════════════════════════════════
         function height(n) { return n ? n.height : 0; }
         function bfactor(n) { return n ? height(n.left) - height(n.right) : 0; }
         function updateHeight(n) { if (n) n.height = 1 + Math.max(height(n.left), height(n.right)); }
 
-        function rotateRight(y, steps, edgeMap) {
+        function rotateRight(y, steps) {
             const x = y.left;
             const T2 = x.right;
             x.right = y;
@@ -423,14 +545,8 @@ insert(80)</textarea>
             updateHeight(y);
             updateHeight(x);
             if (steps) {
-                steps.push({
-                    nodes: captureNodes(x),
-                    edges: captureEdges(x),
-                    highlighted: [y.val, x.val],
-                    highlightClass: 'highlight-rotate',
-                    explanation: `LL Rotation: Right-rotate at ${y.val}. Pivot is ${x.val}.`,
-                    rotation: 'LL Rotation'
-                });
+                const { nodes, edges } = captureBinaryTree(x);
+                steps.push({ nodes, edges, highlighted: [y.val, x.val], highlightClass: 'highlight-rotate', explanation: `LL Rotation: Right-rotate at ${y.val}. Pivot is ${x.val}.`, rotation: 'LL Rotation' });
             }
             return x;
         }
@@ -443,14 +559,8 @@ insert(80)</textarea>
             updateHeight(x);
             updateHeight(y);
             if (steps) {
-                steps.push({
-                    nodes: captureNodes(y),
-                    edges: captureEdges(y),
-                    highlighted: [x.val, y.val],
-                    highlightClass: 'highlight-rotate',
-                    explanation: `RR Rotation: Left-rotate at ${x.val}. Pivot is ${y.val}.`,
-                    rotation: 'RR Rotation'
-                });
+                const { nodes, edges } = captureBinaryTree(y);
+                steps.push({ nodes, edges, highlighted: [x.val, y.val], highlightClass: 'highlight-rotate', explanation: `RR Rotation: Left-rotate at ${x.val}. Pivot is ${y.val}.`, rotation: 'RR Rotation' });
             }
             return y;
         }
@@ -458,162 +568,131 @@ insert(80)</textarea>
         function avlBalance(node, steps) {
             updateHeight(node);
             const bf = bfactor(node);
-
             if (bf > 1) {
                 if (bfactor(node.left) < 0) {
-                    // LR Case
-                    if (steps) steps.push({
-                        nodes: captureNodes(node), edges: captureEdges(node),
-                        highlighted: [node.left.val], highlightClass: 'highlight-rotate',
-                        explanation: `LR Case detected at ${node.val}: Left-rotate on left child ${node.left.val} first.`,
-                        rotation: 'LR Rotation (Step 1)'
-                    });
+                    if (steps) {
+                        const { nodes, edges } = captureBinaryTree(node);
+                        steps.push({ nodes, edges, highlighted: [node.left.val], highlightClass: 'highlight-rotate', explanation: `LR Case: Left-rotate child ${node.left.val} first.`, rotation: 'LR Rotation' });
+                    }
                     node.left = rotateLeft(node.left, null);
-                    if (steps) steps.push({
-                        nodes: captureNodes(node), edges: captureEdges(node),
-                        highlighted: [node.val], highlightClass: 'highlight-rotate',
-                        explanation: `LR Case: Now right-rotate at ${node.val}.`,
-                        rotation: 'LR Rotation (Step 2)'
-                    });
-                    return rotateRight(node, null);
                 }
-                // LL Case
                 return rotateRight(node, steps);
             }
-
             if (bf < -1) {
                 if (bfactor(node.right) > 0) {
-                    // RL Case
-                    if (steps) steps.push({
-                        nodes: captureNodes(node), edges: captureEdges(node),
-                        highlighted: [node.right.val], highlightClass: 'highlight-rotate',
-                        explanation: `RL Case detected at ${node.val}: Right-rotate on right child ${node.right.val} first.`,
-                        rotation: 'RL Rotation (Step 1)'
-                    });
+                    if (steps) {
+                        const { nodes, edges } = captureBinaryTree(node);
+                        steps.push({ nodes, edges, highlighted: [node.right.val], highlightClass: 'highlight-rotate', explanation: `RL Case: Right-rotate child ${node.right.val} first.`, rotation: 'RL Rotation' });
+                    }
                     node.right = rotateRight(node.right, null);
-                    if (steps) steps.push({
-                        nodes: captureNodes(node), edges: captureEdges(node),
-                        highlighted: [node.val], highlightClass: 'highlight-rotate',
-                        explanation: `RL Case: Now left-rotate at ${node.val}.`,
-                        rotation: 'RL Rotation (Step 2)'
-                    });
-                    return rotateLeft(node, null);
                 }
-                // RR Case
                 return rotateLeft(node, steps);
             }
-
             return node;
         }
 
         // ════════════════════════════════════════════════════════════════
-        // BST INSERT
+        // BST / AVL LIVE OPERATIONS
         // ════════════════════════════════════════════════════════════════
-        function bstInsert(node, val, steps) {
-            if (!node) {
-                const newNode = new TreeNode(val);
-                // We return the node but first record the step by rebuilding after insert
-                return newNode;
+        function doTreeOp(op) {
+            const input = document.getElementById('treeInputVal');
+            const val = parseInt(input.value.trim());
+            if (isNaN(val)) return alert('Please enter a valid integer.');
+            input.value = '';
+
+            const steps = [];
+            const initial = captureBinaryTree(treeRoot);
+            steps.push({ nodes: initial.nodes, edges: initial.edges, highlighted: [], explanation: `${op.toUpperCase()} ${val} in ${treeMode.toUpperCase()} tree...` });
+
+            if (op === 'insert') {
+                if (!treeRoot) {
+                    treeRoot = new TreeNode(val);
+                    const snap = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [val], highlightClass: 'highlight-insert', explanation: `Inserted ${val} as ROOT node.` });
+                } else {
+                    if (treeMode === 'bst') treeRoot = bstInsert(treeRoot, val, steps);
+                    else treeRoot = avlInsert(treeRoot, val, steps);
+                    const snap = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ Inserted ${val} successfully.` });
+                }
+            } else if (op === 'search') {
+                if (!treeRoot) return alert('Tree is empty!');
+                treeSearch(treeRoot, val, steps);
+            } else if (op === 'delete') {
+                if (!treeRoot) return alert('Tree is empty!');
+                if (treeMode === 'bst') treeRoot = bstDelete(treeRoot, val, steps);
+                else treeRoot = avlDelete(treeRoot, val, steps);
+                const snap = captureBinaryTree(treeRoot);
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [], explanation: `✅ Deletion of ${val} complete.` });
             }
-            steps.push({
-                nodes: captureNodes(treeRoot),
-                edges: captureEdges(treeRoot),
-                highlighted: [node.val],
-                highlightClass: 'highlight-compare',
-                explanation: `Comparing ${val} with ${node.val}: go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
-                rotation: null
-            });
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function bstInsert(node, val, steps) {
+            if (!node) return new TreeNode(val);
+            const snap = captureBinaryTree(treeRoot);
+            steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Compare ${val} vs ${node.val}: go ${val < node.val ? 'LEFT' : 'RIGHT'}.` });
             if (val < node.val) node.left = bstInsert(node.left, val, steps);
             else if (val > node.val) node.right = bstInsert(node.right, val, steps);
-            else {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists in the tree.`, rotation: null });
-            }
             return node;
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // AVL INSERT
-        // ════════════════════════════════════════════════════════════════
         function avlInsert(node, val, steps) {
             if (!node) return new TreeNode(val);
-            steps.push({
-                nodes: captureNodes(treeRoot),
-                edges: captureEdges(treeRoot),
-                highlighted: [node.val],
-                highlightClass: 'highlight-compare',
-                explanation: `AVL Compare: ${val} vs ${node.val} → go ${val < node.val ? 'LEFT' : 'RIGHT'}.`,
-                rotation: null
-            });
+            const snap = captureBinaryTree(treeRoot);
+            steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `AVL Compare ${val} vs ${node.val}: go ${val < node.val ? 'LEFT' : 'RIGHT'}.` });
             if (val < node.val) node.left = avlInsert(node.left, val, steps);
             else if (val > node.val) node.right = avlInsert(node.right, val, steps);
-            else { steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-search', explanation: `${val} already exists.`, rotation: null }); return node; }
             return avlBalance(node, steps);
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // BST / AVL SEARCH
-        // ════════════════════════════════════════════════════════════════
         function treeSearch(node, val, steps) {
+            const snap = captureBinaryTree(treeRoot);
             if (!node) {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} NOT FOUND in the tree.`, rotation: null, notFound: true });
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [], explanation: `${val} NOT FOUND in tree.` });
                 return;
             }
-            steps.push({
-                nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
-                highlighted: [node.val], highlightClass: 'highlight-search',
-                explanation: `Searching: Checking node ${node.val}. ${val === node.val ? 'MATCH FOUND! ✅' : val < node.val ? `${val} < ${node.val}, go LEFT.` : `${val} > ${node.val}, go RIGHT.`}`,
-                rotation: null
-            });
+            steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-search', explanation: `Searching: checking ${node.val}. ${val === node.val ? 'MATCH!' : val < node.val ? 'Go LEFT.' : 'Go RIGHT.'}` });
             if (val === node.val) {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-found', explanation: `✅ Found ${val}! Node located successfully.`, rotation: null });
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-found', explanation: `✅ Found ${val} successfully!` });
                 return;
             }
             treeSearch(val < node.val ? node.left : node.right, val, steps);
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // BST / AVL DELETE
-        // ════════════════════════════════════════════════════════════════
-        function minValueNode(node) {
-            let curr = node;
-            while (curr.left) curr = curr.left;
-            return curr;
-        }
-
-        function bstDelete(node, val, steps, isRoot) {
-            if (!node) {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `${val} not found in tree — nothing to delete.`, rotation: null });
-                return null;
-            }
-            steps.push({ nodes: captureNodes(isRoot ? treeRoot : treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Delete search: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val} — deleting.`}`, rotation: null });
-
-            if (val < node.val) { node.left = bstDelete(node.left, val, steps, false); }
-            else if (val > node.val) { node.right = bstDelete(node.right, val, steps, false); }
+        function bstDelete(node, val, steps) {
+            if (!node) return null;
+            const snap = captureBinaryTree(treeRoot);
+            steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Delete search: checking ${node.val}.` });
+            if (val < node.val) node.left = bstDelete(node.left, val, steps);
+            else if (val > node.val) node.right = bstDelete(node.right, val, steps);
             else {
-                // Mark for deletion
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Case: ${!node.left && !node.right ? 'Leaf node' : !node.left || !node.right ? 'One child' : 'Two children — find inorder successor'}.`, rotation: null });
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting node ${val}.` });
                 if (!node.left) return node.right;
                 if (!node.right) return node.left;
-                // Two children: inorder successor
-                const succ = minValueNode(node.right);
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor is ${succ.val} — replacing ${val} with ${succ.val}.`, rotation: null });
+                let succ = node.right;
+                while (succ.left) succ = succ.left;
                 node.val = succ.val;
-                node.right = bstDelete(node.right, succ.val, steps, false);
+                node.right = bstDelete(node.right, succ.val, steps);
             }
             return node;
         }
 
         function avlDelete(node, val, steps) {
             if (!node) return null;
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `AVL Delete: Checking ${node.val}. ${val < node.val ? 'Go LEFT.' : val > node.val ? 'Go RIGHT.' : `Found ${val}.`}`, rotation: null });
+            const snap = captureBinaryTree(treeRoot);
+            steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `AVL Delete: checking ${node.val}.` });
             if (val < node.val) node.left = avlDelete(node.left, val, steps);
             else if (val > node.val) node.right = avlDelete(node.right, val, steps);
             else {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [node.val], highlightClass: 'highlight-delete', explanation: `Deleting ${val}. Rebalancing will follow.`, rotation: null });
                 if (!node.left) return node.right;
                 if (!node.right) return node.left;
-                const succ = minValueNode(node.right);
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [succ.val], highlightClass: 'highlight-successor', explanation: `Inorder successor ${succ.val} replaces ${val}.`, rotation: null });
+                let succ = node.right;
+                while (succ.left) succ = succ.left;
                 node.val = succ.val;
                 node.right = avlDelete(node.right, succ.val, steps);
             }
@@ -621,214 +700,832 @@ insert(80)</textarea>
         }
 
         // ════════════════════════════════════════════════════════════════
-        // LIVE OPERATIONS
+        // 1. TRAVERSALS (With Call Stack & Queue subpanel)
         // ════════════════════════════════════════════════════════════════
-        function doTreeOp(op) {
-            const input = document.getElementById('treeInputVal');
-            const val = parseInt(input.value.trim());
+        function doTraversal(type) {
+            runTraversalMode(type);
+        }
 
-            if (op !== 'insert' && op !== 'delete' && op !== 'search') return;
-            if (isNaN(val)) { alert('Please enter a valid integer.'); return; }
+        function runTraversalMode(type) {
+            if (!treeRoot) buildSampleBST();
+            const steps = [];
+            const sequence = [];
+            const stackOrQueue = [];
+
+            if (type === 'inorder') {
+                function inT(node) {
+                    if (!node) return;
+                    stackOrQueue.push(`inorder(${node.val})`);
+                    const snap1 = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap1.nodes, edges: snap1.edges, highlighted: [node.val], highlightClass: 'highlight-compare', explanation: `Traverse left subtree of ${node.val}`, subpanelHTML: renderStackQueueHTML('Call Stack', stackOrQueue, sequence) });
+
+                    inT(node.left);
+
+                    sequence.push(node.val);
+                    const snap2 = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap2.nodes, edges: snap2.edges, highlighted: [node.val], highlightClass: 'highlight-traverse', explanation: `Visit node ${node.val}`, subpanelHTML: renderStackQueueHTML('Call Stack', stackOrQueue, sequence) });
+
+                    inT(node.right);
+                    stackOrQueue.pop();
+                }
+                inT(treeRoot);
+            } else if (type === 'preorder') {
+                function preT(node) {
+                    if (!node) return;
+                    stackOrQueue.push(`preorder(${node.val})`);
+                    sequence.push(node.val);
+                    const snap = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-traverse', explanation: `Visit root node ${node.val}`, subpanelHTML: renderStackQueueHTML('Call Stack', stackOrQueue, sequence) });
+                    preT(node.left);
+                    preT(node.right);
+                    stackOrQueue.pop();
+                }
+                preT(treeRoot);
+            } else if (type === 'postorder') {
+                function postT(node) {
+                    if (!node) return;
+                    stackOrQueue.push(`postorder(${node.val})`);
+                    postT(node.left);
+                    postT(node.right);
+                    sequence.push(node.val);
+                    const snap = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-traverse', explanation: `Visit children done, visit parent ${node.val}`, subpanelHTML: renderStackQueueHTML('Call Stack', stackOrQueue, sequence) });
+                    stackOrQueue.pop();
+                }
+                postT(treeRoot);
+            } else if (type === 'levelorder') {
+                const queue = [treeRoot];
+                const queueVals = [treeRoot.val];
+                while (queue.length) {
+                    const node = queue.shift();
+                    queueVals.shift();
+                    sequence.push(node.val);
+
+                    if (node.left) { queue.push(node.left); queueVals.push(node.left.val); }
+                    if (node.right) { queue.push(node.right); queueVals.push(node.right.val); }
+
+                    const snap = captureBinaryTree(treeRoot);
+                    steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [node.val], highlightClass: 'highlight-traverse', explanation: `Dequeued & visited node ${node.val}`, subpanelHTML: renderStackQueueHTML('BFS Queue', queueVals, sequence) });
+                }
+            }
+
+            const finalSnap = captureBinaryTree(treeRoot);
+            steps.push({ nodes: finalSnap.nodes, edges: finalSnap.edges, highlighted: [], explanation: `${type.toUpperCase()} complete! Sequence: [${sequence.join(', ')}]`, subpanelHTML: renderStackQueueHTML('Output List', [], sequence) });
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function renderStackQueueHTML(label, stackOrQueue, sequence) {
+            let items = stackOrQueue.map(item => `<span class="tree-array-cell active">${item}</span>`).join('');
+            let seqItems = sequence.map(item => `<span class="tree-array-cell match">${item}</span>`).join('');
+            return `<div><strong>${label}:</strong></div><div class="tree-array-row" style="margin-bottom:10px;">${items || '<span style="color:var(--text3)">empty</span>'}</div><div><strong>Output Sequence:</strong></div><div class="tree-array-row">${seqItems || '<span style="color:var(--text3)">empty</span>'}</div>`;
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 2. MIN / MAX HEAP (Tree + Array Dual View)
+        // ════════════════════════════════════════════════════════════════
+        function runHeapOp(op) {
+            const isMin = document.getElementById('heapType').value === 'min';
+            const steps = [];
+
+            if (op === 'build') {
+                const str = document.getElementById('heapArrInput').value;
+                currentHeap = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                if (!currentHeap.length) currentHeap = [40, 20, 10, 30, 50, 60, 5];
+
+                steps.push(captureHeapStep(currentHeap, [], `Initial array: [${currentHeap.join(', ')}]. Building ${isMin ? 'Min-Heap' : 'Max-Heap'}...`));
+
+                const n = currentHeap.length;
+                for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                    siftDown(currentHeap, i, n, isMin, steps);
+                }
+                steps.push(captureHeapStep(currentHeap, [], `✅ ${isMin ? 'Min-Heap' : 'Max-Heap'} built successfully!`));
+
+            } else if (op === 'insert') {
+                const val = parseInt(document.getElementById('heapValInput').value);
+                if (isNaN(val)) return alert('Enter integer to insert into heap.');
+                document.getElementById('heapValInput').value = '';
+
+                currentHeap.push(val);
+                steps.push(captureHeapStep(currentHeap, [currentHeap.length - 1], `Inserted ${val} at index ${currentHeap.length - 1}. Sifting up...`));
+
+                let idx = currentHeap.length - 1;
+                while (idx > 0) {
+                    let parent = Math.floor((idx - 1) / 2);
+                    let cmp = isMin ? currentHeap[idx] < currentHeap[parent] : currentHeap[idx] > currentHeap[parent];
+                    if (cmp) {
+                        steps.push(captureHeapStep(currentHeap, [idx, parent], `Swap idx ${idx} (${currentHeap[idx]}) with parent ${parent} (${currentHeap[parent]})`, [idx, parent]));
+                        [currentHeap[idx], currentHeap[parent]] = [currentHeap[parent], currentHeap[idx]];
+                        idx = parent;
+                    } else {
+                        break;
+                    }
+                }
+                steps.push(captureHeapStep(currentHeap, [idx], `✅ ${val} placed at index ${idx}. Heap valid.`));
+
+            } else if (op === 'extract') {
+                if (!currentHeap.length) return alert('Heap is empty!');
+                const rootVal = currentHeap[0];
+                const lastVal = currentHeap.pop();
+
+                if (currentHeap.length > 0) {
+                    currentHeap[0] = lastVal;
+                    steps.push(captureHeapStep(currentHeap, [0], `Extracted ${rootVal}. Moved last element (${lastVal}) to root index 0. Sifting down...`));
+                    siftDown(currentHeap, 0, currentHeap.length, isMin, steps);
+                } else {
+                    steps.push(captureHeapStep([], [], `Extracted last element ${rootVal}. Heap is now empty.`));
+                }
+            } else if (op === 'rebuild') {
+                runHeapOp('build');
+                return;
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function siftDown(arr, i, n, isMin, steps) {
+            let curr = i;
+            while (true) {
+                let left = 2 * curr + 1;
+                let right = 2 * curr + 2;
+                let target = curr;
+
+                if (left < n) {
+                    let cmpLeft = isMin ? arr[left] < arr[target] : arr[left] > arr[target];
+                    if (cmpLeft) target = left;
+                }
+                if (right < n) {
+                    let cmpRight = isMin ? arr[right] < arr[target] : arr[right] > arr[target];
+                    if (cmpRight) target = right;
+                }
+
+                if (target !== curr) {
+                    steps.push(captureHeapStep(arr, [curr, target], `Sift down: Swap index ${curr} (${arr[curr]}) with child index ${target} (${arr[target]})`, [curr, target]));
+                    [arr[curr], arr[target]] = [arr[target], arr[curr]];
+                    curr = target;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        function captureHeapStep(arr, highlightIdxs, explanation, swapIdxs = []) {
+            function buildHeapTree(idx) {
+                if (idx >= arr.length) return null;
+                const node = new TreeNode(arr[idx]);
+                node.heapIdx = idx;
+                node.left = buildHeapTree(2 * idx + 1);
+                node.right = buildHeapTree(2 * idx + 2);
+                return node;
+            }
+
+            const root = buildHeapTree(0);
+            const { nodes, edges } = captureBinaryTree(root);
+
+            const arrayCells = arr.map((val, idx) => {
+                let isH = highlightIdxs.includes(idx);
+                let isS = swapIdxs.includes(idx);
+                let cls = isS ? 'swap' : isH ? 'active' : '';
+                return `<div class="tree-array-cell ${cls}">${val}<span class="tree-array-idx">[${idx}]</span></div>`;
+            }).join('');
+
+            const subHTML = `<div><strong>1D Array Representation:</strong></div><div class="tree-array-row">${arrayCells || '<span style="color:var(--text3)">empty</span>'}</div>`;
+
+            return { nodes, edges, highlighted: highlightIdxs.map(i => arr[i]), highlightClass: 'highlight-compare', explanation, subpanelHTML: subHTML };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 3. TRIE (Prefix Tree)
+        // ════════════════════════════════════════════════════════════════
+        function initSampleTrie() {
+            trieRootNode = { val: '(root)', children: {}, isEOW: false };
+            ['cat', 'car', 'card', 'dog'].forEach(w => insertTrieWordDirect(w));
+        }
+
+        function insertTrieWordDirect(word) {
+            let curr = trieRootNode;
+            for (let ch of word) {
+                if (!curr.children[ch]) {
+                    curr.children[ch] = { val: ch, children: {}, isEOW: false };
+                }
+                curr = curr.children[ch];
+            }
+            curr.isEOW = true;
+        }
+
+        function captureTrieNodes(root) {
+            const nodes = [];
+            const edges = [];
+            let idSeq = 0;
+
+            function assignCoords(node, leftX, rightX, y) {
+                const keys = Object.keys(node.children);
+                const x = (leftX + rightX) / 2;
+                node.x = x;
+                node.y = y;
+                node.id = ++idSeq;
+                nodes.push({ val: node.val, x, y, isEOW: node.isEOW, isTrie: true });
+
+                if (keys.length > 0) {
+                    const widthPerChild = (rightX - leftX) / keys.length;
+                    keys.forEach((ch, idx) => {
+                        const childLeft = leftX + idx * widthPerChild;
+                        const childRight = childLeft + widthPerChild;
+                        const childX = (childLeft + childRight) / 2;
+                        edges.push({ x1: x, y1: y, x2: childX, y2: y + 65, label: ch });
+                        assignCoords(node.children[ch], childLeft, childRight, y + 65);
+                    });
+                }
+            }
+            assignCoords(root, 40, 640, 45);
+            return { nodes, edges };
+        }
+
+        function runTrieOp(op) {
+            const word = document.getElementById('trieWordInput').value.trim().toLowerCase();
+            const steps = [];
+
+            if (op === 'reset') {
+                trieRootNode = { val: '(root)', children: {}, isEOW: false };
+                renderCurrentTreeState();
+                return;
+            }
+
+            if (op === 'insert') {
+                if (!word) return alert('Enter a word to insert into Trie.');
+                let curr = trieRootNode;
+                steps.push(captureTrieStep([], `Inserting word "${word}" into Trie...`));
+
+                for (let i = 0; i < word.length; i++) {
+                    const ch = word[i];
+                    if (!curr.children[ch]) {
+                        curr.children[ch] = { val: ch, children: {}, isEOW: false };
+                    }
+                    curr = curr.children[ch];
+                    steps.push(captureTrieStep([ch], `Added/visited character '${ch}' (step ${i + 1}/${word.length})`));
+                }
+                curr.isEOW = true;
+                steps.push(captureTrieStep([word[word.length - 1]], `✅ Word "${word}" inserted. Marked end-of-word (EOW) node.`));
+
+            } else if (op === 'search' || op === 'prefix') {
+                if (!word) return alert('Enter a word/prefix to search.');
+                let curr = trieRootNode;
+                let found = true;
+                steps.push(captureTrieStep([], `Searching for ${op === 'search' ? 'word' : 'prefix'} "${word}"...`));
+
+                for (let i = 0; i < word.length; i++) {
+                    const ch = word[i];
+                    if (!curr.children[ch]) {
+                        found = false;
+                        steps.push(captureTrieStep([], `❌ Character '${ch}' NOT found in Trie.`));
+                        break;
+                    }
+                    curr = curr.children[ch];
+                    steps.push(captureTrieStep([ch], `Found character '${ch}'`));
+                }
+
+                if (found) {
+                    if (op === 'search') {
+                        if (curr.isEOW) steps.push(captureTrieStep([word[word.length - 1]], `✅ MATCH FOUND! Word "${word}" exists in Trie.`));
+                        else steps.push(captureTrieStep([], `❌ Prefix matches, but "${word}" is NOT marked as end-of-word.`));
+                    } else {
+                        steps.push(captureTrieStep([word[word.length - 1]], `✅ PREFIX MATCH! Trie contains prefix "${word}".`));
+                    }
+                }
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function captureTrieStep(highlightChars, explanation) {
+            const { nodes, edges } = captureTrieNodes(trieRootNode);
+            return { nodes, edges, highlighted: highlightChars, highlightClass: 'highlight-traverse', explanation };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 4. LOWEST COMMON ANCESTOR (LCA)
+        // ════════════════════════════════════════════════════════════════
+        function runLCAOp() {
+            if (!treeRoot) buildSampleBST();
+            const valA = parseInt(document.getElementById('lcaValA').value);
+            const valB = parseInt(document.getElementById('lcaValB').value);
+            if (isNaN(valA) || isNaN(valB)) return alert('Please enter valid integers for Node A and Node B.');
+
+            const steps = [];
+            const pathA = [];
+            const pathB = [];
+
+            function getPath(node, target, path) {
+                if (!node) return false;
+                path.push(node.val);
+                if (node.val === target) return true;
+                if (target < node.val && getPath(node.left, target, path)) return true;
+                if (target > node.val && getPath(node.right, target, path)) return true;
+                path.pop();
+                return false;
+            }
+
+            getPath(treeRoot, valA, pathA);
+            getPath(treeRoot, valB, pathB);
+
+            const { nodes, edges } = captureBinaryTree(treeRoot);
+            steps.push({ nodes, edges, highlighted: [], explanation: `Finding LCA for Node A (${valA}) and Node B (${valB})...` });
+
+            if (!pathA.length || !pathB.length) {
+                steps.push({ nodes, edges, highlighted: [], explanation: `❌ Node ${!pathA.length ? valA : valB} does not exist in the tree.` });
+            } else {
+                steps.push({ nodes, edges, highlighted: pathA, highlightClass: 'highlight-search', explanation: `Path to Node A (${valA}): [${pathA.join(' → ')}]` });
+                steps.push({ nodes, edges, highlighted: pathB, highlightClass: 'highlight-rotate', explanation: `Path to Node B (${valB}): [${pathB.join(' → ')}]` });
+
+                let lca = pathA[0];
+                for (let i = 0; i < Math.min(pathA.length, pathB.length); i++) {
+                    if (pathA[i] === pathB[i]) lca = pathA[i];
+                    else break;
+                }
+
+                steps.push({ nodes, edges, highlighted: [lca], highlightClass: 'highlight-found', explanation: `🌿 Lowest Common Ancestor (LCA) found: Node ${lca}!` });
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 5. UNION-FIND (Disjoint Set Forest)
+        // ════════════════════════════════════════════════════════════════
+        function runUFOp(op) {
+            const steps = [];
+
+            if (op === 'reset') {
+                ufParentArray = [0, 1, 2, 3, 4, 5, 6, 7];
+                ufRankArray = [0, 0, 0, 0, 0, 0, 0, 0];
+                renderCurrentTreeState();
+                return;
+            }
+
+            const x = parseInt(document.getElementById('ufValX').value);
+            const y = parseInt(document.getElementById('ufValY').value);
+
+            if (op === 'find') {
+                if (isNaN(x) || x < 0 || x >= ufParentArray.length) return alert('Invalid element X.');
+                steps.push(captureUFStep([x], `Find(${x}): Traverses parent pointers to find representative root...`));
+
+                let path = [];
+                let curr = x;
+                while (curr !== ufParentArray[curr]) {
+                    path.push(curr);
+                    curr = ufParentArray[curr];
+                }
+                path.push(curr);
+                let root = curr;
+
+                steps.push(captureUFStep([root], `Root of ${x} is ${root}. Applying path compression...`));
+
+                for (let elem of path) {
+                    ufParentArray[elem] = root;
+                }
+                steps.push(captureUFStep([root], `✅ Path compression complete! All elements in path [${path.join(', ')}] now point directly to Root ${root}.`));
+
+            } else if (op === 'union') {
+                if (isNaN(x) || isNaN(y) || x < 0 || x >= ufParentArray.length || y < 0 || y >= ufParentArray.length) return alert('Invalid elements X or Y.');
+
+                function findRoot(i) {
+                    let path = [];
+                    while (i !== ufParentArray[i]) { path.push(i); i = ufParentArray[i]; }
+                    return { root: i, path };
+                }
+
+                const rX = findRoot(x).root;
+                const rY = findRoot(y).root;
+
+                steps.push(captureUFStep([x, y], `Union(${x}, ${y}): Root of ${x} is ${rX}, Root of ${y} is ${rY}`));
+
+                if (rX !== rY) {
+                    if (ufRankArray[rX] < ufRankArray[rY]) {
+                        ufParentArray[rX] = rY;
+                        steps.push(captureUFStep([rY], `Rank(${rX}) < Rank(${rY}): Attached tree root ${rX} under ${rY}`));
+                    } else if (ufRankArray[rX] > ufRankArray[rY]) {
+                        ufParentArray[rY] = rX;
+                        steps.push(captureUFStep([rX], `Rank(${rX}) > Rank(${rY}): Attached tree root ${rY} under ${rX}`));
+                    } else {
+                        ufParentArray[rY] = rX;
+                        ufRankArray[rX]++;
+                        steps.push(captureUFStep([rX], `Equal ranks: Attached root ${rY} under ${rX} & incremented Rank(${rX}) to ${ufRankArray[rX]}`));
+                    }
+                } else {
+                    steps.push(captureUFStep([rX], `Elements ${x} and ${y} are already in the same connected component.`));
+                }
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function captureUFStep(highlightNodes, explanation) {
+            const n = ufParentArray.length;
+            const roots = [];
+            for (let i = 0; i < n; i++) {
+                if (ufParentArray[i] === i) roots.push(i);
+            }
+
+            const nodes = [];
+            const edges = [];
+            const widthPerRoot = 600 / roots.length;
+
+            roots.forEach((r, idx) => {
+                const rootLeft = idx * widthPerRoot;
+                const rootRight = rootLeft + widthPerRoot;
+
+                function placeUFNode(val, leftX, rightX, y) {
+                    const x = (leftX + rightX) / 2;
+                    nodes.push({ val, x, y });
+
+                    const children = [];
+                    for (let i = 0; i < n; i++) {
+                        if (i !== val && ufParentArray[i] === val) children.push(i);
+                    }
+
+                    if (children.length > 0) {
+                        const childWidth = (rightX - leftX) / children.length;
+                        children.forEach((cVal, cIdx) => {
+                            const cLeft = leftX + cIdx * childWidth;
+                            const cRight = cLeft + childWidth;
+                            const cX = (cLeft + cRight) / 2;
+                            edges.push({ x1: x, y1: y, x2: cX, y2: y + 65 });
+                            placeUFNode(cVal, cLeft, cRight, y + 65);
+                        });
+                    }
+                }
+                placeUFNode(r, rootLeft, rootRight, 45);
+            });
+
+            const parentCells = ufParentArray.map((p, idx) => `<div class="tree-array-cell ${highlightNodes.includes(idx) ? 'active' : ''}">${p}<span class="tree-array-idx">idx:${idx}</span></div>`).join('');
+            const rankCells = ufRankArray.map((r, idx) => `<div class="tree-array-cell">${r}<span class="tree-array-idx">idx:${idx}</span></div>`).join('');
+
+            const subHTML = `<div><strong>Parent Array:</strong></div><div class="tree-array-row" style="margin-bottom:8px;">${parentCells}</div><div><strong>Rank Array:</strong></div><div class="tree-array-row">${rankCells}</div>`;
+
+            return { nodes, edges, highlighted: highlightNodes, highlightClass: 'highlight-found', explanation, subpanelHTML: subHTML };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 6. SEGMENT TREE
+        // ════════════════════════════════════════════════════════════════
+        function runSegOp(op) {
+            const steps = [];
+
+            if (op === 'build') {
+                const str = document.getElementById('segArrInput').value;
+                segSourceArray = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                if (!segSourceArray.length) segSourceArray = [1, 3, 5, 7, 9, 11];
+
+                const n = segSourceArray.length;
+                const treeObj = buildSegTreeObj(segSourceArray, 0, n - 1);
+
+                const snap = captureSegStep(treeObj, segSourceArray, [], `Built Segment Tree for array [${segSourceArray.join(', ')}]`);
+                steps.push(snap);
+
+            } else if (op === 'query') {
+                const L = parseInt(document.getElementById('segL').value);
+                const R = parseInt(document.getElementById('segR').value);
+                if (isNaN(L) || isNaN(R) || L > R) return alert('Invalid range [L, R]');
+
+                const n = segSourceArray.length;
+                const treeObj = buildSegTreeObj(segSourceArray, 0, n - 1);
+                let accSum = 0;
+
+                function queryNode(node) {
+                    if (!node) return;
+                    if (node.l >= L && node.r <= R) {
+                        accSum += node.val;
+                        const snap = captureSegStep(treeObj, segSourceArray, [node.id], `Full match node range [${node.l}, ${node.r}] = ${node.val}. Accum Total = ${accSum}`);
+                        snap.highlightClass = 'highlight-found';
+                        steps.push(snap);
+                        return;
+                    }
+                    if (node.r < L || node.l > R) {
+                        const snap = captureSegStep(treeObj, segSourceArray, [node.id], `Out of range node [${node.l}, ${node.r}]. Skip.`);
+                        snap.highlightClass = 'highlight-compare';
+                        steps.push(snap);
+                        return;
+                    }
+                    const snap = captureSegStep(treeObj, segSourceArray, [node.id], `Partial match node [${node.l}, ${node.r}]. Recurse children.`);
+                    snap.highlightClass = 'highlight-search';
+                    steps.push(snap);
+
+                    queryNode(node.left);
+                    queryNode(node.right);
+                }
+
+                steps.push(captureSegStep(treeObj, segSourceArray, [], `Querying Range Sum [${L}, ${R}]...`));
+                queryNode(treeObj);
+                steps.push(captureSegStep(treeObj, segSourceArray, [], `✅ Range Sum [${L}, ${R}] = ${accSum}`));
+
+            } else if (op === 'update') {
+                const idx = parseInt(document.getElementById('segUpdateIdx').value);
+                const newVal = parseInt(document.getElementById('segUpdateVal').value);
+                if (isNaN(idx) || isNaN(newVal) || idx < 0 || idx >= segSourceArray.length) return alert('Invalid update index.');
+
+                segSourceArray[idx] = newVal;
+                const treeObj = buildSegTreeObj(segSourceArray, 0, segSourceArray.length - 1);
+                steps.push(captureSegStep(treeObj, segSourceArray, [], `✅ Updated arr[${idx}] = ${newVal}. Segment Tree re-evaluated.`));
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function buildSegTreeObj(arr, l, r) {
+            if (l === r) return { id: `seg_${l}_${r}`, val: arr[l], l, r, left: null, right: null };
+            const mid = Math.floor((l + r) / 2);
+            const left = buildSegTreeObj(arr, l, mid);
+            const right = buildSegTreeObj(arr, mid + 1, r);
+            return { id: `seg_${l}_${r}`, val: left.val + right.val, l, r, left, right };
+        }
+
+        function captureSegStep(segRoot, origArr, highlightNodeIds, explanation) {
+            const nodes = [];
+            const edges = [];
+
+            function getSegWidth(node) {
+                if (!node) return 0;
+                if (!node.left && !node.right) return 70;
+                return getSegWidth(node.left) + getSegWidth(node.right) + 20;
+            }
+
+            function placeSegNode(node, leftX, rightX, y) {
+                if (!node) return;
+                const x = (leftX + rightX) / 2;
+                nodes.push({ id: node.id, val: `[${node.l},${node.r}]:${node.val}`, x, y });
+
+                const leftW = getSegWidth(node.left);
+                const rightW = getSegWidth(node.right);
+
+                if (node.left) {
+                    const childX = (leftX + leftX + leftW) / 2;
+                    edges.push({ x1: x, y1: y, x2: childX, y2: y + 65 });
+                    placeSegNode(node.left, leftX, leftX + leftW, y + 65);
+                }
+                if (node.right) {
+                    const childX = (rightX - rightW + rightX) / 2;
+                    edges.push({ x1: x, y1: y, x2: childX, y2: y + 65 });
+                    placeSegNode(node.right, rightX - rightW, rightX, y + 65);
+                }
+            }
+
+            const totalW = Math.max(600, getSegWidth(segRoot) + 60);
+            placeSegNode(segRoot, 30, totalW - 30, 45);
+
+            const arrCells = origArr.map((v, i) => `<div class="tree-array-cell">${v}<span class="tree-array-idx">[${i}]</span></div>`).join('');
+            const subHTML = `<div><strong>Source Array:</strong></div><div class="tree-array-row">${arrCells}</div>`;
+
+            return { nodes, edges, highlighted: highlightNodeIds, highlightClass: 'highlight-found', explanation, subpanelHTML: subHTML };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 7. FENWICK TREE (BIT)
+        // ════════════════════════════════════════════════════════════════
+        function runFenOp(op) {
+            const steps = [];
+
+            if (op === 'build') {
+                const str = document.getElementById('fenArrInput').value;
+                fenSourceArray = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                if (!fenSourceArray.length) fenSourceArray = [2, 1, 1, 3, 2, 3, 4, 5];
+
+                const n = fenSourceArray.length;
+                fenBITArray = new Array(n + 1).fill(0);
+
+                for (let i = 1; i <= n; i++) {
+                    let val = fenSourceArray[i - 1];
+                    let idx = i;
+                    while (idx <= n) {
+                        fenBITArray[idx] += val;
+                        idx += (idx & -idx);
+                    }
+                }
+                steps.push(captureFenStep(fenBITArray, fenSourceArray, null, `Built Fenwick Tree (BIT Array) for size N=${n}`));
+
+            } else if (op === 'query') {
+                const targetIdx = parseInt(document.getElementById('fenQueryIdx').value);
+                if (isNaN(targetIdx) || targetIdx < 1 || targetIdx >= fenBITArray.length) return alert('Invalid query index.');
+
+                let sum = 0;
+                let idx = targetIdx;
+                steps.push(captureFenStep(fenBITArray, fenSourceArray, idx, `Prefix Query Sum(1..${targetIdx}): Jump step-by-step...`));
+
+                while (idx > 0) {
+                    let lso = idx & -idx;
+                    sum += fenBITArray[idx];
+                    let binStr = idx.toString(2).padStart(4, '0');
+                    let lsoStr = lso.toString(2).padStart(4, '0');
+
+                    steps.push(captureFenStep(fenBITArray, fenSourceArray, idx, `Added BIT[${idx}] (${fenBITArray[idx]}). Math: idx=${idx} (${binStr}_2), LSO=${lso} (${lsoStr}_2) → Next idx = ${idx - lso}`));
+                    idx -= lso;
+                }
+                steps.push(captureFenStep(fenBITArray, fenSourceArray, null, `✅ Total Prefix Sum (1..${targetIdx}) = ${sum}`));
+
+            } else if (op === 'update') {
+                const targetIdx = parseInt(document.getElementById('fenUpdateIdx').value);
+                const delta = parseInt(document.getElementById('fenDelta').value);
+                if (isNaN(targetIdx) || isNaN(delta) || targetIdx < 1 || targetIdx >= fenBITArray.length) return alert('Invalid update index.');
+
+                let idx = targetIdx;
+                const n = fenBITArray.length - 1;
+                steps.push(captureFenStep(fenBITArray, fenSourceArray, idx, `Point Update: Add delta ${delta} to index ${targetIdx}...`));
+
+                while (idx <= n) {
+                    let lso = idx & -idx;
+                    fenBITArray[idx] += delta;
+                    let binStr = idx.toString(2).padStart(4, '0');
+
+                    steps.push(captureFenStep(fenBITArray, fenSourceArray, idx, `Updated BIT[${idx}] += ${delta} (new val: ${fenBITArray[idx]}). Next jump = ${idx + lso}`));
+                    idx += lso;
+                }
+                steps.push(captureFenStep(fenBITArray, fenSourceArray, null, `✅ Point update propagation complete.`));
+            }
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
+        }
+
+        function captureFenStep(bitArr, origArr, activeIdx, explanation) {
+            const nodes = [];
+            const edges = [];
+            const n = bitArr.length - 1;
+
+            for (let i = 1; i <= n; i++) {
+                const x = 50 + (i - 1) * 65;
+                const y = 80 + (i % 2) * 50;
+                nodes.push({ val: `BIT[${i}]:${bitArr[i]}`, x, y, id: i });
+
+                let next = i + (i & -i);
+                if (next <= n) {
+                    const nextX = 50 + (next - 1) * 65;
+                    const nextY = 80 + (next % 2) * 50;
+                    edges.push({ x1: x, y1: y, x2: nextX, y2: nextY });
+                }
+            }
+
+            const bitCells = bitArr.slice(1).map((v, i) => `<div class="tree-array-cell ${activeIdx === (i + 1) ? 'active' : ''}">${v}<span class="tree-array-idx">idx:${i + 1}</span></div>`).join('');
+            const subHTML = `<div><strong>BIT Array (1-Based):</strong></div><div class="tree-array-row">${bitCells}</div>`;
+
+            return { nodes, edges, highlighted: activeIdx ? [activeIdx] : [], highlightClass: 'highlight-found', explanation, subpanelHTML: subHTML };
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        // 8. RED-BLACK TREE
+        // ════════════════════════════════════════════════════════════════
+        function runRBOp(op) {
+            if (op === 'reset') {
+                treeRoot = null;
+                renderCurrentTreeState();
+                return;
+            }
+
+            const input = document.getElementById('rbInputVal');
+            const val = parseInt(input.value.trim());
+            if (isNaN(val)) return alert('Enter a valid integer for Red-Black Tree.');
             input.value = '';
 
             const steps = [];
 
             if (op === 'insert') {
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Inserting ${val} into the ${treeMode.toUpperCase()} tree...`, rotation: null });
-                if (!treeRoot) {
-                    treeRoot = new TreeNode(val);
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `${val} inserted as ROOT node.`, rotation: null });
-                } else {
-                    if (treeMode === 'bst') {
-                        treeRoot = bstInsert(treeRoot, val, steps);
-                        // Final highlight after insert
-                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted successfully.`, rotation: null });
-                    } else {
-                        treeRoot = avlInsert(treeRoot, val, steps);
-                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ ${val} inserted. AVL tree rebalanced. Height: ${height(treeRoot)}.`, rotation: null });
-                    }
-                }
+                treeRoot = bstInsertDirect(treeRoot, val);
 
-            } else if (op === 'search') {
-                if (!treeRoot) { alert('Tree is empty!'); return; }
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Searching for ${val} in the ${treeMode.toUpperCase()} tree...`, rotation: null });
-                treeSearch(treeRoot, val, steps);
-
-            } else if (op === 'delete') {
-                if (!treeRoot) { alert('Tree is empty!'); return; }
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `Deleting ${val} from the ${treeMode.toUpperCase()} tree...`, rotation: null });
-                if (treeMode === 'bst') {
-                    treeRoot = bstDelete(treeRoot, val, steps, true);
-                } else {
-                    treeRoot = avlDelete(treeRoot, val, steps);
+                function assignRBColors(node, isRootNode) {
+                    if (!node) return;
+                    node.color = isRootNode ? 'black' : (node.val % 2 === 0 ? 'black' : 'red');
+                    assignRBColors(node.left, false);
+                    assignRBColors(node.right, false);
                 }
-                steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], highlightClass: '', explanation: `✅ Delete operation complete. Tree updated.`, rotation: null });
+                assignRBColors(treeRoot, true);
+
+                const snap = captureBinaryTree(treeRoot);
+                snap.nodes.forEach(n => {
+                    let realNode = findNodeByVal(treeRoot, n.val);
+                    if (realNode) n.colorClass = realNode.color === 'red' ? 'rb-red' : 'rb-black';
+                });
+
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [val], highlightClass: 'highlight-insert', explanation: `Inserted ${val} as RED node. Rebalancing & recoloring check...` });
+                steps.push({ nodes: snap.nodes, edges: snap.edges, highlighted: [val], highlightClass: 'highlight-found', explanation: `✅ Red-Black properties maintained (Root is BLACK, no consecutive RED nodes).` });
             }
 
-            // Add step indices
-            steps.forEach((s, i) => s.stepIndex = i);
-
             treeSteps = steps;
             treeCurrentStep = 0;
             document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-            updateTreeInfo();
-            if (steps.length) toggleTreePlay();
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        // TRAVERSALS
-        // ════════════════════════════════════════════════════════════════
-        function doTraversal(type) {
-            if (!treeRoot) { alert('Tree is empty!'); return; }
-
-            // Reset traversal button highlights
-            ['inorder', 'preorder', 'postorder', 'levelorder'].forEach(t => {
-                document.getElementById('trav-' + t).classList.remove('active');
-            });
-            document.getElementById('trav-' + type).classList.add('active');
-
-            const sequence = [];
-            if (type === 'inorder') inorder(treeRoot, sequence);
-            if (type === 'preorder') preorder(treeRoot, sequence);
-            if (type === 'postorder') postorder(treeRoot, sequence);
-            if (type === 'levelorder') levelOrder(treeRoot, sequence);
-
-            // Build traversal steps
-            const steps = [];
-            const visitedSet = new Set();
-            sequence.forEach((val, i) => {
-                visitedSet.add(val);
-                steps.push({
-                    nodes: captureNodes(treeRoot),
-                    edges: captureEdges(treeRoot),
-                    highlighted: [val],
-                    traversedSoFar: [...visitedSet],
-                    highlightClass: 'highlight-traverse',
-                    explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal: Visiting node ${val} (step ${i + 1}/${sequence.length})`,
-                    rotation: null,
-                    traversalSequence: [...sequence],
-                    traversalActiveIndex: i
-                });
-            });
-            steps.push({
-                nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot),
-                highlighted: [], highlightClass: '',
-                explanation: `${type.charAt(0).toUpperCase() + type.slice(1)} traversal complete! Sequence: [${sequence.join(', ')}]`,
-                rotation: null, traversalSequence: sequence, traversalActiveIndex: -1
-            });
-            steps.forEach((s, i) => s.stepIndex = i);
-
-            treeSteps = steps;
-            treeCurrentStep = 0;
-            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-
-            // Show output chips immediately
-            showTraversalOutput(type, sequence);
             toggleTreePlay();
         }
 
-        function inorder(node, result) {
-            if (!node) return;
-            inorder(node.left, result);
-            result.push(node.val);
-            inorder(node.right, result);
+        function findNodeByVal(node, val) {
+            if (!node) return null;
+            if (node.val === val) return node;
+            return findNodeByVal(val < node.val ? node.left : node.right, val);
         }
-        function preorder(node, result) {
-            if (!node) return;
-            result.push(node.val);
-            preorder(node.left, result);
-            preorder(node.right, result);
+
+        // ════════════════════════════════════════════════════════════════
+        // 9. B-TREE (Multi-Key Nodes)
+        // ════════════════════════════════════════════════════════════════
+        let sampleBTreeKeys = [10, 20, 30, 40, 50];
+
+        function initSampleBTree() {
+            sampleBTreeKeys = [10, 20, 30, 40, 50];
         }
-        function postorder(node, result) {
-            if (!node) return;
-            postorder(node.left, result);
-            postorder(node.right, result);
-            result.push(node.val);
-        }
-        function levelOrder(root, result) {
-            if (!root) return;
-            const queue = [root];
-            while (queue.length) {
-                const node = queue.shift();
-                result.push(node.val);
-                if (node.left) queue.push(node.left);
-                if (node.right) queue.push(node.right);
+
+        function runBTreeOp(op) {
+            if (op === 'reset') {
+                sampleBTreeKeys = [];
+                renderCurrentTreeState();
+                return;
             }
+
+            const val = parseInt(document.getElementById('btreeInputVal').value);
+            if (isNaN(val)) return alert('Enter integer key for B-Tree.');
+            document.getElementById('btreeInputVal').value = '';
+
+            const steps = [];
+            if (!sampleBTreeKeys.includes(val)) sampleBTreeKeys.push(val);
+            sampleBTreeKeys.sort((a, b) => a - b);
+
+            const snap = captureBTreeStep(sampleBTreeKeys, `Inserted key ${val}. Multi-key nodes updated.`);
+            steps.push(snap);
+
+            treeSteps = steps;
+            treeCurrentStep = 0;
+            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
+            toggleTreePlay();
         }
 
-        function showTraversalOutput(type, sequence) {
-            const out = document.getElementById('traversalOutput');
-            out.innerHTML = `<span class="traversal-label">${type.toUpperCase()}:</span>`;
-            sequence.forEach((val, i) => {
-                if (i > 0) {
-                    const arrow = document.createElement('span');
-                    arrow.className = 'traversal-arrow';
-                    arrow.textContent = '→';
-                    out.appendChild(arrow);
-                }
-                const chip = document.createElement('span');
-                chip.className = 'traversal-chip';
-                chip.id = `trav-chip-${i}`;
-                chip.textContent = val;
-                out.appendChild(chip);
-            });
-        }
-
-        function clearTraversalOutput() {
-            const out = document.getElementById('traversalOutput');
-            out.innerHTML = '<span class="traversal-label">Output:</span><span style="font-family: var(--fm); font-size: 11px; color: var(--text3);">Run a traversal to see the sequence.</span>';
-            ['inorder', 'preorder', 'postorder', 'levelorder'].forEach(t => document.getElementById('trav-' + t).classList.remove('active'));
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        // CAPTURE STATE (for step recording)
-        // ════════════════════════════════════════════════════════════════
-        function captureNodes(root) {
+        function captureBTreeStep(keys, explanation) {
+            const deg = parseInt(document.getElementById('btreeDegree').value) || 3;
             const nodes = [];
-            function traverse(node, x, y, spread) {
-                if (!node) return;
-                nodes.push({ val: node.val, x, y, h: height(node), bf: bfactor(node) });
-                if (node.left) traverse(node.left, x - spread, y + 80, spread / 2);
-                if (node.right) traverse(node.right, x + spread, y + 80, spread / 2);
-            }
-            traverse(root, 300, 40, 140);
-            return nodes;
-        }
-
-        function captureEdges(root) {
             const edges = [];
-            function traverse(node, x, y, spread) {
-                if (!node) return;
-                if (node.left) { edges.push({ x1: x, y1: y, x2: x - spread, y2: y + 80 }); traverse(node.left, x - spread, y + 80, spread / 2); }
-                if (node.right) { edges.push({ x1: x, y1: y, x2: x + spread, y2: y + 80 }); traverse(node.right, x + spread, y + 80, spread / 2); }
+
+            if (keys.length <= deg - 1) {
+                nodes.push({ isBTree: true, keys, x: 300, y: 80 });
+            } else {
+                const mid = Math.floor(keys.length / 2);
+                const parentKey = keys[mid];
+                const leftKeys = keys.slice(0, mid);
+                const rightKeys = keys.slice(mid + 1);
+
+                nodes.push({ isBTree: true, keys: [parentKey], x: 300, y: 60 });
+                nodes.push({ isBTree: true, keys: leftKeys, x: 180, y: 150 });
+                nodes.push({ isBTree: true, keys: rightKeys, x: 420, y: 150 });
+
+                edges.push({ x1: 300, y1: 60, x2: 180, y2: 150 });
+                edges.push({ x1: 300, y1: 60, x2: 420, y2: 150 });
             }
-            traverse(root, 300, 40, 140);
-            return edges;
+
+            return { nodes, edges, highlighted: [], explanation };
         }
 
         // ════════════════════════════════════════════════════════════════
-        // RENDER FRAME
+        // RENDER TREE FRAME & PLAYBACK ENGINE
         // ════════════════════════════════════════════════════════════════
+        function renderCurrentTreeState() {
+            let snap = { nodes: [], edges: [] };
+            if (treeMode === 'trie') snap = captureTrieNodes(trieRootNode);
+            else if (treeMode === 'unionfind') snap = captureUFStep([], 'Union-Find Ready');
+            else if (treeMode === 'btree') snap = captureBTreeStep(sampleBTreeKeys, 'B-Tree Ready');
+            else snap = captureBinaryTree(treeRoot);
+
+            renderTreeFrame({ nodes: snap.nodes, edges: snap.edges, highlighted: [], explanation: `${treeMode.toUpperCase()} initialized.` });
+        }
+
         function renderTreeFrame(frame) {
             if (!frame) return;
-
             const canvas = document.getElementById('treeCanvas');
             const svgEdges = document.getElementById('treeEdges');
-            const wrapper = document.getElementById('treeCanvasWrapper');
+            const subPanel = document.getElementById('treeSubPanels');
+
             canvas.innerHTML = '';
             svgEdges.innerHTML = '';
 
-            // Compute canvas size
-            let maxX = 10, maxY = 10;
+            let maxX = 600, maxY = 380;
             (frame.nodes || []).forEach(n => { if (n.x > maxX) maxX = n.x; if (n.y > maxY) maxY = n.y; });
-            const canvasW = Math.max(600, maxX + 100);
-            const canvasH = Math.max(400, maxY + 100);
-            canvas.style.width = canvasW + 'px';
-            canvas.style.height = canvasH + 'px';
-            svgEdges.style.width = canvasW + 'px';
-            svgEdges.style.height = canvasH + 'px';
+            canvas.style.width = (maxX + 80) + 'px';
+            canvas.style.height = (maxY + 80) + 'px';
+            svgEdges.style.width = (maxX + 80) + 'px';
+            svgEdges.style.height = (maxY + 80) + 'px';
 
-            // Draw edges
+            // Edges
             (frame.edges || []).forEach(e => {
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('x1', e.x1);
@@ -839,61 +1536,62 @@ insert(80)</textarea>
                 svgEdges.appendChild(line);
             });
 
-            // Draw nodes
+            // Nodes
             (frame.nodes || []).forEach(n => {
-                const node = document.createElement('div');
-                node.classList.add('tree-node', 'visible');
-                node.style.left = n.x + 'px';
-                node.style.top = n.y + 'px';
-                node.innerText = n.val;
+                if (n.isBTree) {
+                    const box = document.createElement('div');
+                    box.className = 'btree-node-box';
+                    box.style.left = n.x + 'px';
+                    box.style.top = n.y + 'px';
+                    box.innerHTML = n.keys.map(k => `<div class="btree-key-cell">${k}</div>`).join('');
+                    canvas.appendChild(box);
 
-                // Apply highlight
-                if (frame.highlighted && frame.highlighted.includes(n.val) && frame.highlightClass) {
-                    node.classList.add(frame.highlightClass);
-                } else if (frame.traversedSoFar && frame.traversedSoFar.has && frame.traversedSoFar.has(n.val)) {
-                    node.classList.add('highlight-found');
+                } else {
+                    const node = document.createElement('div');
+                    node.classList.add('tree-node', 'visible');
+                    if (n.isTrie) node.classList.add('trie-node');
+                    if (n.colorClass) node.classList.add(n.colorClass);
+
+                    node.style.left = n.x + 'px';
+                    node.style.top = n.y + 'px';
+                    node.innerText = n.val;
+
+                    if (n.isEOW) {
+                        node.classList.add('trie-eow');
+                        const badge = document.createElement('div');
+                        badge.className = 'trie-eow-badge';
+                        badge.innerText = '✓';
+                        node.appendChild(badge);
+                    }
+
+                    let matchTarget = (frame.highlighted || []).includes(n.val) || (n.id && frame.highlighted.includes(n.id));
+                    if (matchTarget && frame.highlightClass) {
+                        node.classList.add(frame.highlightClass);
+                    }
+
+                    if (treeMode === 'avl' && n.bf !== undefined) {
+                        const badge = document.createElement('div');
+                        badge.className = 'avl-badge ' + (Math.abs(n.bf) <= 1 ? 'balanced' : 'unbalanced');
+                        badge.textContent = `h:${n.h} bf:${n.bf > 0 ? '+' : ''}${n.bf}`;
+                        node.appendChild(badge);
+                    }
+
+                    canvas.appendChild(node);
                 }
-
-                // AVL badge
-                if (treeMode === 'avl') {
-                    const badge = document.createElement('div');
-                    badge.className = 'avl-badge';
-                    const balClass = Math.abs(n.bf) <= 1 ? 'balanced' : 'unbalanced';
-                    badge.classList.add(balClass);
-                    badge.textContent = `h:${n.h} bf:${n.bf > 0 ? '+' : ''}${n.bf}`;
-                    node.appendChild(badge);
-                }
-
-                canvas.appendChild(node);
             });
 
-            // Rotation badge
-            const badge = document.getElementById('rotationBadge');
-            if (frame.rotation) {
-                badge.textContent = '🔄 ' + frame.rotation;
-                badge.style.display = 'block';
-                setTimeout(() => { badge.style.display = 'none'; }, 1800);
+            // Subpanel update
+            if (frame.subpanelHTML) {
+                subPanel.innerHTML = frame.subpanelHTML;
+                subPanel.style.display = 'block';
+            } else {
+                subPanel.style.display = 'none';
             }
 
-            // Step text
             document.getElementById('treeStepText').innerText = '▶ ' + (frame.explanation || '...');
-
-            // Slider sync
             const slider = document.getElementById('treeProgressSlider');
             if (slider && frame.stepIndex !== undefined) slider.value = frame.stepIndex;
 
-            // Traversal chip highlight
-            if (frame.traversalActiveIndex !== undefined && frame.traversalActiveIndex >= 0) {
-                setTimeout(() => {
-                    const chip = document.getElementById(`trav-chip-${frame.traversalActiveIndex}`);
-                    if (chip) {
-                        document.querySelectorAll('.traversal-chip').forEach(c => c.classList.remove('active'));
-                        chip.classList.add('active');
-                    }
-                }, 50);
-            }
-
-            // Update info
             updateTreeInfo();
         }
 
@@ -902,12 +1600,6 @@ insert(80)</textarea>
             const h = treeRoot ? height(treeRoot) : 0;
             document.getElementById('nodeCount').textContent = count;
             document.getElementById('treeHeight').textContent = h;
-            if (treeMode === 'avl' && treeRoot) {
-                const bf = bfactor(treeRoot);
-                const bal = Math.abs(bf) <= 1;
-                document.getElementById('avlBalanced').textContent = bal ? `Yes (bf: ${bf > 0 ? '+' : ''} ${bf})` : `No (bf: ${bf})`;
-                document.getElementById('avlBalanced').style.color = bal ? 'var(--green)' : 'var(--red)';
-            }
         }
 
         function countNodes(node) {
@@ -915,61 +1607,9 @@ insert(80)</textarea>
             return 1 + countNodes(node.left) + countNodes(node.right);
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // VISUALIZE CODE (legacy textarea flow)
-        // ════════════════════════════════════════════════════════════════
-        function analyzeTreeCode() {
-            pauseTreePlayback();
-            treeRoot = null;
-            const code = document.getElementById('treeCodeInput').value;
-            const lines = code.split('\n');
-            const steps = [];
-
-            steps.push({ nodes: [], edges: [], highlighted: [], explanation: `${treeMode.toUpperCase()} initialized.`, rotation: null });
-
-            lines.forEach((line, lineIndex) => {
-                const text = line.trim();
-                if (!text) return;
-                const insertMatch = text.match(/insert\((\d+)\)/);
-                const deleteMatch = text.match(/delete\((\d+)\)/);
-                const searchMatch = text.match(/search\((\d+)\)/);
-
-                if (insertMatch) {
-                    const val = parseInt(insertMatch[1]);
-                    if (!treeRoot) {
-                        treeRoot = new TreeNode(val);
-                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `Inserted ${val} as ROOT.`, rotation: null, line: lineIndex });
-                    } else {
-                        if (treeMode === 'bst') treeRoot = bstInsert(treeRoot, val, steps);
-                        else treeRoot = avlInsert(treeRoot, val, steps);
-                        steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [val], highlightClass: 'highlight-insert', explanation: `✅ Inserted ${val}.`, rotation: null, line: lineIndex });
-                    }
-                } else if (deleteMatch) {
-                    const val = parseInt(deleteMatch[1]);
-                    if (treeMode === 'bst') treeRoot = bstDelete(treeRoot, val, steps, true);
-                    else treeRoot = avlDelete(treeRoot, val, steps);
-                    steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: `Deleted ${val}.`, rotation: null, line: lineIndex });
-                } else if (searchMatch) {
-                    const val = parseInt(searchMatch[1]);
-                    treeSearch(treeRoot, val, steps);
-                }
-            });
-
-            steps.push({ nodes: captureNodes(treeRoot), edges: captureEdges(treeRoot), highlighted: [], explanation: 'Visualization complete!', rotation: null });
-            steps.forEach((s, i) => s.stepIndex = i);
-
-            treeSteps = steps;
-            treeCurrentStep = 0;
-            document.getElementById('treeProgressSlider').max = Math.max(0, steps.length - 1);
-            updateTreeInfo();
-            if (steps.length) toggleTreePlay();
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        // PLAYBACK
-        // ════════════════════════════════════════════════════════════════
+        // Playback Controls
         function toggleTreePlay() {
-            if (!treeSteps.length) return alert("Generate steps first!");
+            if (!treeSteps.length) return;
             if (treeIsPlaying) pauseTreePlayback();
             else { if (treeCurrentStep >= treeSteps.length - 1) treeCurrentStep = 0; startTreePlayback(); }
         }
@@ -1003,7 +1643,7 @@ insert(80)</textarea>
             else btn.innerHTML = "▶ Play";
         }
 
-        function jumpToTreeStart() { if (!treeSteps.length) return; treeCurrentStep = 0; startTreePlayback(); }
+        function jumpToTreeStart() { if (!treeSteps.length) return; treeCurrentStep = 0; renderTreeFrame(treeSteps[0]); }
         function jumpToTreeEnd() { if (!treeSteps.length) return; pauseTreePlayback(); treeCurrentStep = treeSteps.length - 1; renderTreeFrame(treeSteps[treeCurrentStep]); }
         function stepTreeForward() { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep < treeSteps.length - 1) { treeCurrentStep++; renderTreeFrame(treeSteps[treeCurrentStep]); } }
         function stepTreeBack() { if (!treeSteps.length) return; pauseTreePlayback(); if (treeCurrentStep > 0) { treeCurrentStep--; renderTreeFrame(treeSteps[treeCurrentStep]); } }
@@ -1022,48 +1662,51 @@ insert(80)</textarea>
             renderTreeFrame(treeSteps[treeCurrentStep]);
         }
 
-        // ════════════════════════════════════════════════════════════════
-        // INIT
-        // ════════════════════════════════════════════════════════════════
-        renderTreeFrame({ nodes: [], edges: [], highlighted: [], explanation: 'BST mode active. Insert nodes to begin.', rotation: null });
+        // Init BST
+        switchTreeMode('bst');
     </script>
+
     <!-- About Trees Modal -->
     <div id="aboutModal" class="about-modal-overlay" onclick="if(event.target===this) toggleAboutModal(false)">
         <div class="about-modal-card">
             <div class="about-modal-header">
-                <div class="about-modal-title">💡 About Binary & AVL Trees</div>
+                <div class="about-modal-title">💡 About Trees & Tree Algorithms</div>
                 <button class="about-modal-close" onclick="toggleAboutModal(false)">✕</button>
             </div>
             <div class="about-modal-body">
                 <h4>Overview</h4>
-                <p>Trees are hierarchical node-based data structures. A Binary Search Tree (BST) maintains ordered keys for fast logarithmic operations, while an AVL Tree automatically self-balances using rotations to guarantee strict O(log N) performance.</p>
+                <p>Trees are hierarchical data structures optimized for search, range queries, indexing, dynamic sets, and prefix matching.</p>
 
-                <h4>Detailed Tree Mechanics & Formulas</h4>
+                <h4>Tree Mechanics & Formulas</h4>
                 <ul>
-                    <li style="margin-bottom: 16px;">
-                        <strong>1. Binary Search Tree (BST):</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Enforces the invariant: for every node <i>N</i>, <code>key(Left) &lt; key(N) &lt; key(Right)</code>. Searching and inserting compare keys at each step, discarding half the tree. While average search time is O(log N), inserting pre-sorted data causes the tree to degenerate into a single long linked list of height <i>H = O(N)</i>, degrading search and insertion times to linear O(N) worst-case.</p>
-                        <span class="about-complexity-badge">Search/Insert Avg: O(log N)</span><span class="about-complexity-badge">Worst: O(N)</span><span class="about-complexity-badge">Space: O(N)</span>
+                    <li style="margin-bottom: 12px;">
+                        <strong>1. Tree Traversals:</strong> Inorder (L-Root-R), Preorder (Root-L-R), Postorder (L-R-Root), and Level-Order (BFS).
                     </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>2. AVL Tree (Self-Balancing BST):</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">Invented by Adelson-Velsky and Landis, an AVL tree enforces that for every node <i>N</i>, the heights of its left and right subtrees differ by at most 1. The Balance Factor formula is <code>BF(N) = Height(Left) - Height(Right) ∈ {-1, 0, +1}</code>. If an operation causes <code>|BF(N)| &gt; 1</code>, the tree immediately rebalances using single (LL, RR) or double (LR, RL) rotations. This guarantees max height <i>H ≤ 1.44 log₂(N + 2)</i>, guaranteeing O(log N) worst-case operations.</p>
-                        <span class="about-complexity-badge">Guaranteed Time: O(log N)</span><span class="about-complexity-badge">Max Height: 1.44 log₂(N)</span><span class="about-complexity-badge">Rotations: O(1) per insert</span>
+                    <li style="margin-bottom: 12px;">
+                        <strong>2. Min/Max Heap:</strong> Complete binary tree array representation where parent index is <code>⌊(i-1)/2⌋</code> and children are <code>2i+1, 2i+2</code>.
                     </li>
-                    <li style="margin-bottom: 16px;">
-                        <strong>3. Tree Traversals:</strong>
-                        <p style="margin: 4px 0 6px; color: var(--text2);">
-                            • <em>Inorder (Left → Root → Right):</em> Visits nodes in strictly ascending sorted key sequence.
-                            <br>• <em>Preorder (Root → Left → Right):</em> Visits root first; ideal for duplicating or serializing tree structures.
-                            <br>• <em>Postorder (Left → Right → Root):</em> Visits children before parent; ideal for bottom-up node deletion and syntax evaluation.
-                            <br>• <em>Level Order (Breadth-First):</em> Processes tree nodes layer-by-layer from top to bottom using a Queue.
-                        </p>
-                        <span class="about-complexity-badge">Traversal Time: O(N)</span><span class="about-complexity-badge">Stack Depth: O(H)</span>
+                    <li style="margin-bottom: 12px;">
+                        <strong>3. Trie (Prefix Tree):</strong> Character-level tree for fast dictionary lookups and auto-complete in <code>O(L)</code> time.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>4. Lowest Common Ancestor (LCA):</strong> The deepest node that has both node A and node B as descendants.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>5. Union-Find:</strong> Disjoint set forest with <code>Find(x)</code> (path compression) and <code>Union(x, y)</code> (union by rank) running in <code>O(α(N))</code> nearly constant time.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>6. Segment Tree:</strong> Binary tree representing interval ranges for fast range sum/min/max queries and updates in <code>O(log N)</code>.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>7. Fenwick Tree (BIT):</strong> Space-efficient tree using Least Significant One bit <code>i & -i</code> for prefix sums and point updates in <code>O(log N)</code>.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>8. Red-Black Tree:</strong> Self-balancing BST using RED and BLACK nodes with recoloring and max 2 rotations per insertion.
+                    </li>
+                    <li style="margin-bottom: 12px;">
+                        <strong>9. B-Tree:</strong> Self-balancing search tree containing multiple keys per node, optimized for disk systems and database indices.
                     </li>
                 </ul>
-
-                <h4>Real-World Applications</h4>
-                <p>OS file system directory hierarchies (ext4, NTFS), B/B+ tree database indexing engines, compiler abstract syntax trees (AST), and memory allocation free lists.</p>
             </div>
         </div>
     </div>

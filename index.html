@@ -205,7 +205,7 @@
         <div class="logo">
             <a href="cover.html"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <div class="logo-mark">L</div>
+                <div class="logo-mark"><img src="LogicLens_Logo.png" alt="LogicLens Logo"></div>
                 <div class="logo-text">LogicLens</div>
             </a>
         </div>
@@ -245,22 +245,27 @@
             <input type="text" id="arrayInput" value="30, 10, 45, 20, 15" placeholder="e.g. 10, 50, 20, 40" />
 
             <span class="input-label">Paste Code:</span>
-            <div class="samples-row">
-                <span class="sample-lbl">Demos:</span>
+            <div class="samples-row" style="flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                <span class="sample-lbl" style="width: 100%; font-weight: 700;">Select Algorithm Demo:</span>
                 <button class="sample-btn" onclick="loadDemo('bubble')">Bubble Sort</button>
                 <button class="sample-btn" onclick="loadDemo('insertion')">Insertion Sort</button>
                 <button class="sample-btn" onclick="loadDemo('selection')">Selection Sort</button>
                 <button class="sample-btn" onclick="loadDemo('quick')">Quick Sort</button>
+                <button class="sample-btn" onclick="loadDemo('merge')">Merge Sort</button>
+                <button class="sample-btn" onclick="loadDemo('heap')">Heap Sort</button>
+                <button class="sample-btn" onclick="loadDemo('binary')">Binary Search</button>
+                <button class="sample-btn" onclick="loadDemo('lower_bound')">Lower Bound</button>
+                <button class="sample-btn" onclick="loadDemo('upper_bound')">Upper Bound</button>
+                <button class="sample-btn" onclick="loadDemo('counting')">Counting Sort</button>
+                <button class="sample-btn" onclick="loadDemo('radix')">Radix Sort</button>
+                <button class="sample-btn" onclick="loadDemo('quick_select')">Quick Select</button>
+                <button class="sample-btn" onclick="loadDemo('two_pointers')">Two Pointers</button>
+                <button class="sample-btn" onclick="loadDemo('sliding_window')">Sliding Window</button>
             </div>
-            <textarea id="codeInput" class="notranslate" translate="no" readonly>
-for(int i=0;i<n;i++){
- for(int j=0;j<n-i-1;j++){
-  if(arr[j] > arr[j+1]){
-   swap(arr[j],arr[j+1]);
-  }
- }
-}
-</textarea>
+            <div class="code-editor-box">
+                <div id="codeLineContainer" class="code-line-container"></div>
+                <textarea id="codeInput" class="notranslate" translate="no" style="display:none;"></textarea>
+            </div>
             <button class="viz-btn" id="vizBtn" onclick="analyzeCode()">
                 Visualize Logic
             </button>
@@ -270,10 +275,10 @@ for(int i=0;i<n;i++){
             <h3>Sorting Visualization</h3>
 
             <div class="legend">
-                <span><span class="box" style="background: #eab308"></span>Compare</span>
-                <span><span class="box" style="background: #ef4444"></span>Swap</span>
-                <span><span class="box" style="background: #22c55e"></span>Sorted</span>
-                <span><span class="box" style="background: #38bdf8"></span>Unsorted</span>
+                <span><span class="box" style="background: #38bdf8"></span>Blue (Unchecked)</span>
+                <span><span class="box" style="background: #eab308"></span>Yellow (Comparing)</span>
+                <span><span class="box" style="background: #ef4444"></span>Red (Swapping)</span>
+                <span><span class="box" style="background: #22c55e"></span>Green (Sorted)</span>
             </div>
 
             <div class="canvas" id="canvas"></div>
@@ -365,9 +370,9 @@ for(int i=0;i<n;i++){
                 <h3>Strings</h3>
                 <p>Pattern matching</p>
             </div>
-            <div class="card" onclick="window.location.href='sentences.html'">
-                <h3>Sentences</h3>
-                <p>Text structure visualization</p>
+            <div class="card" onclick="window.location.href='dp.html'">
+                <h3>DP & Backtracking</h3>
+                <p>Coin Change, Knapsack, N-Queens</p>
             </div>
         </div>
     </section>
@@ -400,11 +405,56 @@ for(int i=0;i<n;i++){
             bubble: "void bubbleSort(int arr[], int n) {\n  for(int i=0; i<n; i++) {\n    for(int j=0; j<n-i-1; j++) {\n      if(arr[j] > arr[j+1]) {\n        int temp = arr[j];\n        arr[j] = arr[j+1];\n        arr[j+1] = temp;\n      }\n    }\n  }\n}",
             insertion: "void insertionSort(int arr[], int n) {\n    for (int i = 1; i < n; i++) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j = j - 1;\n        }\n        arr[j + 1] = key;\n    }\n}",
             selection: "class SelectionSort {\n    void sort(int arr[]) {\n        int n = arr.length;\n        for (int i = 0; i < n-1; i++) {\n            int min_idx = i;\n            for (int j = i+1; j < n; j++) {\n                if (arr[j] < arr[min_idx]) {\n                    min_idx = j;\n                }\n            }\n            int temp = arr[min_idx];\n            arr[min_idx] = arr[i];\n            arr[i] = temp;\n        }\n    }\n}",
-            quick: "def quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)"
+            quick: "def quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)",
+            merge: "void mergeSort(int arr[], int l, int r) {\n    if (l < r) {\n        int m = l + (r - l) / 2;\n        mergeSort(arr, l, m);\n        mergeSort(arr, m + 1, r);\n        merge(arr, l, m, r);\n    }\n}",
+            heap: "void heapSort(int arr[], int n) {\n    for (int i = n / 2 - 1; i >= 0; i--)\n        heapify(arr, n, i);\n    for (int i = n - 1; i > 0; i--) {\n        swap(arr[0], arr[i]);\n        heapify(arr, i, 0);\n    }\n}",
+            binary: "int binarySearch(int arr[], int n, int target) {\n    int low = 0, high = n - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}",
+            lower_bound: "int lowerBound(int arr[], int n, int target) {\n    int low = 0, high = n;\n    while (low < high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] >= target) high = mid;\n        else low = mid + 1;\n    }\n    return low;\n}",
+            upper_bound: "int upperBound(int arr[], int n, int target) {\n    int low = 0, high = n;\n    while (low < high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] > target) high = mid;\n        else low = mid + 1;\n    }\n    return low;\n}",
+            counting: "void countingSort(int arr[], int n) {\n    int maxVal = getMax(arr, n);\n    int count[maxVal + 1] = {0};\n    for (int i = 0; i < n; i++) count[arr[i]]++;\n    for (int i = 1; i <= maxVal; i++) count[i] += count[i-1];\n    int output[n];\n    for (int i = n - 1; i >= 0; i--) {\n        output[count[arr[i]] - 1] = arr[i];\n        count[arr[i]]--;\n    }\n}",
+            radix: "void radixSort(int arr[], int n) {\n    int maxVal = getMax(arr, n);\n    for (int exp = 1; maxVal / exp > 0; exp *= 10)\n        countSortByDigit(arr, n, exp);\n}",
+            quick_select: "int quickSelect(int arr[], int low, int high, int k) {\n    if (low <= high) {\n        int p = partition(arr, low, high);\n        if (p == k - 1) return arr[p];\n        if (p > k - 1) return quickSelect(arr, low, p - 1, k);\n        return quickSelect(arr, p + 1, high, k);\n    }\n    return -1;\n}",
+            two_pointers: "bool twoSumSorted(int arr[], int n, int target) {\n    int left = 0, right = n - 1;\n    while (left < right) {\n        int sum = arr[left] + arr[right];\n        if (sum == target) return true;\n        if (sum < target) left++;\n        else right--;\n    }\n    return false;\n}",
+            sliding_window: "int maxSubarraySum(int arr[], int n, int k) {\n    int windowSum = 0;\n    for (int i = 0; i < k; i++) windowSum += arr[i];\n    int maxSum = windowSum;\n    for (int i = k; i < n; i++) {\n        windowSum += arr[i] - arr[i - k];\n        maxSum = max(maxSum, windowSum);\n    }\n    return maxSum;\n}"
         };
 
+        function renderCodeDisplay(codeText, activeLine = null) {
+            const container = document.getElementById("codeLineContainer");
+            if (!container) return;
+            const lines = (codeText || "").split('\n');
+            let html = "";
+            lines.forEach((lineText, idx) => {
+                const lineNum = idx + 1;
+                const isActive = activeLine === lineNum;
+                const activeCls = isActive ? "code-line-active" : "";
+                const escaped = (lineText || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                html += `<div class="code-line ${activeCls}" id="codeLine-${lineNum}">
+                    <span class="line-num">${lineNum}</span>
+                    <span class="line-text">${escaped || ' '}</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function highlightCodeLine(lineIdx) {
+            const lines = document.querySelectorAll(".code-line");
+            lines.forEach(el => el.classList.remove("code-line-active"));
+            if (lineIdx !== null && lineIdx !== undefined && lineIdx >= 0) {
+                let target = document.getElementById(`codeLine-${lineIdx}`);
+                if (!target) target = document.getElementById(`codeLine-${lineIdx + 1}`);
+                if (target) {
+                    target.classList.add("code-line-active");
+                    target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+        }
+
         function loadDemo(type) {
-            document.getElementById("codeInput").value = demos[type];
+            pausePlayback();
+            const codeText = demos[type] || demos['bubble'];
+            document.getElementById("codeInput").value = codeText;
+            renderCodeDisplay(codeText);
+            analyzeCode(false); // Prepare preview, do NOT auto-start playback when selecting demo
         }
 
         /* --- HYBRID ENGINE STATE --- */
@@ -422,21 +472,21 @@ for(int i=0;i<n;i++){
             for (let i = 0; i < arr.length; i++) {
                 let swappedThisPass = false;
                 for (let j = 0; j < arr.length - i - 1; j++) {
-                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", sorted: [...sortedIndices], explanation: `Checking ${arr[j]} and ${arr[j + 1]}` });
+                    steps.push({ array: [...arr], highlight: [j, j + 1], action: "compare", line: 4, sorted: [...sortedIndices], explanation: `Checking ${arr[j]} and ${arr[j + 1]}` });
                     if (arr[j] > arr[j + 1]) {
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                         swappedThisPass = true;
-                        steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[j+1]} and ${arr[j]}` });
+                        steps.push({ array: [...arr], highlight: [j, j + 1], action: "swap", line: 6, sorted: [...sortedIndices], explanation: `Swapping ${arr[j+1]} and ${arr[j]}` });
                     }
                 }
                 sortedIndices.push(arr.length - 1 - i);
-                steps.push({ array: [...arr], highlight: [], action: "none", sorted: [...sortedIndices], explanation: `${arr[arr.length - 1 - i]} is in its final sorted position.` });
+                steps.push({ array: [...arr], highlight: [], action: "none", line: 2, sorted: [...sortedIndices], explanation: `${arr[arr.length - 1 - i]} is in its final sorted position.` });
                 if (!swappedThisPass) {
                     for (let k = 0; k < arr.length - i - 1; k++) sortedIndices.push(k);
                     break;
                 }
             }
-            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            steps.push({ array: [...arr], highlight: [], action: "none", line: 11, sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
             return steps;
         }
 
@@ -447,20 +497,20 @@ for(int i=0;i<n;i++){
             for (let i = 0; i < arr.length - 1; i++) {
                 let minIdx = i;
                 for (let j = i + 1; j < arr.length; j++) {
-                    steps.push({ array: [...arr], highlight: [minIdx, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with current min ${arr[minIdx]}` });
+                    steps.push({ array: [...arr], highlight: [minIdx, j], action: "compare", line: 7, sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with current min ${arr[minIdx]}` });
                     if (arr[j] < arr[minIdx]) {
                         minIdx = j;
-                        steps.push({ array: [...arr], highlight: [minIdx], action: "compare", sorted: [...sortedIndices], explanation: `New minimum found: ${arr[minIdx]}` });
+                        steps.push({ array: [...arr], highlight: [minIdx], action: "compare", line: 8, sorted: [...sortedIndices], explanation: `New minimum found: ${arr[minIdx]}` });
                     }
                 }
                 if (minIdx !== i) {
                     [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
-                    steps.push({ array: [...arr], highlight: [i, minIdx], action: "swap", sorted: [...sortedIndices], explanation: `Swapping minimum ${arr[i]} into position ${i}` });
+                    steps.push({ array: [...arr], highlight: [i, minIdx], action: "swap", line: 12, sorted: [...sortedIndices], explanation: `Swapping minimum ${arr[i]} into position ${i}` });
                 }
                 sortedIndices.push(i);
             }
             sortedIndices.push(arr.length - 1);
-            steps.push({ array: [...arr], highlight: [], action: "none", sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
+            steps.push({ array: [...arr], highlight: [], action: "none", line: 15, sorted: arr.map((_, i) => i), explanation: "Array is fully sorted!" });
             return steps;
         }
 
@@ -493,18 +543,18 @@ for(int i=0;i<n;i++){
 
             const partition = (low, high) => {
                 let pivot = arr[high];
-                steps.push({ array: [...arr], highlight: [high], action: "compare", sorted: [...sortedIndices], explanation: `Pivot chosen as ${pivot}` });
+                steps.push({ array: [...arr], range: [low, high], pointers: { [low]: 'L', [high]: 'R', [high]: 'Pivot' }, highlight: [high], action: "compare", sorted: [...sortedIndices], explanation: `Pivot chosen as ${pivot}` });
                 let i = (low - 1);
                 for (let j = low; j <= high - 1; j++) {
-                    steps.push({ array: [...arr], highlight: [high, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing ${arr[j]} with pivot ${pivot}` });
+                    steps.push({ array: [...arr], range: [low, high], pointers: { [j]: 'j', [high]: 'Pivot' }, highlight: [high, j], action: "compare", sorted: [...sortedIndices], explanation: `Comparing arr[${j}] (${arr[j]}) with pivot ${pivot}` });
                     if (arr[j] < pivot) {
                         i++;
                         [arr[i], arr[j]] = [arr[j], arr[i]];
-                        steps.push({ array: [...arr], highlight: [i, j], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[i]} and ${arr[j]}` });
+                        steps.push({ array: [...arr], range: [low, high], pointers: { [i]: 'i', [j]: 'j', [high]: 'Pivot' }, highlight: [i, j], action: "swap", sorted: [...sortedIndices], explanation: `Swapping ${arr[i]} and ${arr[j]}` });
                     }
                 }
                 [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
-                steps.push({ array: [...arr], highlight: [i + 1, high], action: "swap", sorted: [...sortedIndices], explanation: `Placing pivot ${pivot} in position ${i + 1}` });
+                steps.push({ array: [...arr], range: [low, high], pointers: { [i + 1]: 'Pivot' }, highlight: [i + 1, high], action: "swap", sorted: [...sortedIndices], explanation: `Placing pivot ${pivot} in position ${i + 1}` });
                 sortedIndices.push(i + 1);
                 return (i + 1);
             };
@@ -522,8 +572,496 @@ for(int i=0;i<n;i++){
             return steps;
         }
 
-        function analyzeCode() {
-            const code = document.querySelector("textarea").value || "";
+        function generateMergeSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let aux = Array(n).fill(null);
+
+            function merge(low, mid, high, level) {
+                let leftArr = arr.slice(low, mid + 1);
+                let rightArr = arr.slice(mid + 1, high + 1);
+                
+                steps.push({
+                    array: [...arr],
+                    auxArray: [...aux],
+                    range: [low, high],
+                    pointers: { [low]: 'L', [mid]: 'Mid', [high]: 'R' },
+                    mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                    highlight: [low, mid, high],
+                    action: 'compare',
+                    explanation: `Splitting & Merging subarray range [${low}..${high}] at mid=${mid}.`
+                });
+
+                let i = 0, j = 0, k = low;
+                while (i < leftArr.length && j < rightArr.length) {
+                    steps.push({
+                        array: [...arr],
+                        auxArray: [...aux],
+                        range: [low, high],
+                        pointers: { [low + i]: 'i', [mid + 1 + j]: 'j', [k]: 'k' },
+                        mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                        highlight: [low + i, mid + 1 + j],
+                        action: 'compare',
+                        explanation: `Comparing left element ${leftArr[i]} and right element ${rightArr[j]}`
+                    });
+
+                    if (leftArr[i] <= rightArr[j]) {
+                        aux[k] = leftArr[i];
+                        steps.push({
+                            array: [...arr],
+                            auxArray: [...aux],
+                            range: [low, high],
+                            pointers: { [low + i]: 'i', [k]: 'k' },
+                            mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                            highlight: [k],
+                            action: 'swap',
+                            explanation: `Placing ${leftArr[i]} into auxiliary array position ${k}`
+                        });
+                        i++;
+                    } else {
+                        aux[k] = rightArr[j];
+                        steps.push({
+                            array: [...arr],
+                            auxArray: [...aux],
+                            range: [low, high],
+                            pointers: { [mid + 1 + j]: 'j', [k]: 'k' },
+                            mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                            highlight: [k],
+                            action: 'swap',
+                            explanation: `Placing ${rightArr[j]} into auxiliary array position ${k}`
+                        });
+                        j++;
+                    }
+                    k++;
+                }
+
+                while (i < leftArr.length) {
+                    aux[k] = leftArr[i];
+                    steps.push({
+                        array: [...arr], auxArray: [...aux], range: [low, high],
+                        pointers: { [low + i]: 'i', [k]: 'k' },
+                        mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                        highlight: [k], action: 'swap',
+                        explanation: `Copying remaining left element ${leftArr[i]} to aux[${k}]`
+                    });
+                    i++; k++;
+                }
+
+                while (j < rightArr.length) {
+                    aux[k] = rightArr[j];
+                    steps.push({
+                        array: [...arr], auxArray: [...aux], range: [low, high],
+                        pointers: { [mid + 1 + j]: 'j', [k]: 'k' },
+                        mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                        highlight: [k], action: 'swap',
+                        explanation: `Copying remaining right element ${rightArr[j]} to aux[${k}]`
+                    });
+                    j++; k++;
+                }
+
+                for (let idx = low; idx <= high; idx++) {
+                    arr[idx] = aux[idx];
+                    steps.push({
+                        array: [...arr], auxArray: [...aux], range: [low, high],
+                        pointers: { [idx]: 'copy' },
+                        mergeLevels: { level, subLeft: [low, mid], subRight: [mid + 1, high] },
+                        highlight: [idx], action: 'swap',
+                        explanation: `Copying merged element ${arr[idx]} back to main array at index ${idx}`
+                    });
+                }
+            }
+
+            function mergeSortHelper(low, high, level) {
+                if (low < high) {
+                    let mid = Math.floor((low + high) / 2);
+                    mergeSortHelper(low, mid, level + 1);
+                    mergeSortHelper(mid + 1, high, level + 1);
+                    merge(low, mid, high, level);
+                }
+            }
+
+            mergeSortHelper(0, n - 1, 1);
+            steps.push({
+                array: [...arr], auxArray: [...aux], range: [0, n - 1], pointers: {},
+                sorted: arr.map((_, i) => i), action: 'none', explanation: 'Merge sort complete! Array is fully sorted.'
+            });
+            return steps;
+        }
+
+        function generateHeapSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let sortedIndices = [];
+
+            function heapify(size, i) {
+                let largest = i;
+                let left = 2 * i + 1;
+                let right = 2 * i + 2;
+
+                let pointers = { [i]: 'root' };
+                if (left < size) pointers[left] = 'L';
+                if (right < size) pointers[right] = 'R';
+
+                steps.push({
+                    array: [...arr], heapTree: [...arr], heapSize: size, range: [0, size - 1],
+                    pointers: pointers, highlight: [i, ...(left < size ? [left] : []), ...(right < size ? [right] : [])],
+                    sorted: [...sortedIndices], action: 'compare',
+                    explanation: `Heapify at root ${i} (${arr[i]}). Left child ${left} (${arr[left] ?? 'N/A'}), Right child ${right} (${arr[right] ?? 'N/A'})`
+                });
+
+                if (left < size && arr[left] > arr[largest]) largest = left;
+                if (right < size && arr[right] > arr[largest]) largest = right;
+
+                if (largest !== i) {
+                    [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                    steps.push({
+                        array: [...arr], heapTree: [...arr], heapSize: size, range: [0, size - 1],
+                        pointers: { [i]: 'root', [largest]: 'max' }, highlight: [i, largest],
+                        sorted: [...sortedIndices], action: 'swap',
+                        explanation: `Swapping arr[${i}] and arr[${largest}] to maintain Max-Heap property.`
+                    });
+                    heapify(size, largest);
+                }
+            }
+
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) heapify(n, i);
+
+            for (let i = n - 1; i > 0; i--) {
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                sortedIndices.push(i);
+                steps.push({
+                    array: [...arr], heapTree: [...arr], heapSize: i, range: [0, i - 1],
+                    pointers: { [i]: 'sorted' }, sorted: [...sortedIndices], highlight: [0, i], action: 'swap',
+                    explanation: `Extracted max element ${arr[i]} to sorted position ${i}.`
+                });
+                heapify(i, 0);
+            }
+            sortedIndices.push(0);
+
+            steps.push({
+                array: [...arr], heapTree: [...arr], heapSize: 0, range: [0, n - 1],
+                pointers: {}, sorted: arr.map((_, idx) => idx), action: 'none', explanation: 'Heap sort complete! Array is fully sorted.'
+            });
+            return steps;
+        }
+
+        function generateBinarySearchSteps(initialArray, target = 20, variant = 'standard') {
+            let steps = [];
+            let arr = [...initialArray].sort((a, b) => a - b);
+            let n = arr.length;
+
+            steps.push({
+                array: [...arr], range: [0, n - 1], pointers: { 0: 'low', [n - 1]: 'high' }, action: 'none',
+                explanation: `Binary Search (${variant}). Array pre-sorted. Target = ${target}`
+            });
+
+            let low = 0, high = variant === 'standard' ? n - 1 : n;
+            let ans = -1;
+
+            while (low <= (variant === 'standard' ? high : high - 1)) {
+                let mid = Math.floor((low + (variant === 'standard' ? high : high - 1)) / 2);
+                if (variant !== 'standard') mid = Math.floor((low + high) / 2);
+
+                let pointers = { [low]: 'low', [mid]: 'mid' };
+                if (high < n) pointers[high] = 'high';
+
+                steps.push({
+                    array: [...arr], range: [low, Math.min(high, n - 1)], pointers: pointers, highlight: [mid], action: 'compare',
+                    explanation: `Checking mid index ${mid} (value ${arr[mid]}). Active range: [${low}..${Math.min(high, n - 1)}]`
+                });
+
+                if (variant === 'standard') {
+                    if (arr[mid] === target) {
+                        ans = mid;
+                        steps.push({
+                            array: [...arr], range: [mid, mid], pointers: { [mid]: 'FOUND' }, sorted: [mid], highlight: [mid], action: 'none',
+                            explanation: `Target ${target} found at index ${mid}!`
+                        });
+                        break;
+                    } else if (arr[mid] < target) {
+                        low = mid + 1;
+                    } else {
+                        high = mid - 1;
+                    }
+                } else if (variant === 'lower_bound') {
+                    if (arr[mid] >= target) { ans = mid; high = mid; }
+                    else { low = mid + 1; }
+                } else if (variant === 'upper_bound') {
+                    if (arr[mid] > target) { ans = mid; high = mid; }
+                    else { low = mid + 1; }
+                }
+            }
+
+            let finalIdx = variant === 'standard' ? ans : low;
+            steps.push({
+                array: [...arr], range: [0, n - 1], pointers: finalIdx < n && finalIdx >= 0 ? { [finalIdx]: variant === 'standard' ? 'FOUND' : variant } : {},
+                sorted: finalIdx >= 0 && finalIdx < n ? [finalIdx] : [], action: 'none',
+                explanation: variant === 'standard' ? (ans !== -1 ? `Found ${target} at index ${ans}.` : `Target ${target} not found.`) : `${variant} result index = ${finalIdx} (value ${arr[finalIdx] ?? 'N/A'}).`
+            });
+            return steps;
+        }
+
+        function generateCountingSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let maxVal = Math.max(...arr, 1);
+            let count = Array(maxVal + 1).fill(0);
+            let output = Array(n).fill(null);
+
+            steps.push({
+                array: [...arr], countArray: [...count], outputArray: [...output], phase: 'count', pointers: {}, action: 'none',
+                explanation: `Initializing Counting Sort. Max value = ${maxVal}. Building frequency count array.`
+            });
+
+            for (let i = 0; i < n; i++) {
+                let val = arr[i];
+                count[val]++;
+                steps.push({
+                    array: [...arr], countArray: [...count], outputArray: [...output], phase: 'count', pointers: { [i]: 'i' }, highlight: [i], action: 'compare',
+                    explanation: `Incrementing count of arr[${i}] = ${val}. count[${val}] = ${count[val]}`
+                });
+            }
+
+            for (let i = 1; i <= maxVal; i++) {
+                count[i] += count[i - 1];
+                steps.push({
+                    array: [...arr], countArray: [...count], outputArray: [...output], phase: 'prefix', pointers: {}, action: 'swap',
+                    explanation: `Calculating prefix sum: count[${i}] = ${count[i]}`
+                });
+            }
+
+            for (let i = n - 1; i >= 0; i--) {
+                let val = arr[i];
+                let pos = count[val] - 1;
+                output[pos] = val;
+                count[val]--;
+                steps.push({
+                    array: [...arr], countArray: [...count], outputArray: [...output], phase: 'output', pointers: { [i]: 'curr', [pos]: 'outPos' }, highlight: [i], action: 'swap',
+                    explanation: `Placing arr[${i}] (${val}) into output[${pos}]. count[${val}] decremented to ${count[val]}`
+                });
+            }
+
+            for (let i = 0; i < n; i++) {
+                arr[i] = output[i];
+                steps.push({
+                    array: [...arr], countArray: [...count], outputArray: [...output], phase: 'copy', pointers: { [i]: 'copy' }, sorted: Array.from({ length: i + 1 }, (_, idx) => idx), highlight: [i], action: 'swap',
+                    explanation: `Copying output[${i}] (${output[i]}) back to main array.`
+                });
+            }
+
+            steps.push({
+                array: [...arr], countArray: [...count], outputArray: [...output], phase: 'done', pointers: {}, sorted: arr.map((_, i) => i), action: 'none',
+                explanation: 'Counting sort complete! Array is fully sorted.'
+            });
+            return steps;
+        }
+
+        function generateRadixSortSteps(initialArray) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let maxVal = Math.max(...arr, 1);
+
+            steps.push({
+                array: [...arr], buckets: Array.from({ length: 10 }, () => []), digitExp: 1, pointers: {}, action: 'none',
+                explanation: `Radix Sort starting. Max value = ${maxVal}. Sorting digit by digit.`
+            });
+
+            for (let exp = 1; Math.floor(maxVal / exp) > 0; exp *= 10) {
+                let buckets = Array.from({ length: 10 }, () => []);
+
+                for (let i = 0; i < n; i++) {
+                    let digit = Math.floor(arr[i] / exp) % 10;
+                    buckets[digit].push(arr[i]);
+                    steps.push({
+                        array: [...arr], buckets: JSON.parse(JSON.stringify(buckets)), digitExp: exp, pointers: { [i]: `digit:${digit}` }, highlight: [i], action: 'compare',
+                        explanation: `Element ${arr[i]}: digit at ${exp}s place is ${digit}. Placed in Bucket [${digit}]`
+                    });
+                }
+
+                let idx = 0;
+                for (let b = 0; b < 10; b++) {
+                    while (buckets[b].length > 0) {
+                        let val = buckets[b].shift();
+                        arr[idx] = val;
+                        steps.push({
+                            array: [...arr], buckets: JSON.parse(JSON.stringify(buckets)), digitExp: exp, pointers: { [idx]: `from B[${b}]` }, highlight: [idx], action: 'swap',
+                            explanation: `Collected ${val} from Bucket [${b}] into main array index ${idx}`
+                        });
+                        idx++;
+                    }
+                }
+            }
+
+            steps.push({
+                array: [...arr], buckets: Array.from({ length: 10 }, () => []), digitExp: 0, pointers: {}, sorted: arr.map((_, i) => i), action: 'none',
+                explanation: 'Radix sort complete! Array is fully sorted.'
+            });
+            return steps;
+        }
+
+        function generateQuickSelectSteps(initialArray, k = 2) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let targetIdx = Math.max(0, Math.min(k - 1, n - 1));
+
+            steps.push({
+                array: [...arr], range: [0, n - 1], k: k, pointers: { [targetIdx]: `target k=${k}` }, action: 'none',
+                explanation: `Quick Select starting. Finding ${k}-th smallest element (index ${targetIdx}).`
+            });
+
+            function quickSelectHelper(low, high) {
+                if (low <= high) {
+                    let pivot = arr[high];
+                    steps.push({
+                        array: [...arr], range: [low, high], k: k, pointers: { [low]: 'L', [high]: 'R', [high]: 'Pivot' }, highlight: [high], action: 'compare',
+                        explanation: `Partitioning range [${low}..${high}] with Pivot = ${pivot}`
+                    });
+
+                    let i = low - 1;
+                    for (let j = low; j < high; j++) {
+                        if (arr[j] < pivot) {
+                            i++;
+                            [arr[i], arr[j]] = [arr[j], arr[i]];
+                            steps.push({
+                                array: [...arr], range: [low, high], k: k, pointers: { [i]: 'i', [j]: 'j', [high]: 'Pivot' }, highlight: [i, j], action: 'swap',
+                                explanation: `arr[${j}] < pivot. Swapping arr[${i}] and arr[${j}]`
+                            });
+                        }
+                    }
+
+                    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+                    let p = i + 1;
+
+                    steps.push({
+                        array: [...arr], range: [low, high], k: k, pointers: { [p]: 'Pivot' }, highlight: [p], action: 'swap',
+                        explanation: `Placed pivot ${pivot} at index ${p}.`
+                    });
+
+                    if (p === targetIdx) {
+                        steps.push({
+                            array: [...arr], range: [p, p], k: k, pointers: { [p]: 'K-TH SMALLEST' }, sorted: [p], highlight: [p], action: 'none',
+                            explanation: `Pivot index ${p} matches target index ${targetIdx}! ${k}-th smallest element is ${arr[p]}.`
+                        });
+                        return;
+                    } else if (p > targetIdx) {
+                        steps.push({
+                            array: [...arr], range: [low, p - 1], k: k, pointers: { [p]: 'p > target' }, highlight: [p], action: 'compare',
+                            explanation: `Pivot ${p} > target ${targetIdx}. Recursing on LEFT partition [${low}..${p - 1}].`
+                        });
+                        quickSelectHelper(low, p - 1);
+                    } else {
+                        steps.push({
+                            array: [...arr], range: [p + 1, high], k: k, pointers: { [p]: 'p < target' }, highlight: [p], action: 'compare',
+                            explanation: `Pivot ${p} < target ${targetIdx}. Recursing on RIGHT partition [${p + 1}..${high}].`
+                        });
+                        quickSelectHelper(p + 1, high);
+                    }
+                }
+            }
+
+            quickSelectHelper(0, n - 1);
+            return steps;
+        }
+
+        function generateTwoPointersSteps(initialArray, target = 35) {
+            let steps = [];
+            let arr = [...initialArray].sort((a, b) => a - b);
+            let n = arr.length;
+
+            steps.push({
+                array: [...arr], range: [0, n - 1], pointers: { 0: 'Left', [n - 1]: 'Right' }, action: 'none',
+                explanation: `Two Pointers starting. Array pre-sorted. Target pair sum = ${target}`
+            });
+
+            let left = 0, right = n - 1;
+            let found = false;
+
+            while (left < right) {
+                let sum = arr[left] + arr[right];
+                steps.push({
+                    array: [...arr], range: [left, right], pointers: { [left]: 'Left', [right]: 'Right' }, highlight: [left, right], action: 'compare',
+                    explanation: `Comparing arr[${left}] (${arr[left]}) + arr[${right}] (${arr[right]}) = ${sum}. Target is ${target}.`
+                });
+
+                if (sum === target) {
+                    found = true;
+                    steps.push({
+                        array: [...arr], range: [left, right], pointers: { [left]: 'MATCH', [right]: 'MATCH' }, sorted: [left, right], highlight: [left, right], action: 'none',
+                        explanation: `Pair found! arr[${left}] (${arr[left]}) + arr[${right}] (${arr[right]}) = ${target}`
+                    });
+                    break;
+                } else if (sum < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+
+            if (!found) {
+                steps.push({
+                    array: [...arr], range: [0, n - 1], pointers: {}, action: 'none',
+                    explanation: `Two Pointers complete. No pair found with sum = ${target}.`
+                });
+            }
+            return steps;
+        }
+
+        function generateSlidingWindowSteps(initialArray, windowSize = 3) {
+            let steps = [];
+            let arr = [...initialArray];
+            let n = arr.length;
+            let k = Math.min(windowSize, n);
+
+            let windowSum = 0;
+            for (let i = 0; i < k; i++) windowSum += arr[i];
+            let maxSum = windowSum;
+            let maxWindowStart = 0;
+
+            steps.push({
+                array: [...arr], window: [0, k - 1], windowSum: windowSum, maxSum: maxSum, pointers: { 0: 'WinStart', [k - 1]: 'WinEnd' },
+                highlight: Array.from({ length: k }, (_, i) => i), action: 'compare', line: 3,
+                explanation: `Initial Sliding Window of size k=${k}: indices [0..${k - 1}]. Initial Sum = ${windowSum}`
+            });
+
+            for (let i = k; i < n; i++) {
+                let prevStart = i - k;
+                let newStart = i - k + 1;
+                let newEnd = i;
+
+                windowSum += arr[i] - arr[prevStart];
+
+                let isMaxUpdated = false;
+                if (windowSum > maxSum) {
+                    maxSum = windowSum;
+                    maxWindowStart = newStart;
+                    isMaxUpdated = true;
+                }
+
+                steps.push({
+                    array: [...arr], window: [newStart, newEnd], windowSum: windowSum, maxSum: maxSum,
+                    pointers: { [newStart]: 'WinStart', [newEnd]: 'WinEnd' },
+                    highlight: Array.from({ length: k }, (_, idx) => newStart + idx), action: 'swap', line: isMaxUpdated ? 7 : 6,
+                    explanation: `Slid window to [${newStart}..${newEnd}]. Subtracted ${arr[prevStart]}, added ${arr[i]}. Current Window Sum = ${windowSum} (Max = ${maxSum})`
+                });
+            }
+
+            steps.push({
+                array: [...arr], window: [maxWindowStart, maxWindowStart + k - 1], windowSum: maxSum, maxSum: maxSum,
+                pointers: { [maxWindowStart]: 'MAX WIN', [maxWindowStart + k - 1]: 'MAX WIN' },
+                sorted: Array.from({ length: k }, (_, idx) => maxWindowStart + idx), action: 'none', line: 9,
+                explanation: `Sliding Window complete! Maximum sum window of size ${k} is [${maxWindowStart}..${maxWindowStart + k - 1}] with sum = ${maxSum}`
+            });
+
+            return steps;
+        }
+
+        function analyzeCode(autoStart = true) {
+            const code = document.getElementById("codeInput").value || "";
             const rawInput = document.getElementById("arrayInput").value;
             let parsedArray = rawInput.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
 
@@ -536,9 +1074,11 @@ for(int i=0;i<n;i++){
             let stepText = document.getElementById("stepText");
 
             pausePlayback();
-            btn.innerText = "Analyzing...";
-            btn.disabled = true;
-            stepText.innerText = "▶ Analysing and preparing Visualisation";
+            if (autoStart) {
+                btn.innerText = "Analyzing...";
+                btn.disabled = true;
+                stepText.innerText = "▶ Analysing and preparing Visualisation";
+            }
 
             let algoName = "Bubble Sort";
             let lang = "C++";
@@ -547,7 +1087,67 @@ for(int i=0;i<n;i++){
             let spaceComp = "O(1)";
 
             const lowerCode = code.toLowerCase();
-            if (lowerCode.includes("insertion") || lowerCode.includes("key")) {
+            if (lowerCode.includes("merge")) {
+                algoName = "Merge Sort";
+                lang = "C++";
+                generatedSteps = generateMergeSortSteps(parsedArray);
+                timeComp = { best: "O(n log n)", average: "O(n log n)", worst: "O(n log n)" };
+                spaceComp = "O(n)";
+            } else if (lowerCode.includes("heap")) {
+                algoName = "Heap Sort";
+                lang = "C++";
+                generatedSteps = generateHeapSortSteps(parsedArray);
+                timeComp = { best: "O(n log n)", average: "O(n log n)", worst: "O(n log n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("lowerbound") || lowerCode.includes("lower_bound")) {
+                algoName = "Binary Search (Lower Bound)";
+                lang = "C++";
+                generatedSteps = generateBinarySearchSteps(parsedArray, 20, 'lower_bound');
+                timeComp = { best: "O(1)", average: "O(log n)", worst: "O(log n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("upperbound") || lowerCode.includes("upper_bound")) {
+                algoName = "Binary Search (Upper Bound)";
+                lang = "C++";
+                generatedSteps = generateBinarySearchSteps(parsedArray, 20, 'upper_bound');
+                timeComp = { best: "O(1)", average: "O(log n)", worst: "O(log n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("binary") || lowerCode.includes("binarysearch")) {
+                algoName = "Binary Search";
+                lang = "C++";
+                generatedSteps = generateBinarySearchSteps(parsedArray, 20, 'standard');
+                timeComp = { best: "O(1)", average: "O(log n)", worst: "O(log n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("counting")) {
+                algoName = "Counting Sort";
+                lang = "C++";
+                generatedSteps = generateCountingSortSteps(parsedArray);
+                timeComp = { best: "O(n + k)", average: "O(n + k)", worst: "O(n + k)" };
+                spaceComp = "O(k)";
+            } else if (lowerCode.includes("radix")) {
+                algoName = "Radix Sort";
+                lang = "C++";
+                generatedSteps = generateRadixSortSteps(parsedArray);
+                timeComp = { best: "O(d * (n + k))", average: "O(d * (n + k))", worst: "O(d * (n + k))" };
+                spaceComp = "O(n + k)";
+            } else if (lowerCode.includes("quickselect") || lowerCode.includes("quick_select")) {
+                algoName = "Quick Select (k-th Smallest)";
+                lang = "C++";
+                generatedSteps = generateQuickSelectSteps(parsedArray, 2);
+                timeComp = { best: "O(n)", average: "O(n)", worst: "O(n²)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("twosum") || lowerCode.includes("two_pointers") || lowerCode.includes("left < right")) {
+                algoName = "Two Pointers";
+                lang = "C++";
+                generatedSteps = generateTwoPointersSteps(parsedArray, 35);
+                timeComp = { best: "O(n)", average: "O(n)", worst: "O(n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("sliding") || lowerCode.includes("window")) {
+                algoName = "Sliding Window";
+                lang = "C++";
+                generatedSteps = generateSlidingWindowSteps(parsedArray, 3);
+                timeComp = { best: "O(n)", average: "O(n)", worst: "O(n)" };
+                spaceComp = "O(1)";
+            } else if (lowerCode.includes("insertion") || lowerCode.includes("key")) {
                 algoName = "Insertion Sort";
                 lang = "C++";
                 generatedSteps = generateInsertionSortSteps(parsedArray);
@@ -584,7 +1184,7 @@ for(int i=0;i<n;i++){
             };
 
             setTimeout(() => {
-                continueVisualization(data);
+                continueVisualization(data, autoStart);
                 btn.innerText = "Visualize Logic";
                 btn.disabled = false;
             }, 100);
@@ -645,7 +1245,7 @@ for(int i=0;i<n;i++){
             }
         }
 
-        function continueVisualization(data) {
+        function continueVisualization(data, autoStart = true) {
             let stepText = document.getElementById("stepText");
             steps = data.steps || [];
 
@@ -666,7 +1266,10 @@ for(int i=0;i<n;i++){
             if (steps.length > 0) {
                 document.getElementById("progressSlider").max = steps.length - 1;
                 currentStep = 0;
-                togglePlay(); // Auto-start the fetched animation
+                renderFrame(steps[0]);
+                if (autoStart) {
+                    startPlayback(); // Auto-start animation ONLY when Visualize Logic is clicked
+                }
             } else {
                 stepText.innerText = "▶ Analysis failed. No steps generated.";
             }
@@ -689,24 +1292,245 @@ for(int i=0;i<n;i++){
 
             // --- 1. RENDER ARRAY (BAR CHART) ---
             if (type === "array") {
-                const maxVal = Math.max(...frame.array, 1);
-                frame.array.forEach((value, index) => {
-                    let bar = document.createElement("div");
-                    bar.classList.add("bar");
-                    bar.style.height = (value / maxVal) * 260 + "px";
+                // Side-by-Side Heap Split Layout
+                if (frame.heapTree) {
+                    let split = document.createElement("div");
+                    split.classList.add("canvas-split");
 
-                    let highlightArr = frame.highlight || [];
-                    let sortedArr = frame.sorted || [];
+                    let leftBox = document.createElement("div");
+                    leftBox.classList.add("canvas-split-left");
 
-                    if (sortedArr.includes(index)) bar.style.background = "#22c55e";
-                    else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308";
-                    else bar.style.background = "#38bdf8";
+                    const maxVal = Math.max(...frame.array, 1);
+                    frame.array.forEach((value, index) => {
+                        let bar = document.createElement("div");
+                        bar.classList.add("bar");
+                        bar.style.height = (value / maxVal) * 180 + "px";
 
-                    let label = document.createElement("span");
-                    label.innerText = value;
-                    bar.appendChild(label);
-                    canvas.appendChild(bar);
-                });
+                        if (frame.pointers && frame.pointers[index]) {
+                            let badge = document.createElement("div");
+                            badge.classList.add("pointer-badge");
+                            badge.innerText = frame.pointers[index];
+                            bar.appendChild(badge);
+                        }
+
+                        if (frame.range && (index < frame.range[0] || index > frame.range[1])) {
+                            bar.classList.add("shaded");
+                        }
+
+                        let highlightArr = frame.highlight || [];
+                        let sortedArr = frame.sorted || [];
+
+                        if (sortedArr.includes(index)) bar.style.background = "#22c55e";
+                        else if (highlightArr.includes(index)) bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308";
+                        else bar.style.background = "#38bdf8";
+
+                        let label = document.createElement("span");
+                        label.innerText = value;
+                        bar.appendChild(label);
+                        leftBox.appendChild(bar);
+                    });
+
+                    let rightBox = document.createElement("div");
+                    rightBox.classList.add("canvas-split-right");
+                    let treeTitle = document.createElement("div");
+                    treeTitle.classList.add("viz-sub-title");
+                    treeTitle.style.marginBottom = "8px";
+                    treeTitle.innerText = `Max-Heap Tree (Heap Size: ${frame.heapSize ?? frame.array.length})`;
+                    rightBox.appendChild(treeTitle);
+
+                    let treeArr = frame.heapTree;
+                    let levels = [ [0], [1, 2], [3, 4, 5, 6] ];
+                    levels.forEach(levelIndices => {
+                        let levelRow = document.createElement("div");
+                        levelRow.classList.add("heap-tree-level");
+                        levelIndices.forEach(idx => {
+                            if (idx < treeArr.length) {
+                                let node = document.createElement("div");
+                                node.classList.add("heap-tree-node");
+                                node.innerText = treeArr[idx];
+                                if (idx >= (frame.heapSize ?? treeArr.length)) {
+                                    node.style.background = "#22c55e";
+                                    node.style.opacity = "0.4";
+                                } else if ((frame.highlight || []).includes(idx)) {
+                                    node.style.background = frame.action === "swap" ? "#ef4444" : "#eab308";
+                                }
+                                levelRow.appendChild(node);
+                            }
+                        });
+                        if (levelRow.children.length > 0) rightBox.appendChild(levelRow);
+                    });
+
+                    split.appendChild(leftBox);
+                    split.appendChild(rightBox);
+                    canvas.appendChild(split);
+                } else {
+                    // Standard Bar Chart Rendering
+                    if (frame.mergeLevels) {
+                        let badge = document.createElement("div");
+                        badge.classList.add("algo-info-badge");
+                        badge.innerText = `Merge Level ${frame.mergeLevels.level} | Subarray [${frame.mergeLevels.subLeft[0]}..${frame.mergeLevels.subRight[1]}]`;
+                        canvas.appendChild(badge);
+                    } else if (frame.phase) {
+                        let badge = document.createElement("div");
+                        badge.classList.add("algo-info-badge");
+                        badge.innerText = `Counting Sort Phase: ${frame.phase.toUpperCase()}`;
+                        canvas.appendChild(badge);
+                    } else if (frame.digitExp) {
+                        let badge = document.createElement("div");
+                        badge.classList.add("algo-info-badge");
+                        badge.innerText = `Radix Pass: ${frame.digitExp}s Place`;
+                        canvas.appendChild(badge);
+                    } else if (frame.windowSum !== undefined) {
+                        let badge = document.createElement("div");
+                        badge.classList.add("algo-info-badge");
+                        badge.innerText = `Window Sum: ${frame.windowSum} | Max Sum: ${frame.maxSum}`;
+                        canvas.appendChild(badge);
+                    }
+
+                    const maxVal = Math.max(...frame.array, 1);
+                    frame.array.forEach((value, index) => {
+                        let bar = document.createElement("div");
+                        bar.classList.add("bar");
+                        bar.style.height = (value / maxVal) * 220 + "px";
+
+                        if (frame.pointers && frame.pointers[index]) {
+                            let badge = document.createElement("div");
+                            badge.classList.add("pointer-badge");
+                            badge.innerText = frame.pointers[index];
+                            bar.appendChild(badge);
+                        }
+
+                        if (frame.range && (index < frame.range[0] || index > frame.range[1])) {
+                            bar.classList.add("shaded");
+                        } else if (frame.range) {
+                            bar.classList.add("in-range");
+                        }
+
+                        if (frame.window && index >= frame.window[0] && index <= frame.window[1]) {
+                            bar.classList.add("in-window");
+                        }
+
+                        let highlightArr = frame.highlight || [];
+                        let sortedArr = frame.sorted || [];
+
+                        if (sortedArr.includes(index)) {
+                            bar.classList.add("sorted");
+                            bar.style.background = "#22c55e";
+                        } else if (highlightArr.includes(index)) {
+                            bar.style.background = frame.action === "swap" ? "#ef4444" : "#eab308";
+                        } else {
+                            bar.style.background = "#38bdf8";
+                        }
+
+                        let label = document.createElement("span");
+                        label.innerText = value;
+                        bar.appendChild(label);
+                        canvas.appendChild(bar);
+                    });
+                }
+
+                // Render Sub-Panels (Auxiliary Array, Count Array, Buckets)
+                let auxContainer = document.getElementById("canvasSubPanels");
+                if (!auxContainer) {
+                    auxContainer = document.createElement("div");
+                    auxContainer.id = "canvasSubPanels";
+                    canvas.parentNode.insertBefore(auxContainer, canvas.nextSibling);
+                }
+                auxContainer.innerHTML = "";
+
+                if (frame.auxArray) {
+                    let sub = document.createElement("div");
+                    sub.classList.add("viz-sub-container");
+                    let title = document.createElement("div");
+                    title.classList.add("viz-sub-title");
+                    title.innerText = "Auxiliary Array (Temp Buffer)";
+                    sub.appendChild(title);
+
+                    let row = document.createElement("div");
+                    row.classList.add("aux-cells-row");
+                    frame.auxArray.forEach((v) => {
+                        let cell = document.createElement("div");
+                        cell.classList.add("aux-cell");
+                        cell.innerText = v !== null && v !== undefined ? v : "-";
+                        if (v !== null && v !== undefined) cell.style.borderColor = "#00e5ff";
+                        row.appendChild(cell);
+                    });
+                    sub.appendChild(row);
+                    auxContainer.appendChild(sub);
+                }
+
+                if (frame.countArray) {
+                    let sub = document.createElement("div");
+                    sub.classList.add("viz-sub-container");
+                    let title = document.createElement("div");
+                    title.classList.add("viz-sub-title");
+                    title.innerText = "Count Array (Frequencies & Prefix Sums)";
+                    sub.appendChild(title);
+
+                    let row = document.createElement("div");
+                    row.classList.add("count-cells-row");
+                    frame.countArray.forEach((cnt, idx) => {
+                        let cell = document.createElement("div");
+                        cell.classList.add("count-cell");
+                        cell.innerHTML = `<span>${cnt}</span><span class="count-idx">val:${idx}</span>`;
+                        if (cnt > 0) cell.style.borderColor = "#eab308";
+                        row.appendChild(cell);
+                    });
+                    sub.appendChild(row);
+
+                    if (frame.outputArray) {
+                        let outTitle = document.createElement("div");
+                        outTitle.classList.add("viz-sub-title");
+                        outTitle.style.marginTop = "10px";
+                        outTitle.innerText = "Output Array";
+                        sub.appendChild(outTitle);
+
+                        let outRow = document.createElement("div");
+                        outRow.classList.add("aux-cells-row");
+                        frame.outputArray.forEach((v) => {
+                            let cell = document.createElement("div");
+                            cell.classList.add("aux-cell");
+                            cell.innerText = v !== null && v !== undefined ? v : "-";
+                            if (v !== null && v !== undefined) cell.style.borderColor = "#22c55e";
+                            outRow.appendChild(cell);
+                        });
+                        sub.appendChild(outRow);
+                    }
+                    auxContainer.appendChild(sub);
+                }
+
+                if (frame.buckets) {
+                    let sub = document.createElement("div");
+                    sub.classList.add("viz-sub-container");
+                    let title = document.createElement("div");
+                    title.classList.add("viz-sub-title");
+                    title.innerText = `Digit Buckets 0 - 9 (Pass ${frame.digitExp}s Place)`;
+                    sub.appendChild(title);
+
+                    let grid = document.createElement("div");
+                    grid.classList.add("buckets-grid");
+                    frame.buckets.forEach((items, bucketIdx) => {
+                        let box = document.createElement("div");
+                        box.classList.add("bucket-box");
+                        let hdr = document.createElement("div");
+                        hdr.classList.add("bucket-header");
+                        hdr.innerText = `B[${bucketIdx}]`;
+                        box.appendChild(hdr);
+
+                        let list = document.createElement("div");
+                        list.classList.add("bucket-items");
+                        items.forEach(val => {
+                            let chip = document.createElement("div");
+                            chip.classList.add("bucket-chip");
+                            chip.innerText = val;
+                            list.appendChild(chip);
+                        });
+                        box.appendChild(list);
+                        grid.appendChild(box);
+                    });
+                    sub.appendChild(grid);
+                    auxContainer.appendChild(sub);
+                }
             }
 
             // --- 2. RENDER STACK (VERTICAL) ---
@@ -785,22 +1609,9 @@ for(int i=0;i<n;i++){
                 }
             }
 
-            // Highlight line in textarea
+            // Highlight line in code viewer display
             if (frame.line !== undefined && frame.line >= 0) {
-                const textarea = document.getElementById(codeInputId);
-                if (textarea) {
-                    const lines = textarea.value.split('\n');
-                    let startPos = 0;
-                    for (let i = 0; i < frame.line && i < lines.length; i++) {
-                        startPos += lines[i].length + 1;
-                    }
-                    let endPos = startPos + (lines[frame.line] ? lines[frame.line].length : 0);
-
-                    const curScroll = textarea.scrollTop;
-                    textarea.focus();
-                    textarea.setSelectionRange(startPos, endPos);
-                    textarea.scrollTop = curScroll;
-                }
+                highlightCodeLine(frame.line);
             }
         }
 
@@ -997,6 +1808,9 @@ for(int i=0;i<n;i++){
             const modal = document.getElementById("aboutModal");
             if (modal) modal.classList.toggle("active", show);
         }
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDemo('bubble');
+        });
     </script>
     <script src="i18n.js"></script>
 </body>
